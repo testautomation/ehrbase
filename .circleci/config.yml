@@ -455,6 +455,10 @@ commands:
                     --xunit junit-output.xml --xunitskipnoncritical \
                     robot/
       - save-integration-tests-job-caches
+      - store_test_results:
+            path: ~/project/tests/results/
+      - store_artifacts:
+            path: ~/project/tests/results/
 
 
   run-integration-tests:
