@@ -37,27 +37,27 @@ workflows:
               only:
                 - /^(feature\/.*|develop|release\/v\d+\.\d+\.\d+|hotfix\/v\d+\.\d+\.\d+|master)$/
 
-      - dependency-check:
-          context: org-global
-          requires:
-            - build-artifacts
-          filters:
-            branches:
-              only:
-                - /^(feature\/.*|develop|release\/v\d+\.\d+\.\d+|hotfix\/v\d+\.\d+\.\d+|master)$/
+      # - dependency-check:
+      #     context: org-global
+      #     requires:
+      #       - build-artifacts
+      #     filters:
+      #       branches:
+      #         only:
+      #           - /^(feature\/.*|develop|release\/v\d+\.\d+\.\d+|hotfix\/v\d+\.\d+\.\d+|master)$/
 
-      - unit-tests:
-          context: org-global
-          filters:
-            branches:
-              only:
-                - /^(feature\/.*|develop|release\/v\d+\.\d+\.\d+|hotfix\/v\d+\.\d+\.\d+|master)$/
+      # - unit-tests:
+      #     context: org-global
+      #     filters:
+      #       branches:
+      #         only:
+      #           - /^(feature\/.*|develop|release\/v\d+\.\d+\.\d+|hotfix\/v\d+\.\d+\.\d+|master)$/
 
       - COMPOSITION-tests-1:
           context: org-global
           requires:
             - build-artifacts
-            - unit-tests
+            # - unit-tests
           filters:
             branches:
               only:
@@ -69,7 +69,7 @@ workflows:
           context: org-global
           requires:
             - build-artifacts
-            - unit-tests
+            # - unit-tests
           filters:
             branches:
               only:
@@ -79,7 +79,7 @@ workflows:
           context: org-global
           requires:
             - build-artifacts
-            - unit-tests
+            # - unit-tests
           filters:
             branches:
               only:
@@ -89,73 +89,73 @@ workflows:
           context: org-global
           requires:
             - build-artifacts
-            - unit-tests
+            # - unit-tests
           filters:
             branches:
               only:
                 - /^(feature\/.*|develop|release\/v\d+\.\d+\.\d+|hotfix\/v\d+\.\d+\.\d+|master)$/
 
-      - CONTRIBUTION-test:
-          context: org-global
-          requires:
-            - build-artifacts
-            - unit-tests
-          filters:
-            branches:
-              only:
-                - /^(feature\/.*|develop|release\/v\d+\.\d+\.\d+|hotfix\/v\d+\.\d+\.\d+|master)$/
-
-      - DIRECTORY-test:
-          context: org-global
-          requires:
-            - build-artifacts
-            - unit-tests
-          filters:
-            branches:
-              only:
-                - /^(feature\/.*|develop|release\/v\d+\.\d+\.\d+|hotfix\/v\d+\.\d+\.\d+|master)$/
-
-      - EHRSERVICE-test:
-          context: org-global
-          requires:
-            - build-artifacts
-            - unit-tests
-          filters:
-            branches:
-              only:
-                - /^(feature\/.*|develop|release\/v\d+\.\d+\.\d+|hotfix\/v\d+\.\d+\.\d+|master)$/
-
-      - KNOWLEDGE-test:
-          context: org-global
-          requires:
-            - build-artifacts
-            - unit-tests
-          filters:
-            branches:
-              only:
-                - /^(feature\/.*|develop|release\/v\d+\.\d+\.\d+|hotfix\/v\d+\.\d+\.\d+|master)$/
-
-      - QUERYSERVICE-test:
-          context: org-global
-          requires:
-            - build-artifacts
-            - unit-tests
-          filters:
-            branches:
-              only:
-                - /^(feature\/.*|develop|release\/v\d+\.\d+\.\d+|hotfix\/v\d+\.\d+\.\d+|master)$/
-
-      # - sonar-analysis:
+      # - CONTRIBUTION-test:
       #     context: org-global
       #     requires:
       #       - build-artifacts
       #       - unit-tests
-      #       - integration-tests
-      #       - dependency-check
       #     filters:
       #       branches:
       #         only:
       #           - /^(feature\/.*|develop|release\/v\d+\.\d+\.\d+|hotfix\/v\d+\.\d+\.\d+|master)$/
+
+      # - DIRECTORY-test:
+      #     context: org-global
+      #     requires:
+      #       - build-artifacts
+      #       - unit-tests
+      #     filters:
+      #       branches:
+      #         only:
+      #           - /^(feature\/.*|develop|release\/v\d+\.\d+\.\d+|hotfix\/v\d+\.\d+\.\d+|master)$/
+
+      # - EHRSERVICE-test:
+      #     context: org-global
+      #     requires:
+      #       - build-artifacts
+      #       - unit-tests
+      #     filters:
+      #       branches:
+      #         only:
+      #           - /^(feature\/.*|develop|release\/v\d+\.\d+\.\d+|hotfix\/v\d+\.\d+\.\d+|master)$/
+
+      # - KNOWLEDGE-test:
+      #     context: org-global
+      #     requires:
+      #       - build-artifacts
+      #       - unit-tests
+      #     filters:
+      #       branches:
+      #         only:
+      #           - /^(feature\/.*|develop|release\/v\d+\.\d+\.\d+|hotfix\/v\d+\.\d+\.\d+|master)$/
+
+      # - QUERYSERVICE-test:
+      #     context: org-global
+      #     requires:
+      #       - build-artifacts
+      #       - unit-tests
+      #     filters:
+      #       branches:
+      #         only:
+      #           - /^(feature\/.*|develop|release\/v\d+\.\d+\.\d+|hotfix\/v\d+\.\d+\.\d+|master)$/
+
+      # # - sonar-analysis:
+      # #     context: org-global
+      # #     requires:
+      # #       - build-artifacts
+      # #       - unit-tests
+      # #       - integration-tests
+      # #       - dependency-check
+      # #     filters:
+      # #       branches:
+      # #         only:
+      # #           - /^(feature\/.*|develop|release\/v\d+\.\d+\.\d+|hotfix\/v\d+\.\d+\.\d+|master)$/
 
 
 
@@ -240,53 +240,74 @@ jobs:
   COMPOSITION-tests-2:
     machine:
       image: ubuntu-1604:201903-01
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
     steps:
-      - configure-python-version
-      - checkout
-      - restore-integration-tests-job-caches
-      - setup-jacoco-distribution
-      - attach-target-folder
-      - install-python-requirements
-      - run-integration-tests:
-          include: "compositionANDjson2"
-      - save-integration-tests-job-caches
+      - run-robot-tests:
+          include: "circleci"
 
   COMPOSITION-tests-3:
     machine:
       image: ubuntu-1604:201903-01
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
     steps:
-      - configure-python-version
-      - checkout
-      - restore-integration-tests-job-caches
-      - setup-jacoco-distribution
-      - attach-target-folder
-      - install-python-requirements
-      - run-integration-tests:
-          include: "compositionANDxml1"
-      - save-integration-tests-job-caches
+      - run-robot-tests:
+          include: "circleci"
 
   COMPOSITION-tests-4:
     machine:
       image: ubuntu-1604:201903-01
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
     steps:
-      - configure-python-version
-      - checkout
-      - restore-integration-tests-job-caches
-      - setup-jacoco-distribution
-      - attach-target-folder
-      - install-python-requirements
-      - run-integration-tests:
-          include: "compositionANDxml2"
-      - save-integration-tests-job-caches
+      - run-robot-tests:
+          include: "circleci"
+
+  # COMPOSITION-tests-2:
+  #   machine:
+  #     image: ubuntu-1604:201903-01
+  #   environment:
+  #     POSTGRES_USER: postgres
+  #     POSTGRES_PASSWORD: postgres
+  #   steps:
+  #     - configure-python-version
+  #     - checkout
+  #     - restore-integration-tests-job-caches
+  #     - setup-jacoco-distribution
+  #     - attach-target-folder
+  #     - install-python-requirements
+  #     - run-integration-tests:
+  #         include: "compositionANDjson2"
+  #     - save-integration-tests-job-caches
+
+  # COMPOSITION-tests-3:
+  #   machine:
+  #     image: ubuntu-1604:201903-01
+  #   environment:
+  #     POSTGRES_USER: postgres
+  #     POSTGRES_PASSWORD: postgres
+  #   steps:
+  #     - configure-python-version
+  #     - checkout
+  #     - restore-integration-tests-job-caches
+  #     - setup-jacoco-distribution
+  #     - attach-target-folder
+  #     - install-python-requirements
+  #     - run-integration-tests:
+  #         include: "compositionANDxml1"
+  #     - save-integration-tests-job-caches
+
+  # COMPOSITION-tests-4:
+  #   machine:
+  #     image: ubuntu-1604:201903-01
+  #   environment:
+  #     POSTGRES_USER: postgres
+  #     POSTGRES_PASSWORD: postgres
+  #   steps:
+  #     - configure-python-version
+  #     - checkout
+  #     - restore-integration-tests-job-caches
+  #     - setup-jacoco-distribution
+  #     - attach-target-folder
+  #     - install-python-requirements
+  #     - run-integration-tests:
+  #         include: "compositionANDxml2"
+  #     - save-integration-tests-job-caches
 
   CONTRIBUTION-test:
     machine:
