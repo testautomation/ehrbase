@@ -145,6 +145,18 @@ workflows:
               only:
                 - /^(feature\/.*|develop|release\/v\d+\.\d+\.\d+|hotfix\/v\d+\.\d+\.\d+|master)$/
 
+      - ROBOT-REPORT:
+          context: org-global
+          requires:
+            - COMPOSITION-tests-1
+            - COMPOSITION-tests-2
+            - COMPOSITION-tests-3
+            - QUERYSERVICE-test
+          filters:
+            branches:
+              only:
+                - /^(feature\/.*|develop|release\/v\d+\.\d+\.\d+|hotfix\/v\d+\.\d+\.\d+|master)$/
+
       # # - sonar-analysis:
       # #     context: org-global
       # #     requires:
@@ -237,7 +249,7 @@ jobs:
         - run-robot-tests:
               include-tags: "circleci"
               test-suite-path: "COMPOSITION_TESTS"
-              test-report-titel: "COMPOSITION 1"
+              test-suite-name: "COMPOSITION_1"
 
 
   COMPOSITION-tests-2:
@@ -247,7 +259,7 @@ jobs:
           - run-robot-tests:
                 include-tags: "circleci"
                 test-suite-path: "COMPOSITION_TESTS"
-                test-report-titel: "COMPOSITION 2"
+                test-suite-name: "COMPOSITION_2"
 
   COMPOSITION-tests-3:
       machine:
@@ -256,7 +268,7 @@ jobs:
           - run-robot-tests:
                 include-tags: "circleci"
                 test-suite-path: "COMPOSITION_TESTS"
-                test-report-titel: "COMPOSITION 3"
+                test-suite-name: "COMPOSITION_3"
 
 
   # COMPOSITION-tests-2:
@@ -398,7 +410,17 @@ jobs:
           - run-robot-tests:
                 include-tags: "ADHOC-QUERY"
                 test-suite-path: "QUERY_SERVICE_TESTS"
-                test-report-titel: "AQL QUERY SERVICE"
+                test-suite-name: "AQL QUERY SERVICE"
+
+  ROBOT-REPORT:
+      machine:
+        image: ubuntu-1604:201903-01
+      steps:
+          - configure-python-version
+          # - checkout
+          - restore-integration-tests-job-caches
+          - attach-tests-folder
+          - merge-robot-outputs
 
 
 
@@ -443,7 +465,7 @@ commands:
         test-suite-path:
             description: Target test-suite given by it's folder name e.g. COMPOSITION_TESTS
             type: string
-        test-report-titel:
+        test-suite-name:
             description: Titel of generated Robot Log/Report.html
             type: string
     steps:
@@ -465,9 +487,9 @@ commands:
                     --flattenkeywords for \
                     --flattenkeywords foritem \
                     --flattenkeywords name:_resources.* \
-                    --outputdir results \
-                    --output XML/<< parameters.test-report-titel >>.xml \
-                    --name << parameters.test-report-titel >> \
+                    --outputdir results/<< parameters.test-suite-name >> \
+                    --output << parameters.test-suite-name >>.xml \
+                    --name << parameters.test-suite-name >> \
                     robot/<< parameters.test-suite-path >>/
       - save-integration-tests-job-caches
       - persist-tests-folder
@@ -481,29 +503,39 @@ commands:
     description: Merge Robot Results from Parallel Tests
     steps:
       - run:
+            name: INSTALL ROBOT FRAMEWORK
+            command: |
+                pip install robotframework
+      - run:
             name: POST PROCESS & MERGE OUTPUTS
             command: |
                 cd tests
 
                 # Create Log/Report with ALL DETAILS
-                rebot --outputdir results/all_details \
-                      --name ehrbase \
+                rebot --outputdir results \
+                      --name EHRbase \
                       --removekeywords for \
                       --removekeywords wuks \
                       --loglevel TRACE \
-                      --output output.xml \
-                      --xunit junit-output.xml --xunitskipnoncritical \
-                      results/XML/*.xml
+                      --noncritical not-ready \
+                      --output ehrbase-test-output.xml \
+                      --log ehrbase-test-log.html \
+                      --report ehrbase-test-report.html \
+                      results/*/*.xml
 
-                # Create ligthweight output for Birger-Report
-                rebot --outputdir results \
-                      --name ehrbase \
-                      --removekeywords passed \
-                      --removekeywords for \
-                      --removekeywords wuks \
-                      --loglevel NONE \
-                      --output dashboard.xml \
-                      results/XML/*.xml
+                # Create JUNIT report from merged results
+                rebot --xunit junit-output.xml --xunitskipnoncritical \
+                      results/ehrbase-test-output.xml
+
+                # # Create ligthweight output for Birger-Report
+                # rebot --outputdir results \
+                #       --name ehrbase \
+                #       --removekeywords passed \
+                #       --removekeywords for \
+                #       --removekeywords wuks \
+                #       --loglevel NONE \
+                #       --output dashboard.xml \
+                #       results/XML/*.xml
 
 
   # run-integration-tests:
