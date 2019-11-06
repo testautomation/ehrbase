@@ -85,15 +85,15 @@ workflows:
               only:
                 - /^(feature\/.*|develop|release\/v\d+\.\d+\.\d+|hotfix\/v\d+\.\d+\.\d+|master)$/
 
-      - COMPOSITION-tests-4:
-          context: org-global
-          requires:
-            - build-artifacts
-            # - unit-tests
-          filters:
-            branches:
-              only:
-                - /^(feature\/.*|develop|release\/v\d+\.\d+\.\d+|hotfix\/v\d+\.\d+\.\d+|master)$/
+      # - COMPOSITION-tests-4:
+      #     context: org-global
+      #     requires:
+      #       - build-artifacts
+      #       # - unit-tests
+      #     filters:
+      #       branches:
+      #         only:
+      #           - /^(feature\/.*|develop|release\/v\d+\.\d+\.\d+|hotfix\/v\d+\.\d+\.\d+|master)$/
 
       # - CONTRIBUTION-test:
       #     context: org-global
@@ -135,15 +135,15 @@ workflows:
       #         only:
       #           - /^(feature\/.*|develop|release\/v\d+\.\d+\.\d+|hotfix\/v\d+\.\d+\.\d+|master)$/
 
-      # - QUERYSERVICE-test:
-      #     context: org-global
-      #     requires:
-      #       - build-artifacts
-      #       - unit-tests
-      #     filters:
-      #       branches:
-      #         only:
-      #           - /^(feature\/.*|develop|release\/v\d+\.\d+\.\d+|hotfix\/v\d+\.\d+\.\d+|master)$/
+      - QUERYSERVICE-test:
+          context: org-global
+          requires:
+            - build-artifacts
+            # - unit-tests
+          filters:
+            branches:
+              only:
+                - /^(feature\/.*|develop|release\/v\d+\.\d+\.\d+|hotfix\/v\d+\.\d+\.\d+|master)$/
 
       # # - sonar-analysis:
       # #     context: org-global
@@ -228,35 +228,36 @@ jobs:
   #     - save-integration-tests-job-caches
 
   COMPOSITION-tests-1:
-    machine:
-      image: ubuntu-1604:201903-01
+      machine:
+          image: ubuntu-1604:201903-01
     # environment:
     #   POSTGRES_USER: postgres
     #   POSTGRES_PASSWORD: postgres
-    steps:
-      - run-robot-tests:
-          include: "circleci"
+      steps:
+        - run-robot-tests:
+              include-tags: "circleci"
+              test-suite-path: "COMPOSITION_TESTS"
+              test-report-titel: "COMPOSITION 1"
+
 
   COMPOSITION-tests-2:
-    machine:
-      image: ubuntu-1604:201903-01
-    steps:
-      - run-robot-tests:
-          include: "circleci"
+      machine:
+          image: ubuntu-1604:201903-01
+      steps:
+          - run-robot-tests:
+                include-tags: "circleci"
+                test-suite-path: "COMPOSITION_TESTS"
+                test-report-titel: "COMPOSITION 2"
 
   COMPOSITION-tests-3:
-    machine:
-      image: ubuntu-1604:201903-01
-    steps:
-      - run-robot-tests:
-          include: "circleci"
+      machine:
+        image: ubuntu-1604:201903-01
+      steps:
+          - run-robot-tests:
+                include-tags: "circleci"
+                test-suite-path: "COMPOSITION_TESTS"
+                test-report-titel: "COMPOSITION 3"
 
-  COMPOSITION-tests-4:
-    machine:
-      image: ubuntu-1604:201903-01
-    steps:
-      - run-robot-tests:
-          include: "circleci"
 
   # COMPOSITION-tests-2:
   #   machine:
@@ -378,21 +379,26 @@ jobs:
       - save-integration-tests-job-caches
 
   QUERYSERVICE-test:
-    machine:
-      image: ubuntu-1604:201903-01
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-    steps:
-      - configure-python-version
-      - checkout
-      - restore-integration-tests-job-caches
-      - setup-jacoco-distribution
-      - attach-target-folder
-      - install-python-requirements
-      - run-integration-tests:
-          include: "ADHOC-QUERY"
-      - save-integration-tests-job-caches
+      machine:
+        image: ubuntu-1604:201903-01
+      # environment:
+      #   POSTGRES_USER: postgres
+      #   POSTGRES_PASSWORD: postgres
+      # steps:
+      #   - configure-python-version
+      #   - checkout
+      #   - restore-integration-tests-job-caches
+      #   - setup-jacoco-distribution
+      #   - attach-target-folder
+      #   - install-python-requirements
+      #   - run-integration-tests:
+      #       include: "ADHOC-QUERY"
+      #   - save-integration-tests-job-caches
+      steps:
+          - run-robot-tests:
+                include-tags: "ADHOC-QUERY"
+                test-suite-path: "QUERY_SERVICE_TESTS"
+                test-report-titel: "AQL QUERY SERVICE"
 
 
 
@@ -431,9 +437,15 @@ commands:
   run-robot-tests:
     description: Run integration tests written in Robot Framework
     parameters:
-      include:
-        type: string
-        default: xxx
+        include-tags:
+            description: Which tests to inclue by TAGs (Robot syntax applies!)
+            type: string
+        test-suite-path:
+            description: Target test-suite given by it's folder name e.g. COMPOSITION_TESTS
+            type: string
+        test-report-titel:
+            description: Titel of generated Robot Log/Report.html
+            type: string
     steps:
       - configure-python-version
       - checkout
@@ -441,50 +453,83 @@ commands:
       - attach-target-folder
       - install-python-requirements
       - run:
-          name: Execute Robot Tests
+          name: EXECUTE ROBOT COMMAND
           no_output_timeout: 30m
           command: |
               cd tests
-              robot -d results --console dotted --noncritical not-ready -L TRACE \
-                    -i << parameters.include >> \
-                    -e libtest \
-                    -e obsolete \
-                    -e future \
-                    -e TODO \
-                    -e EHRSCAPE \
-                    --xunit junit-output.xml --xunitskipnoncritical \
-                    robot/
+              robot --include << parameters.include-tags >> \
+                    --exclude TODO -e future -e obsolete -e libtest -e EHRSCAPE \
+                    --console dotted \
+                    --loglevel TRACE \
+                    --noncritical not-ready \
+                    --flattenkeywords for \
+                    --flattenkeywords foritem \
+                    --flattenkeywords name:_resources.* \
+                    --outputdir results \
+                    --output XML/<< parameters.test-report-titel >>.xml \
+                    --name << parameters.test-report-titel >> \
+                    robot/<< parameters.test-suite-path >>/
       - save-integration-tests-job-caches
+      - persist-tests-folder
       - store_test_results:
             path: ~/project/tests/results/
       - store_artifacts:
             path: ~/project/tests/results/
 
 
-  run-integration-tests:
-    description: Run integration tests
-    parameters:
-      include:
-        type: string
-        default: xxx
+  merge-robot-outputs:
+    description: Merge Robot Results from Parallel Tests
     steps:
-        - run:
-            name: Run integration tests with coverage
-            no_output_timeout: 45m
+      - run:
+            name: POST PROCESS & MERGE OUTPUTS
             command: |
                 cd tests
-                robot -d results --console dotted --noncritical not-ready -L TRACE \
-                      -i << parameters.include >> \
-                      -e libtest \
-                      -e obsolete \
-                      -e future \
-                      -e TODO \
-                      -e circleci \
-                      -e EHRSCAPE \
+
+                # Create Log/Report with ALL DETAILS
+                rebot --outputdir results/all_details \
+                      --name ehrbase \
+                      --removekeywords for \
+                      --removekeywords wuks \
+                      --loglevel TRACE \
+                      --output output.xml \
                       --xunit junit-output.xml --xunitskipnoncritical \
-                      -v CODE_COVERAGE:True \
-                      -v JACOCO_LIB_PATH:/home/circleci/jacoco-0.8.2/lib \
-                      -v COVERAGE_DIR:/home/circleci/project/application/target robot/
+                      results/XML/*.xml
+
+                # Create ligthweight output for Birger-Report
+                rebot --outputdir results \
+                      --name ehrbase \
+                      --removekeywords passed \
+                      --removekeywords for \
+                      --removekeywords wuks \
+                      --loglevel NONE \
+                      --output dashboard.xml \
+                      results/XML/*.xml
+
+
+  # run-integration-tests:
+  #   description: Run integration tests
+  #   parameters:
+  #     include:
+  #       type: string
+  #       default: xxx
+  #   steps:
+  #       - run:
+  #           name: Run integration tests with coverage
+  #           no_output_timeout: 45m
+  #           command: |
+  #               cd tests
+  #               robot -d results --console dotted --noncritical not-ready -L TRACE \
+  #                     -i << parameters.include >> \
+  #                     -e libtest \
+  #                     -e obsolete \
+  #                     -e future \
+  #                     -e TODO \
+  #                     -e circleci \
+  #                     -e EHRSCAPE \
+  #                     --xunit junit-output.xml --xunitskipnoncritical \
+  #                     -v CODE_COVERAGE:True \
+  #                     -v JACOCO_LIB_PATH:/home/circleci/jacoco-0.8.2/lib \
+  #                     -v COVERAGE_DIR:/home/circleci/project/application/target robot/
 
 
   set-slack-build-status:
@@ -765,7 +810,7 @@ commands:
       - persist_to_workspace:
           root: /home/circleci
           paths:
-            - project/tests
+            - project/tests/results
 
   attach-tests-folder:
     description: Attach Robot tests folder back to workspace
