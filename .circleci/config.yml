@@ -26,6 +26,7 @@ version: 2.1
 #   88           88        88  88     `8b   88      a8P  d8'        `8b  Y8a     a8P  88
 #   88888888888  88        88  88      `8b  88888888P"  d8'          `8b  "Y88888P"   88888888888
 
+workflows:
   git-flow:
     jobs:
       - build-artifacts:
