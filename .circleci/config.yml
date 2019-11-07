@@ -28,8 +28,11 @@ version: 2.1
 
 parameters:
   robot-report:
-    type: boolean
-    default: false
+      type: boolean
+      default: false
+  finished-tests:
+      type: integer
+      default: 0
 
 workflows:
   generate-robot-report:
@@ -159,11 +162,11 @@ workflows:
 
       - ROBOT-REPORT:
           context: org-global
-          # requires:
-          #   - COMPOSITION-tests-1
-          #   - COMPOSITION-tests-2
-          #   - COMPOSITION-tests-3
-          #   - QUERYSERVICE-test
+          requires:
+            - COMPOSITION-tests-1
+            - COMPOSITION-tests-2
+            - COMPOSITION-tests-3
+            - QUERYSERVICE-test
           filters:
             branches:
               only:
