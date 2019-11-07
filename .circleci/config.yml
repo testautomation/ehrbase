@@ -193,7 +193,7 @@ jobs:
     steps:
       - run:
           name: WLAD WAS HERE
-          command: echo $FINISHED
+          command: echo ${FINISHED}
       - configure-python-version
       - checkout
       - restore-build-artifacts-job-caches
