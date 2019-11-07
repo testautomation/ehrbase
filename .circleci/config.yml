@@ -204,7 +204,7 @@ jobs:
     steps:
       - run:
           name: WLAD WAS HERE
-          command: | 
+          command: |
             echo ${FINISHED}
             export FINISHED=$(($FINISHED + 1))
             echo $FINISHED
@@ -529,6 +529,7 @@ commands:
                 pip install robotframework
       - run:
             name: POST PROCESS & MERGE OUTPUTS
+            when: always
             command: |
                 cd tests
 
@@ -544,19 +545,15 @@ commands:
                       --report ehrbase-test-report.html \
                       results/*/*.xml
 
+                sleep 1
+
                 # Create JUNIT report from merged results
-                rebot --xunit junit-output.xml --xunitskipnoncritical \
+                rebot --outputdir results \
+                      --xunit junit-output.xml --xunitskipnoncritical \
+                      --log NONE \
+                      --report NONE \
                       results/ehrbase-test-output.xml
 
-                # # Create ligthweight output for Birger-Report
-                # rebot --outputdir results \
-                #       --name ehrbase \
-                #       --removekeywords passed \
-                #       --removekeywords for \
-                #       --removekeywords wuks \
-                #       --loglevel NONE \
-                #       --output dashboard.xml \
-                #       results/XML/*.xml
 
 
   # run-integration-tests:
