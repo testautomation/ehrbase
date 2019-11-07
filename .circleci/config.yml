@@ -26,14 +26,22 @@ version: 2.1
 #   88           88        88  88     `8b   88      a8P  d8'        `8b  Y8a     a8P  88
 #   88888888888  88        88  88      `8b  88888888P"  d8'          `8b  "Y88888P"   88888888888
 
-environment:
-      FINISHED:
-          type: integer
-          default: 0
+parameters:
+  robot-report:
+    type: boolean
+    default: false
 
 workflows:
-  git-flow:
+  generate-robot-report:
+    when: << pipeline.parameters.robot-report >>
     jobs:
+      - ROBOT-REPORT
+
+
+  git-flow:
+
+    jobs:
+
       - build-artifacts:
           context: org-global
           filters:
@@ -151,11 +159,11 @@ workflows:
 
       - ROBOT-REPORT:
           context: org-global
-          requires:
-            - COMPOSITION-tests-1
-            - COMPOSITION-tests-2
-            - COMPOSITION-tests-3
-            - QUERYSERVICE-test
+          # requires:
+          #   - COMPOSITION-tests-1
+          #   - COMPOSITION-tests-2
+          #   - COMPOSITION-tests-3
+          #   - QUERYSERVICE-test
           filters:
             branches:
               only:
@@ -193,7 +201,11 @@ jobs:
     steps:
       - run:
           name: WLAD WAS HERE
-          command: echo ${FINISHED}
+          command: | 
+            echo ${FINISHED}
+            echo $FINISHED
+            export FINISHED=$FINISHED+1
+            echo $FINISHED
       - configure-python-version
       - checkout
       - restore-build-artifacts-job-caches
@@ -424,7 +436,7 @@ jobs:
         image: ubuntu-1604:201903-01
       steps:
           - configure-python-version
-          # - checkout
+          - checkout
           - restore-integration-tests-job-caches
           - attach-tests-folder
           - merge-robot-outputs
