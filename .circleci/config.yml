@@ -26,25 +26,8 @@ version: 2.1
 #   88           88        88  88     `8b   88      a8P  d8'        `8b  Y8a     a8P  88
 #   88888888888  88        88  88      `8b  88888888P"  d8'          `8b  "Y88888P"   88888888888
 
-parameters:
-  robot-report:
-      type: boolean
-      default: false
-  finished-tests:
-      type: integer
-      default: 0
-
-workflows:
-  generate-robot-report:
-    when: << pipeline.parameters.robot-report >>
-    jobs:
-      - ROBOT-REPORT
-
-
   git-flow:
-
     jobs:
-
       - build-artifacts:
           context: org-global
           filters:
@@ -150,15 +133,15 @@ workflows:
       #         only:
       #           - /^(feature\/.*|develop|release\/v\d+\.\d+\.\d+|hotfix\/v\d+\.\d+\.\d+|master)$/
 
-      - QUERYSERVICE-test:
-          context: org-global
-          requires:
-            - build-artifacts
-            # - unit-tests
-          filters:
-            branches:
-              only:
-                - /^(feature\/.*|develop|release\/v\d+\.\d+\.\d+|hotfix\/v\d+\.\d+\.\d+|master)$/
+      # - QUERYSERVICE-test:
+      #     context: org-global
+      #     requires:
+      #       - build-artifacts
+      #       # - unit-tests
+      #     filters:
+      #       branches:
+      #         only:
+      #           - /^(feature\/.*|develop|release\/v\d+\.\d+\.\d+|hotfix\/v\d+\.\d+\.\d+|master)$/
 
       - ROBOT-REPORT:
           context: org-global
@@ -166,7 +149,6 @@ workflows:
             - COMPOSITION-tests-1
             - COMPOSITION-tests-2
             - COMPOSITION-tests-3
-            - QUERYSERVICE-test
           filters:
             branches:
               only:
@@ -187,6 +169,8 @@ workflows:
 
 
 
+# defaults: &defaults
+#   working_directory: /tmp/ehrbase
 
 jobs:
 #           88    ,ad8888ba,    88888888ba    ad88888ba
@@ -241,31 +225,11 @@ jobs:
       - save-unit-tests-job-caches
       # - persist-unit-test-coverage
 
-  # COMPOSITION-tests-1:
-  #   machine:
-  #     image: ubuntu-1604:201903-01
-  #   environment:
-  #     POSTGRES_USER: postgres
-  #     POSTGRES_PASSWORD: postgres
-  #   steps:
-  #     - configure-python-version
-  #     - checkout
-  #     - restore-integration-tests-job-caches
-  #     - setup-jacoco-distribution
-  #     - attach-target-folder
-  #     - install-python-requirements
-  #     - run-integration-tests:
-  #         include: "compositionANDjson1"
-  #     # - collect-integration-coverage
-  #     # - persist-integration-test-coverage
-  #     - save-integration-tests-job-caches
+
 
   COMPOSITION-tests-1:
       machine:
           image: ubuntu-1604:201903-01
-    # environment:
-    #   POSTGRES_USER: postgres
-    #   POSTGRES_PASSWORD: postgres
       steps:
         - run-robot-tests:
               include-tags: "circleci"
@@ -411,27 +375,27 @@ jobs:
           include: "KNOWLEDGE"
       - save-integration-tests-job-caches
 
-  QUERYSERVICE-test:
-      machine:
-        image: ubuntu-1604:201903-01
-      # environment:
-      #   POSTGRES_USER: postgres
-      #   POSTGRES_PASSWORD: postgres
-      # steps:
-      #   - configure-python-version
-      #   - checkout
-      #   - restore-integration-tests-job-caches
-      #   - setup-jacoco-distribution
-      #   - attach-target-folder
-      #   - install-python-requirements
-      #   - run-integration-tests:
-      #       include: "ADHOC-QUERY"
-      #   - save-integration-tests-job-caches
-      steps:
-          - run-robot-tests:
-                include-tags: "ADHOC-QUERY"
-                test-suite-path: "QUERY_SERVICE_TESTS"
-                test-suite-name: "AQL-QUERY-SERVICE"
+  # QUERYSERVICE-test:
+  #     machine:
+  #       image: ubuntu-1604:201903-01
+  #     # environment:
+  #     #   POSTGRES_USER: postgres
+  #     #   POSTGRES_PASSWORD: postgres
+  #     # steps:
+  #     #   - configure-python-version
+  #     #   - checkout
+  #     #   - restore-integration-tests-job-caches
+  #     #   - setup-jacoco-distribution
+  #     #   - attach-target-folder
+  #     #   - install-python-requirements
+  #     #   - run-integration-tests:
+  #     #       include: "ADHOC-QUERY"
+  #     #   - save-integration-tests-job-caches
+  #     steps:
+  #         - run-robot-tests:
+  #               include-tags: "ADHOC-QUERY"
+  #               test-suite-path: "QUERY_SERVICE_TESTS"
+  #               test-suite-name: "AQL-QUERY-SERVICE"
 
   ROBOT-REPORT:
       machine:
@@ -509,7 +473,6 @@ commands:
                     --flattenkeywords foritem \
                     --flattenkeywords name:_resources.* \
                     --outputdir results/<< parameters.test-suite-name >> \
-                    --output << parameters.test-suite-name >>.xml \
                     --name << parameters.test-suite-name >> \
                     robot/<< parameters.test-suite-path >>/
       - save-integration-tests-job-caches
@@ -556,14 +519,11 @@ commands:
                       --log NONE \
                       --report NONE \
                       results/ehrbase-test-output.xml
-
       - persist-tests-folder
       - store_test_results:
             path: ~/project/tests/results/
       - store_artifacts:
             path: ~/project/tests/results/
-
-
 
 
   # run-integration-tests:
@@ -870,9 +830,10 @@ commands:
       - run:
             when: always
             command: |
-                echo ${FINISHED}
-                export FINISHED=$(($FINISHED + 1))
+                echo "export FINISHED=$(($FINISHED + 1))" >> $BASH_ENV
                 echo $FINISHED
+                echo $ROBOT-REPORT
+                echo
       - persist_to_workspace:
           root: /home/circleci
           paths:
@@ -1110,3 +1071,23 @@ commands:
   #   steps:
   #     - restore_cache:
   #         key: google-chrome-incl-webdriver-
+
+
+  # COMPOSITION-tests-1:
+  #   machine:
+  #     image: ubuntu-1604:201903-01
+  #   environment:
+  #     POSTGRES_USER: postgres
+  #     POSTGRES_PASSWORD: postgres
+  #   steps:
+  #     - configure-python-version
+  #     - checkout
+  #     - restore-integration-tests-job-caches
+  #     - setup-jacoco-distribution
+  #     - attach-target-folder
+  #     - install-python-requirements
+  #     - run-integration-tests:
+  #         include: "compositionANDjson1"
+  #     # - collect-integration-coverage
+  #     # - persist-integration-test-coverage
+  #     - save-integration-tests-job-caches
