@@ -524,11 +524,10 @@ commands:
     description: Merge Robot Results from Parallel Tests
     steps:
       - run:
-            name: INSTALL ROBOT FRAMEWORK
             command: |
                 pip install robotframework
       - run:
-            name: POST PROCESS & MERGE OUTPUTS
+            name: POST PROCESS & MERGE TEST RESULTS
             when: always
             command: |
                 cd tests
@@ -544,8 +543,11 @@ commands:
                       --log ehrbase-test-log.html \
                       --report ehrbase-test-report.html \
                       results/*/*.xml
-
-                sleep 1
+      - run:
+            name: GENERATE TEST SUMMARY
+            when: always
+            command: |
+                cd tests
 
                 # Create JUNIT report from merged results
                 rebot --outputdir results \
@@ -553,6 +555,13 @@ commands:
                       --log NONE \
                       --report NONE \
                       results/ehrbase-test-output.xml
+
+      - persist-tests-folder
+      - store_test_results:
+            path: ~/project/tests/results/
+      - store_artifacts:
+            path: ~/project/tests/results/
+
 
 
 
@@ -858,9 +867,11 @@ commands:
     description: Persist Robot tests folder to workspace
     steps:
       - run:
-            name: A JOB THAT RUNS ALWAYS
             when: always
-            command: echo "I WILL NEVER STOP!"
+            command: |
+                echo ${FINISHED}
+                export FINISHED=$(($FINISHED + 1))
+                echo $FINISHED
       - persist_to_workspace:
           root: /home/circleci
           paths:
@@ -921,9 +932,8 @@ commands:
     description: Save all caches in interation tests job
     steps:
         - run:
-            name: A JOB THAT RUNS ALWAYS
             when: always
-            command: echo "I WILL NEVER STOP!"
+            command: echo "I WILL ALWAYS RUN - NO MATTER WHAT!!"
         - save_cache:
             key: job-integration-tests-v1-download-0.8.2
             paths:
