@@ -551,6 +551,7 @@ commands:
 
                 # Create JUNIT report from merged results
                 rebot --outputdir results \
+                      --noncritical not-ready \
                       --xunit junit-output.xml --xunitskipnoncritical \
                       --log NONE \
                       --report NONE \
