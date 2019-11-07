@@ -26,6 +26,10 @@ version: 2.1
 #   88           88        88  88     `8b   88      a8P  d8'        `8b  Y8a     a8P  88
 #   88888888888  88        88  88      `8b  88888888P"  d8'          `8b  "Y88888P"   88888888888
 
+environment:
+      FINISHED:
+          type: integer
+          default: 0
 
 workflows:
   git-flow:
@@ -187,6 +191,9 @@ jobs:
     machine:
       image: circleci/classic:201808-01
     steps:
+      - run:
+          name: WLAD WAS HERE
+          command: echo $FINISHED
       - configure-python-version
       - checkout
       - restore-build-artifacts-job-caches
@@ -410,7 +417,7 @@ jobs:
           - run-robot-tests:
                 include-tags: "ADHOC-QUERY"
                 test-suite-path: "QUERY_SERVICE_TESTS"
-                test-suite-name: "AQL QUERY SERVICE"
+                test-suite-name: "AQL-QUERY-SERVICE"
 
   ROBOT-REPORT:
       machine:
@@ -839,6 +846,10 @@ commands:
   persist-tests-folder:
     description: Persist Robot tests folder to workspace
     steps:
+      - run:
+            name: A JOB THAT RUNS ALWAYS
+            when: always
+            command: echo "I WILL NEVER STOP!"
       - persist_to_workspace:
           root: /home/circleci
           paths:
@@ -898,6 +909,10 @@ commands:
   save-integration-tests-job-caches:
     description: Save all caches in interation tests job
     steps:
+        - run:
+            name: A JOB THAT RUNS ALWAYS
+            when: always
+            command: echo "I WILL NEVER STOP!"
         - save_cache:
             key: job-integration-tests-v1-download-0.8.2
             paths:
