@@ -203,8 +203,7 @@ jobs:
           name: WLAD WAS HERE
           command: | 
             echo ${FINISHED}
-            echo $FINISHED
-            export FINISHED=$FINISHED+1
+            export FINISHED=$(($FINISHED + 1))
             echo $FINISHED
       - configure-python-version
       - checkout
