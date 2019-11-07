@@ -553,67 +553,67 @@ commands:
   #                     -v COVERAGE_DIR:/home/circleci/project/application/target robot/
 
 
-  set-slack-build-status:
-    description: Set status env at the end of a job based on success or failure.
-    steps:
-        - run:
-            name: Slack - Setting Failure Condition
-            when: on_fail
-            command: |
-                echo 'export SLACK_BUILD_STATUS="FAIL"' >> $BASH_ENV
-        - run:
-            when: on_success
-            name: Slack - Setting Success Condition
-            command: |
-              echo 'export SLACK_BUILD_STATUS="PASS"' >> $BASH_ENV
+  # set-slack-build-status:
+  #   description: Set status env at the end of a job based on success or failure.
+  #   steps:
+  #       - run:
+  #           name: Slack - Setting Failure Condition
+  #           when: on_fail
+  #           command: |
+  #               echo 'export SLACK_BUILD_STATUS="FAIL"' >> $BASH_ENV
+  #       - run:
+  #           when: on_success
+  #           name: Slack - Setting Success Condition
+  #           command: |
+  #             echo 'export SLACK_BUILD_STATUS="PASS"' >> $BASH_ENV
 
 
-  provide-test-status-report-via-slack:
-    description: Generates an integration test status report and sends it to our Slack channel
-    steps:
-        - set-slack-build-status
-        - run:
-            name: Download and install Chrome and Chromedriver
-            when: always
-            command: |
-                mkdir -p ~/downloads/chrome
-                cd ~/downloads/chrome
-                sudo killall -9 apt-get || true && \
-                sudo apt-get update && \
-                sudo apt-get install -f lsb-release libappindicator3-1
-                [ -e google-chrome.deb ] || curl -L -o google-chrome.deb https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
-                sudo dpkg --configure -a
-                sudo dpkg -i google-chrome.deb
-                sudo sed -i 's|HERE/chrome"|HERE/chrome" --no-sandbox|g' /opt/google/chrome/google-chrome
-                rm google-chrome.deb
-                CHROME_VERSION=$(google-chrome --version | sed -r 's/[^0-9]+([0-9]+\.[0-9]+\.[0-9]+).*/\1/g')
-                CHROMEDRIVER_VERSION=$(curl -s https://chromedriver.storage.googleapis.com/LATEST_RELEASE_$CHROME_VERSION)
-                [ -e chromedriver_linux64.zip ] || wget https://chromedriver.storage.googleapis.com/$CHROMEDRIVER_VERSION/chromedriver_linux64.zip
-                unzip chromedriver_linux64.zip
-                sudo mv chromedriver /usr/local/bin/chromedriver
-                sudo chown root:root /usr/local/bin/chromedriver
-                sudo chmod +x /usr/local/bin/chromedriver
-        - run:
-            name: Check Browser Versions
-            when: always
-            command: |
-                which chromedriver
-                chromedriver --version
-                google-chrome --version
-        - run:
-            name: Generate and Send  Test Report To Slack Channel
-            when: always
-            command: |
-                cd tests
-                cp robot/_resources/status_report.robot  results/status_report.robot
-                cp robot/_resources/slack-message.json  results/slack-message.json
-                cp robot/_resources/logo.jpg results/logo.jpg
-                cd results
-                robot -d trash --output NONE --log NONE --noncritical chill status_report.robot
-        - store_test_results:
-            path: ~/project/tests/results/
-        - store_artifacts:
-            path: ~/project/tests/results/
+  # provide-test-status-report-via-slack:
+  #   description: Generates an integration test status report and sends it to our Slack channel
+  #   steps:
+  #       - set-slack-build-status
+  #       - run:
+  #           name: Download and install Chrome and Chromedriver
+  #           when: always
+  #           command: |
+  #               mkdir -p ~/downloads/chrome
+  #               cd ~/downloads/chrome
+  #               sudo killall -9 apt-get || true && \
+  #               sudo apt-get update && \
+  #               sudo apt-get install -f lsb-release libappindicator3-1
+  #               [ -e google-chrome.deb ] || curl -L -o google-chrome.deb https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
+  #               sudo dpkg --configure -a
+  #               sudo dpkg -i google-chrome.deb
+  #               sudo sed -i 's|HERE/chrome"|HERE/chrome" --no-sandbox|g' /opt/google/chrome/google-chrome
+  #               rm google-chrome.deb
+  #               CHROME_VERSION=$(google-chrome --version | sed -r 's/[^0-9]+([0-9]+\.[0-9]+\.[0-9]+).*/\1/g')
+  #               CHROMEDRIVER_VERSION=$(curl -s https://chromedriver.storage.googleapis.com/LATEST_RELEASE_$CHROME_VERSION)
+  #               [ -e chromedriver_linux64.zip ] || wget https://chromedriver.storage.googleapis.com/$CHROMEDRIVER_VERSION/chromedriver_linux64.zip
+  #               unzip chromedriver_linux64.zip
+  #               sudo mv chromedriver /usr/local/bin/chromedriver
+  #               sudo chown root:root /usr/local/bin/chromedriver
+  #               sudo chmod +x /usr/local/bin/chromedriver
+  #       - run:
+  #           name: Check Browser Versions
+  #           when: always
+  #           command: |
+  #               which chromedriver
+  #               chromedriver --version
+  #               google-chrome --version
+  #       - run:
+  #           name: Generate and Send  Test Report To Slack Channel
+  #           when: always
+  #           command: |
+  #               cd tests
+  #               cp robot/_resources/status_report.robot  results/status_report.robot
+  #               cp robot/_resources/slack-message.json  results/slack-message.json
+  #               cp robot/_resources/logo.jpg results/logo.jpg
+  #               cd results
+  #               robot -d trash --output NONE --log NONE --noncritical chill status_report.robot
+  #       - store_test_results:
+  #           path: ~/project/tests/results/
+  #       - store_artifacts:
+  #           path: ~/project/tests/results/
 
 
 
@@ -831,10 +831,7 @@ commands:
       - run:
             when: always
             command: |
-                echo "export FINISHED=$(($FINISHED + 1))" >> $BASH_ENV
-                echo $FINISHED
-                echo $ROBOT-REPORT
-                echo
+                echo "persist test results"
       - persist_to_workspace:
           root: /home/circleci
           paths:
@@ -896,7 +893,7 @@ commands:
     steps:
         - run:
             when: always
-            command: echo "I WILL ALWAYS RUN - NO MATTER WHAT!!"
+            command: echo "save integration test cache"
         - save_cache:
             key: job-integration-tests-v1-download-0.8.2
             paths:
