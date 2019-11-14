@@ -17,28 +17,21 @@
 
 
 *** Settings ***
-Documentation   Composition Integration Tests
+Metadata    Version    0.1.0
+Metadata    Author    *Pablo Pazos*
+Metadata    Author    *Wladislaw Wagner*
 
+Documentation    COMPOSITION TEST SUITE
+...
+...              test documentation: https://docs.google.com/document/d/1TvSWjG-Esz-iMFJE-VLfjGH8MiI9tcHE2ilVtJMPYyQ/edit?ts=5d1e49fc
+
+Resource    ${CURDIR}${/}../../_resources/suite_settings.robot
+Resource    ${CURDIR}${/}../../_resources/keywords/generic_keywords.robot
 Resource    ${CURDIR}${/}../../_resources/keywords/composition_keywords.robot
+Resource    ${CURDIR}${/}../../_resources/keywords/template_opt1.4_keywords.robot
+Resource    ${CURDIR}${/}../../_resources/keywords/ehr_keywords.robot
 
-# Resource    ${CURDIR}${/}../_resources/suite_settings.robot
-# Resource    ${CURDIR}${/}../_resources/keywords/generic_keywords.robot
-# Resource    ${CURDIR}${/}../_resources/keywords/template_opt1.4_keywords.robot
-# Resource    ${CURDIR}${/}../_resources/keywords/ehr_keywords.robot
+Suite Setup  startup SUT
+Suite Teardown  shutdown SUT
 
-
-
-Force Tags    JSON
-
-
-
-*** Test Cases ***
-Main flow has existing COMPOSITION (JSON)
-
-    upload OPT    minimal/minimal_observation.opt
-    create EHR
-    commit composition (JSON)    minimal/minimal_observation.composition.participations.extdatetimes.xml
-    get composition by composition_uid    ${version_uid}
-    check composition exists
-
-    [Teardown]    restart SUT
+Force Tags    JSON2

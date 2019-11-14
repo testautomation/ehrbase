@@ -163,7 +163,7 @@ commit composition - no referenced EHR
                         Should Be Equal As Strings   ${resp.status_code}   404
 
 
-commit composition (JSON)
+Commit Composition (JSON)
     [Arguments]         ${opt_file}
     [Documentation]     Creates the first version of a new COMPOSITION
     ...                 DEPENDENCY: `upload OPT`, `create EHR`
@@ -380,7 +380,7 @@ update non-existent composition (XML)
 
 
 # TODO: rename keyword properly e.g. by version_uid
-get composition by composition_uid
+Get Composition By Composition_uid
     [Arguments]         ${uid}
     [Documentation]     :uid: version_uid
     ...                 DEPENDENCY: `start request session` with proper Headers
@@ -586,7 +586,7 @@ check content of compositions version at time (XML)
                         Element Text Should Be    ${xtext}    original value
 
 
-check composition exists
+Check Composition Exists
     [Documentation]     DEPENDENCY: `get composition` keywords
 
                         Should Be Equal As Strings   ${response.status_code}   200
@@ -644,10 +644,10 @@ delete non-existent composition
                         Should Be Equal As Strings   ${resp.status_code}   404
 
 
-upload OPT
+Upload OPT
     [Arguments]     ${opt_file}   ${accept-header}=JSON
 
-    # setting proper Accept=application/xxx header
+    setting proper Accept=application/xxx header
     Run Keyword If    '${accept-header}'=='JSON'   template_opt1.4_keywords.start request session
     Run Keyword If    '${accept-header}'=='XML'    start request session (XML)
 
@@ -656,7 +656,7 @@ upload OPT
     server accepted OPT
 
 
-create EHR
+Create EHR
     [Arguments]     ${accept-header}=JSON
 
     Run Keyword If  '${accept-header}'=='JSON'

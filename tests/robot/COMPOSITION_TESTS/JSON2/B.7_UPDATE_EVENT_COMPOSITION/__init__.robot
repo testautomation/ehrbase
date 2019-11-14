@@ -21,15 +21,17 @@ Metadata    Version    0.1.0
 Metadata    Author    *Pablo Pazos*
 Metadata    Author    *Wladislaw Wagner*
 
-Documentation     COMPOSITION TEST SUITE
+Documentation    COMPOSITION TEST SUITE
 ...
-...               Test Documentation: https://docs.google.com/document/d/1TvSWjG-Esz-iMFJE-VLfjGH8MiI9tcHE2ilVtJMPYyQ/edit?ts=5d1e49fc
+...              test documentation: https://docs.google.com/document/d/1TvSWjG-Esz-iMFJE-VLfjGH8MiI9tcHE2ilVtJMPYyQ/edit?ts=5d1e49fc
 
-Resource          ${EXECDIR}${/}tests${/}robot${/}_resources${/}suite_settings.robot
-Resource          ${EXECDIR}${/}tests${/}robot${/}_resources${/}keywords${/}generic_keywords.robot
-Resource          ${EXECDIR}${/}tests${/}robot${/}_resources${/}keywords${/}composition_keywords.robot
-Resource          ${EXECDIR}${/}tests${/}robot${/}_resources${/}keywords${/}template_opt1.4_keywords.robot
-Resource          ${EXECDIR}${/}tests${/}robot${/}_resources${/}keywords${/}ehr_keywords.robot
-Suite Setup       Startup SUT
-Suite Teardown    Shutdown SUT
-Force Tags        JSON1
+Resource    ${CURDIR}${/}../../_resources/suite_settings.robot
+Resource    ${CURDIR}${/}../../_resources/keywords/generic_keywords.robot
+Resource    ${CURDIR}${/}../../_resources/keywords/composition_keywords.robot
+Resource    ${CURDIR}${/}../../_resources/keywords/template_opt1.4_keywords.robot
+Resource    ${CURDIR}${/}../../_resources/keywords/ehr_keywords.robot
+
+Suite Setup  startup SUT
+Suite Teardown  shutdown SUT
+
+Force Tags    JSON2

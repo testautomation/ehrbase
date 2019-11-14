@@ -118,7 +118,7 @@ compare json-file with json-string
 
 
 
-restart SUT
+Restart SUT
     stop openehr server
     stop and remove ehrdb
     empty operational_templates folder
@@ -218,14 +218,13 @@ abort test execution if this test fails
                     ...             Fatal Error  Aborted Execution - Preconditions not met!
 
 
-startup SUT
+Startup SUT
     get application version
     unzip file_repo_content.zip
     start ehrdb
     start openehr server
 
-
-shutdown SUT
+Shutdown SUT
     stop openehr server
     stop and remove ehrdb
     empty operational_templates folder

@@ -14,33 +14,17 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
-
 *** Settings ***
-Documentation   Composition Integration Tests
-
-Resource    ${CURDIR}${/}../../_resources/keywords/composition_keywords.robot
-
-# Resource    ${CURDIR}${/}../_resources/suite_settings.robot
-# Resource    ${CURDIR}${/}../_resources/keywords/generic_keywords.robot
-# Resource    ${CURDIR}${/}../_resources/keywords/template_opt1.4_keywords.robot
-# Resource    ${CURDIR}${/}../_resources/keywords/ehr_keywords.robot
-
-
-
-Force Tags    JSON
-
-
+Documentation    Composition Integration Tests
+Resource         ${EXECDIR}${/}tests${/}robot${/}_resources${/}keywords${/}composition_keywords.robot
+Force Tags       JSON
 
 *** Test Cases ***
-Alternative flow 1: has COMPOSITION, COMPOSITION does not exist (JSON)
-
-    create EHR
-
+Alternative Flow 1: Has COMPOSITION, COMPOSITION Does Not Exist (JSON)
+    Create EHR
     # Commit fake COMPOSITION
-    generate random composition_uid
-
+    Generate Random Composition_uid
     # Check COMPOSITION does not exist
-    composition_keywords.start request session
-    get composition by composition_uid    ${version_uid}
-    check composition does not exist
+    composition_keywords.Start Request Session
+    Get Composition By Composition_uid    ${version_uid}
+    Check Composition Does Not Exist
