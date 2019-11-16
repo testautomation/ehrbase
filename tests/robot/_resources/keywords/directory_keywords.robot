@@ -59,7 +59,7 @@ create DIRECTORY (JSON)
                         Set Test Variable  ${version_uid}  ${response.json()['uid']}  #TODO: + ::openEHRSys.example.com::1
                         Set Test Variable  ${preceding_version_uid}  ${version_uid}
 
-                        capture point in time    of_first_version
+                        Capture Point In Time    of_first_version
 
 
 create DIRECTORY -w/o- (JSON)
@@ -132,7 +132,7 @@ update DIRECTORY (JSON)
                         Set Test Variable  ${version_uid}  ${response.json()['uid']}  #TODO: + ::openEHRSys.example.com::1
                         Set Test Variable  ${preceding_version_uid}  ${version_uid}
 
-                        capture point in time    of_updated_version
+                        Capture Point In Time    of_updated_version
 
 
 update DIRECTORY (XML)
@@ -252,7 +252,7 @@ get DIRECTORY at time (JSON)
 get DIRECTORY at current time (JSON)
                         Set Test Variable  ${KEYWORD NAME}  GET DIRECTORY AT NOW (JSON)
 
-                        capture point in time    current
+                        Capture Point In Time    current
 
                         Set Test Variable    ${version_at_time}    ${time_current}
 

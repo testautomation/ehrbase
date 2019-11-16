@@ -31,8 +31,8 @@ Documentation   A.1.a) Main flow: Create new EHR
 Resource    ${CURDIR}${/}../_resources/suite_settings.robot
 Resource    ${CURDIR}${/}../_resources/keywords/ehr_keywords.robot
 
-Suite Setup    startup SUT
-Suite Teardown    shutdown SUT
+Suite Setup    Startup SUT
+Suite Teardown    Shutdown SUT
 Test Template    client sends POST request to /ehr
 
 Force Tags    create_ehr    obsolete
@@ -137,7 +137,7 @@ Retrieve EHR and Check Consistence with Test Data Set
 
 
 *** Keywords ***
-# startup SUT
+# Startup SUT
 #     get application version
 #     unzip file_repo_content.zip
 #     start ehrdb
@@ -146,12 +146,12 @@ Retrieve EHR and Check Consistence with Test Data Set
 client sends POST request to /ehr
     [Arguments]  ${ehr_id}  ${subject_id}  ${subject_namespace}  ${is_queryable}  ${is_modifiable}  ${status_code}
 
-    # STEP 1 - Invoke the create EHR service (for each item in the Data set)
+    # STEP 1 - Invoke the Create EHR service (for each item in the Data set)
     build body    ${is_queryable}    ${is_modifiable}
     # &{R}=    Run Keyword If  "${subject_id}"=="" and "${subject_namespace}"==""  REST.POST  /ehr  body=${body}
-    &{R}=    Run Keyword If  "${subject_id}"=="" and "${subject_namespace}"==""  create ehr without query params  body=${body}
-    ...    ELSE IF  "${subject_id}"==""  create ehr with query params  subjectNamespace\=${subject_namespace}  body=${body}
-    ...    ELSE IF  "${subject_namespace}"==""  create ehr with query params  subjectId\=${subject_id}  body=${body}
+    &{R}=    Run Keyword If  "${subject_id}"=="" and "${subject_namespace}"==""  Create EHR without query params  body=${body}
+    ...    ELSE IF  "${subject_id}"==""  Create EHR with query params  subjectNamespace\=${subject_namespace}  body=${body}
+    ...    ELSE IF  "${subject_namespace}"==""  Create EHR with query params  subjectId\=${subject_id}  body=${body}
     ...    ELSE IF  "${ehr_id}"!="" and "${subject_id}"=="" and "${subject_namespace}"==""  REST.PUT  /ehr/${ehr_id}  body=${body}
     ...    ELSE IF  "${ehr_id}"!="" and "${subject_id}"==""  REST.PUT  /ehr/${ehr_id}?subjectNamespace=${subject_namespace}  body=${body}
     ...    ELSE IF  "${ehr_id}"!="" and "${subject_namespace}"==""  REST.PUT  /ehr/${ehr_id}?subjectId=${subject_id}  body=${body}
@@ -240,28 +240,28 @@ build body
 
 # ############### BACKUP TEST CASES
 # *** Test Cases ***
-# Create ehr with auto-generated ID
+# Create EHR with auto-generated ID
 #     [Documentation]    POST  /ehr
 #     ...                 Create a new EHR
-#     create ehr    1234-111    namespace_111
+#     Create EHR    1234-111    namespace_111
 #     verify subject_id  1234-111
 #     verify subject_namespace  namespace_111
 #     verify response action  CREATE
 #     expect response status  201
 #
 # Create identical EHR twice
-#     create ehr  1234-222  namespace_222
-#     create ehr  1234-222  namespace_222
+#     Create EHR  1234-222  namespace_222
+#     Create EHR  1234-222  namespace_222
 #     expect response status  400
 #
-# Create ehr with missing subjectId
-#     create ehr    ${EMPTY}    namespace_100
+# Create EHR with missing subjectId
+#     Create EHR    ${EMPTY}    namespace_100
 #     expect response status  400
 #
-# Create ehr with missing subjectNamespace
+# Create EHR with missing subjectNamespace
 #     [Tags]    not-ready
 #     Log a WARNING  status code should be 400 - Bad Request!
-#     create ehr    1234-333    ${EMPTY}
+#     Create EHR    1234-333    ${EMPTY}
 #     expect response status  400
 #
 # Get EHR summary by subject and namespace
@@ -269,14 +269,14 @@ build body
 #     ...                 ?subjectId&subjectNamespace
 #     ...                 Returns information about EHR specified by subject ID
 #     ...                 and namespace.
-#     create ehr  1234-444  namespace_444
+#     Create EHR  1234-444  namespace_444
 #     get ehr by subject-id and namespace  1234-444  namespace_444
 #     expect response status  201
 #
 # Get EHR summary by ID
 #     [Documentation]    Returns information about the specified EHR.
 #     ...
-#     create ehr  1234-114  namespace_201
+#     Create EHR  1234-114  namespace_201
 #     extract ehrId
 #     get ehr by id  ${ehr_id}
 #     expect response status  201
@@ -293,7 +293,7 @@ build body
 #
 #
 # Update EHR status
-#     create ehr  119  namespace_111
+#     Create EHR  119  namespace_111
 #     extract ehrId
 #     update ehr  ${ehr_id}
 #     verify subject_id  333-333

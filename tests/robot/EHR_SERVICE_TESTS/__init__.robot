@@ -26,7 +26,7 @@ Documentation    EHR SERVICE TEST SUITE
 
 Resource    ${CURDIR}${/}../_resources/suite_settings.robot
 
-Suite Setup    startup SUT
-Suite Teardown    shutdown SUT
+Suite Setup    Startup SUT
+Suite Teardown    Shutdown SUT
 
 Force Tags    EHR_SERVICE

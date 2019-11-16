@@ -16,6 +16,6 @@ Resource    ${CURDIR}${/}../_resources/keywords/ehr_keywords.robot
 Suite Setup  startup AQL SUT
 # Test Setup  start openehr server
 # Test Teardown  restore clean SUT state
-Suite Teardown  shutdown SUT
+Suite Teardown  Shutdown SUT
 
 Force Tags    AQL

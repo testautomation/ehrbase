@@ -32,17 +32,17 @@ Documentation   Contribution Integration Tests
 ...         None
 
 
-Resource    ${CURDIR}${/}../../_resources/suite_settings.robot
-Resource    ${CURDIR}${/}../../_resources/keywords/generic_keywords.robot
-Resource    ${CURDIR}${/}../../_resources/keywords/contribution_keywords.robot
-Resource    ${CURDIR}${/}../../_resources/keywords/composition_keywords.robot
-Resource    ${CURDIR}${/}../../_resources/keywords/template_opt1.4_keywords.robot
-Resource    ${CURDIR}${/}../../_resources/keywords/ehr_keywords.robot
+Resource    ${EXECDIR}${/}tests${/}robot${/}_resources${/}suite_settings.robot
+Resource    ${EXECDIR}${/}tests${/}robot${/}_resources${/}keywords${/}generic_keywords.robot
+Resource    ${EXECDIR}${/}tests${/}robot${/}_resources${/}keywords${/}contribution_keywords.robot
+Resource    ${EXECDIR}${/}tests${/}robot${/}_resources${/}keywords${/}composition_keywords.robot
+Resource    ${EXECDIR}${/}tests${/}robot${/}_resources${/}keywords${/}template_opt1.4_keywords.robot
+Resource    ${EXECDIR}${/}tests${/}robot${/}_resources${/}keywords${/}ehr_keywords.robot
 
-#Suite Setup  startup SUT
+#Suite Setup  Startup SUT
 # Test Setup  start openehr server
 # Test Teardown  restore clean SUT state
-#Suite Teardown  shutdown SUT
+#Suite Teardown  Shutdown SUT
 
 Force Tags    refactor
 
@@ -51,9 +51,9 @@ Force Tags    refactor
 *** Test Cases ***
 Main flow: get existing CONTRIBUTION
 
-    upload OPT    minimal/minimal_evaluation.opt
+    Upload OPT    minimal/minimal_evaluation.opt
 
-    create EHR
+    Create EHR
 
     commit CONTRIBUTION (JSON)    minimal/minimal_evaluation.contribution.json
 
@@ -61,4 +61,4 @@ Main flow: get existing CONTRIBUTION
 
     check content of retrieved CONTRIBUTION (JSON)
 
-    [Teardown]    restart SUT
+    [Teardown]    Restart SUT

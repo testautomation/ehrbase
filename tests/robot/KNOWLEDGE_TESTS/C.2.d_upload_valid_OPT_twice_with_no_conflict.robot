@@ -47,7 +47,7 @@ Resource    ${CURDIR}${/}../_resources/suite_settings.robot
 Resource    ${CURDIR}${/}../_resources/keywords/template_opt1.4_keywords.robot
 
 # Suite Setup  startup OPT SUT
-# Suite Teardown  shutdown SUT
+# Suite Teardown  Shutdown SUT
 
 Force Tags   OPT14    obsolete
 
@@ -133,7 +133,7 @@ upload valid OPT twice w/o conflict
     Log               NOT APPLICABLE FOR ADL 1.4    level=WARN
     Pass Execution    NOT APPLICABLE FOR ADL 1.4    not-ready
 
-    start request session
+    Start Request Session
     get valid OPT file     ${opt file}
     upload OPT file with version parameter  1    # not implemented
     server accepted OPT

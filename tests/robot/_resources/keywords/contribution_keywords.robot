@@ -184,7 +184,7 @@ retrieve CONTRIBUTION by fake contri_uid (JSON)
 retrieve CONTRIBUTION by fake ehr_id & contri_uid (JSON)
                         Set Test Variable  ${KEYWORD NAME}  GET CONTRI BY FAKE U/IDs
 
-                        generate random ehr_id
+                        Generate Random EHR ID
                         generate random contribution_uid
 
                         GET /ehr/ehr_id/contribution/contribution_uid    JSON
@@ -201,7 +201,7 @@ retrieve CONTRIBUTION(S) by ehr_id (JSON)
 retrieve CONTRIBUTION(S) by fake ehr_id (JSON)
                         Set Test Variable  ${KEYWORD NAME}  GET CONTRI(S) BY EHR_ID
 
-                        generate random ehr_id
+                        Generate Random EHR ID
                         GET /ehr/ehr_id/contributions    JSON
 
 

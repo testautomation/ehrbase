@@ -40,8 +40,8 @@ Resource    ${CURDIR}${/}../_resources/keywords/generic_keywords.robot
 Resource    ${CURDIR}${/}../_resources/keywords/ehr_keywords.robot
 
 # Setup/Teardown from __init.robot is used
-# Suite Setup       startup SUT
-# Suite Teardown    shutdown SUT
+# Suite Setup       Startup SUT
+# Suite Teardown    Shutdown SUT
 
 Force Tags    ehr_status
 
@@ -50,7 +50,7 @@ Force Tags    ehr_status
 *** Test Cases ***
 Set EHR queryable of an existing EHR
 
-    ehr_keywords.start request session    JSON
+    ehr_keywords.Start Request Session    JSON
 
     create new EHR
 
@@ -61,7 +61,7 @@ Set EHR queryable of an existing EHR
 
 # # NOTE: fully working example! Keep it as reference!!!!
 # Set EHR queryable of an existing EHR (EHRSCAPE)
-#     ehr_keywords.start request session    JSON
+#     ehr_keywords.Start Request Session    JSON
 #     create new EHR
 #     extract ehr_id from response (JSON EHRSCAPE)
 #     extract ehr_status from response (JSON EHRSCAPE)

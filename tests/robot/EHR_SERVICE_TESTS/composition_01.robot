@@ -23,8 +23,8 @@ Documentation   EHR Integration Tests
 Resource    ${CURDIR}${/}../_resources/suite_settings.robot
 Resource    ${CURDIR}${/}../_resources/keywords/ehr_keywords.robot
 
-Suite Setup    startup SUT
-Suite Teardown    shutdown SUT
+Suite Setup    Startup SUT
+Suite Teardown    Shutdown SUT
 
 Force Tags      composition    obsolete
 
@@ -33,7 +33,7 @@ Force Tags      composition    obsolete
 *** Test Cases ***
 Create new composition (FLAT/JSON)
     [Tags]    not-ready
-    create ehr  1234-555  namespace_555
+    Create EHR  1234-555  namespace_555
     extract ehrId
     create composition  ${template_id}  FLAT  composition_001.json
     expect response status  201
@@ -45,7 +45,7 @@ Create new composition (FLAT/JSON)
 
 Retrieve composition FLAT
     [Tags]  not-ready
-    create ehr  1234-577  namespace_555
+    Create EHR  1234-577  namespace_555
     extract ehrId
     create composition  ${template_id}  FLAT  composition_001.json
     extract composition_id
@@ -56,7 +56,7 @@ Retrieve composition FLAT
 
 Retrieve composition FLAT with embeded XML
     [Tags]  not-ready
-    create ehr  1234-587  namespace_555
+    Create EHR  1234-587  namespace_555
     extract ehrId
     create composition  ${template_id}  FLAT  composition_001.json
     extract composition_id
@@ -67,7 +67,7 @@ Retrieve composition FLAT with embeded XML
 
 Retrieve composition ECISFLAT
     [Tags]  not-ready
-    create ehr  1234-597  namespace_555
+    Create EHR  1234-597  namespace_555
     extract ehrId
     create composition  ${template_id}  FLAT  composition_001.json
     extract composition_id
@@ -78,7 +78,7 @@ Retrieve composition ECISFLAT
 
 Retrieve composition RAW
     [Tags]  not-ready
-    create ehr  1234-588  namespace_555
+    Create EHR  1234-588  namespace_555
     extract ehrId
     create composition  ${template_id}  FLAT  composition_001.json
     extract composition_id
@@ -89,7 +89,7 @@ Retrieve composition RAW
 
 Update composition
     [Tags]  not-ready
-    create ehr  1234-558  namespace_555
+    Create EHR  1234-558  namespace_555
     extract ehrId
     create composition  ${template_id}  FLAT  composition_001.json
     extract composition_id
@@ -97,9 +97,9 @@ Update composition
     # Output
     expect response status  200
 
-Delete composition
+Delete Composition
     [Tags]  not-ready
-    create ehr  1234-559  namespace_555
+    Create EHR  1234-559  namespace_555
     extract ehrId
     create composition  ${template_id}  FLAT  composition_001.json
     extract composition_id

@@ -41,7 +41,7 @@ Resource    ${CURDIR}${/}../_resources/suite_settings.robot
 Resource    ${CURDIR}${/}../_resources/keywords/template_opt1.4_keywords.robot
 
 Suite Setup  startup OPT SUT
-Suite Teardown  shutdown SUT
+Suite Teardown  Shutdown SUT
 
 Force Tags   OPT14    refactor
 
@@ -84,7 +84,7 @@ Retrieve OPT List From Server
 upload valid OPT
     [Arguments]           ${opt file}
 
-    start request session
+    Start Request Session
     get valid OPT file    ${opt file}
     upload OPT file
     server accepted OPT

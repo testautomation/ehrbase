@@ -29,8 +29,8 @@ Documentation   B.1.a) Main flow: Create new EHR
 Resource    ${CURDIR}${/}../_resources/suite_settings.robot
 Resource    ${CURDIR}${/}../_resources/keywords/ehr_keywords.robot
 
-Suite Setup    startup SUT
-Suite Teardown    shutdown SUT
+Suite Setup    Startup SUT
+Suite Teardown    Shutdown SUT
 Test Template    client sends POST request to /ehr
 
 Force Tags    create_ehr    obsolete
@@ -64,7 +64,7 @@ Retrieve EHR and Check Consistence with Test Data Set
 client sends POST request to /ehr
     [Arguments]  ${subject_id}  ${subject_namespace}  ${is_queryable}  ${is_modifiable}  ${status_code}
 
-    # STEP 1 - Invoke the create EHR service (for each item in the Data set)
+    # STEP 1 - Invoke the Create EHR service (for each item in the Data set)
     &{R}=    REST.POST  /ehr?subjectId=${subject_id}&subjectNamespace=${subject_namespace}  # body=${body}
     Set Test Variable    ${response}    ${R}
     Run Keyword And Continue On Failure  verify response action  CREATE

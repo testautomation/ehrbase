@@ -23,7 +23,7 @@ Resource    ${CURDIR}${/}../suite_settings.robot
 Resource    ${CURDIR}${/}../keywords/generic_keywords.robot
 
 # Suite Setup  startup AQL SUT
-# Suite Teardown  shutdown SUT
+# Suite Teardown  Shutdown SUT
 
 Force Tags   libtest
 
