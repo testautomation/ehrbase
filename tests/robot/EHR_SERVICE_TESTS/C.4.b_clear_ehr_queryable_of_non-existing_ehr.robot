@@ -29,8 +29,8 @@ Resource    ${CURDIR}${/}../_resources/keywords/generic_keywords.robot
 Resource    ${CURDIR}${/}../_resources/keywords/ehr_keywords.robot
 
 # Setup/Teardown from __init.robot is used
-#Suite Setup    startup SUT
-#Suite Teardown    shutdown SUT
+#Suite Setup    Startup SUT
+#Suite Teardown    Shutdown SUT
 
 Force Tags    put_ehr_status
 
@@ -41,6 +41,6 @@ Force Tags    put_ehr_status
 
 Clear EHR queryable of non existent EHR (with body)
 
-    create fake EHR
+    Create Fake EHR
 
     update ehr_status of fake EHR (with body)

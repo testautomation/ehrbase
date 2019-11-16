@@ -18,17 +18,17 @@ Documentation    Alternative flow 1: has path on EHR with just root directory
 ...         DS 2 | _any_other_random_path_ | false   |
 
 
-Resource    ${CURDIR}${/}../../_resources/suite_settings.robot
-Resource    ${CURDIR}${/}../../_resources/keywords/generic_keywords.robot
-Resource    ${CURDIR}${/}../../_resources/keywords/contribution_keywords.robot
-Resource    ${CURDIR}${/}../../_resources/keywords/directory_keywords.robot
-Resource    ${CURDIR}${/}../../_resources/keywords/template_opt1.4_keywords.robot
-Resource    ${CURDIR}${/}../../_resources/keywords/ehr_keywords.robot
+Resource    ${EXECDIR}${/}tests${/}robot${/}_resources${/}suite_settings.robot
+Resource    ${EXECDIR}${/}tests${/}robot${/}_resources${/}keywords${/}generic_keywords.robot
+Resource    ${EXECDIR}${/}tests${/}robot${/}_resources${/}keywords${/}contribution_keywords.robot
+Resource    ${EXECDIR}${/}tests${/}robot${/}_resources${/}keywords${/}directory_keywords.robot
+Resource    ${EXECDIR}${/}tests${/}robot${/}_resources${/}keywords${/}template_opt1.4_keywords.robot
+Resource    ${EXECDIR}${/}tests${/}robot${/}_resources${/}keywords${/}ehr_keywords.robot
 
-#Suite Setup  startup SUT
+#Suite Setup  Startup SUT
 # Test Setup  start openehr server
 # Test Teardown  restore clean SUT state
-#Suite Teardown  shutdown SUT
+#Suite Teardown  Shutdown SUT
 
 Force Tags
 
@@ -37,7 +37,7 @@ Force Tags
 *** Test Cases ***
 Alternative flow 1: has path on EHR with just root directory (DS 1)
 
-    create EHR
+    Create EHR
 
     create DIRECTORY (JSON)    empty_directory.json
 
@@ -49,7 +49,7 @@ Alternative flow 1: has path on EHR with just root directory (DS 1)
 
 Alternative flow 1: has path on EHR with just root directory (DS 2)
 
-    create EHR
+    Create EHR
 
     create DIRECTORY (JSON)    empty_directory.json
 

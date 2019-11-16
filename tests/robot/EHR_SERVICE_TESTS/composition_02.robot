@@ -23,8 +23,8 @@ Documentation   EHR Integration Tests
 Resource    ${CURDIR}${/}../_resources/suite_settings.robot
 Resource    ${CURDIR}${/}../_resources/keywords/ehr_keywords.robot
 
-Suite Setup    startup SUT
-Suite Teardown    shutdown SUT
+Suite Setup    Startup SUT
+Suite Teardown    Shutdown SUT
 
 Force Tags      composition    obsolete
 
@@ -33,7 +33,7 @@ Force Tags      composition    obsolete
 *** Test Cases ***
 Retrieve composition XML
     [Tags]   composition  not-ready
-    create ehr  1234-556  namespace_555
+    Create EHR  1234-556  namespace_555
     extract ehrId
     create composition  ${template_id}  FLAT  composition_001.json
     extract composition_id

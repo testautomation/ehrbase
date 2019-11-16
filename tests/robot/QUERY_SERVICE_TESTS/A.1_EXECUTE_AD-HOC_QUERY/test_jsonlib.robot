@@ -19,11 +19,11 @@
 *** Settings ***
 Documentation   Tests for Robot Framework JSON-Compare-Library
 
-Resource    ${CURDIR}${/}../../_resources/suite_settings.robot
-Resource    ${CURDIR}${/}../../_resources/keywords/generic_keywords.robot
+Resource    ${EXECDIR}${/}tests${/}robot${/}_resources${/}suite_settings.robot
+Resource    ${EXECDIR}${/}tests${/}robot${/}_resources${/}keywords${/}generic_keywords.robot
 
 # Suite Setup  startup AQL SUT
-# Suite Teardown  shutdown SUT
+# Suite Teardown  Shutdown SUT
 
 Force Tags   libtest
 

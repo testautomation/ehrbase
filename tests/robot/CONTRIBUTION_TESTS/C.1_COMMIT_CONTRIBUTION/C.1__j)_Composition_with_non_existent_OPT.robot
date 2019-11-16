@@ -33,17 +33,17 @@ Documentation   Contribution Integration Tests
 ...          None
 
 
-Resource    ${CURDIR}${/}../../_resources/suite_settings.robot
-Resource    ${CURDIR}${/}../../_resources/keywords/generic_keywords.robot
-Resource    ${CURDIR}${/}../../_resources/keywords/contribution_keywords.robot
-Resource    ${CURDIR}${/}../../_resources/keywords/composition_keywords.robot
-Resource    ${CURDIR}${/}../../_resources/keywords/template_opt1.4_keywords.robot
-Resource    ${CURDIR}${/}../../_resources/keywords/ehr_keywords.robot
+Resource    ${EXECDIR}${/}tests${/}robot${/}_resources${/}suite_settings.robot
+Resource    ${EXECDIR}${/}tests${/}robot${/}_resources${/}keywords${/}generic_keywords.robot
+Resource    ${EXECDIR}${/}tests${/}robot${/}_resources${/}keywords${/}contribution_keywords.robot
+Resource    ${EXECDIR}${/}tests${/}robot${/}_resources${/}keywords${/}composition_keywords.robot
+Resource    ${EXECDIR}${/}tests${/}robot${/}_resources${/}keywords${/}template_opt1.4_keywords.robot
+Resource    ${EXECDIR}${/}tests${/}robot${/}_resources${/}keywords${/}ehr_keywords.robot
 
-#Suite Setup  startup SUT
+#Suite Setup  Startup SUT
 # Test Setup  start openehr server
 # Test Teardown  restore clean SUT state
-#Suite Teardown  shutdown SUT
+#Suite Teardown  Shutdown SUT
 
 Force Tags    refactor
 
@@ -52,7 +52,7 @@ Force Tags    refactor
 *** Test Cases ***
 Alternative flow 9. commit CONTRIBUTION with COMPOSITION referencing a non existing OPT
 
-      create EHR
+      Create EHR
 
       commit invalid CONTRIBUTION (JSON)    invalid_contributions/ref_to_non_existent_OPT.json
                                             # TODO: @PABLO this is just a copy of `multiple_valid_and_invalid_compos.json` with value of template_id changed.

@@ -39,7 +39,7 @@ Resource    ${CURDIR}${/}../_resources/suite_settings.robot
 Resource    ${CURDIR}${/}../_resources/keywords/template_opt1.4_keywords.robot
 
 Suite Setup  startup OPT SUT
-Suite Teardown  shutdown SUT
+Suite Teardown  Shutdown SUT
 
 Force Tags   OPT14
 

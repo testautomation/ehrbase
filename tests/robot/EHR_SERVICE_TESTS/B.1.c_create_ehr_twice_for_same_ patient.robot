@@ -31,8 +31,8 @@ Resource    ${CURDIR}${/}../_resources/keywords/generic_keywords.robot
 Resource    ${CURDIR}${/}../_resources/keywords/ehr_keywords.robot
 
 # Setup/Teardown from __init.robot is used
-#Suite Setup    startup SUT
-#Suite Teardown    shutdown SUT
+#Suite Setup    Startup SUT
+#Suite Teardown    Shutdown SUT
 
 Force Tags    create_ehr
 
@@ -41,7 +41,7 @@ Force Tags    create_ehr
 *** Test Cases ***
 Create Same EHR Twice For The Same Patient (JSON)
 
-    start request session    JSON
+    Start Request Session    JSON
 
     generate random subject_id
     create new EHR for subject_id (JSON)    ${subject_id}

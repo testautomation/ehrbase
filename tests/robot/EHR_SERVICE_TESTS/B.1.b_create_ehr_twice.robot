@@ -27,9 +27,9 @@ Documentation   B.1.b) Alternative flow 1: Create same EHR twice
 ...
 ...             Flow:
 ...
-...                 1. Invoke the create EHR service (for each item in the Data set with given ehr_id, data sets 9 to 16)
+...                 1. Invoke the Create EHR service (for each item in the Data set with given ehr_id, data sets 9 to 16)
 ...                 2. The server should answer with a positive response associated to "EHR created"
-...                 3. Invoke the create EHR service (for the same item as in 1.)
+...                 3. Invoke the Create EHR service (for the same item as in 1.)
 ...                 4. The server should answer with a negative response, and that should be related with the EHR existence,
 ...                    like "EHR with ehr_id already exists"
 ...
@@ -41,8 +41,8 @@ Resource    ${CURDIR}${/}../_resources/keywords/generic_keywords.robot
 Resource    ${CURDIR}${/}../_resources/keywords/ehr_keywords.robot
 
 # Setup/Teardown from __init.robot is used
-# Suite Setup    startup SUT
-# Suite Teardown    shutdown SUT
+# Suite Setup    Startup SUT
+# Suite Teardown    Shutdown SUT
 
 Force Tags    create_ehr
 
@@ -53,8 +53,8 @@ Create Same EHR Twice (JSON)
 
     [Documentation]     Uses PUT method on /ehr/{{ehr_id}} endpoint to create new EHR.
 
-    start request session       JSON
-    generate random ehr_id
+    Start Request Session       JSON
+    Generate Random EHR ID
     create new EHR by ID        ${ehr_id}
     create new EHR by ID        ${ehr_id}
 
@@ -65,8 +65,8 @@ Create Same EHR Twice (XML)
 
     [Documentation]     Uses PUT method on /ehr/{{ehr_id}} endpoint to create new EHR.
 
-    start request session       XML
-    generate random ehr_id
+    Start Request Session       XML
+    Generate Random EHR ID
     create new EHR by ID        ${ehr_id}
     create new EHR by ID        ${ehr_id}
 

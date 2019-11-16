@@ -31,8 +31,8 @@ Resource    ${CURDIR}${/}../_resources/keywords/generic_keywords.robot
 Resource    ${CURDIR}${/}../_resources/keywords/ehr_keywords.robot
 
 # Setup/Teardown from __init.robot is used
-# Suite Setup       startup SUT
-# Suite Teardown    shutdown SUT
+# Suite Setup       Startup SUT
+# Suite Teardown    Shutdown SUT
 
 Force Tags    has_ehr
 
@@ -41,7 +41,7 @@ Force Tags    has_ehr
 *** Test Cases ***
 Check has EHR with existing EHR
 
-    ehr_keywords.start request session    JSON
+    ehr_keywords.Start Request Session    JSON
 
     create new EHR
 

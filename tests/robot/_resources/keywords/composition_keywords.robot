@@ -50,7 +50,7 @@ ${INVALID DATA SETS}   ${PROJECT_ROOT}${/}tests${/}robot${/}_resources${/}test_d
 
 
 
-start request session
+Start Request Session
     [Arguments]         ${content}=application/json  ${accept}=application/json  &{others}
     [Documentation]     Prepares request settings for RESTistance & RequestLib
     ...                 :content: application/json (default) / application/xml
@@ -76,7 +76,7 @@ start request session
 
 
 # TODO: rename to `generate random versioned_object_uid`
-generate random composition_uid
+Generate Random Composition UID
     [Documentation]     Generates a random UUIDv4 spec conform `versioned_object_uid`,
     ...                 an OpenEHR spec conform `version_uid` (alias `preceding_version_uid`).
 
@@ -96,10 +96,10 @@ generate random version_uid
                         Set Test Variable   ${preceding_version_uid}    ${version_uid}
 
 
-commit invalid composition (JSON)
+Commit Invalid Composition (JSON)
     [Arguments]         ${opt_file}
     [Documentation]     Creates the first version of a new COMPOSITION
-    ...                 DEPENDENCY: `upload OPT`, `create EHR`
+    ...                 DEPENDENCY: `upload OPT`, `Create EHR`
     ...
     ...                 ENDPOINT: POST /ehr/${ehr_id}/composition
 
@@ -114,10 +114,10 @@ commit invalid composition (JSON)
                         Should Be Equal As Strings   ${resp.status_code}   400
 
 
-commit invalid composition (XML)
+Commit Invalid Composition (XML)
     [Arguments]         ${opt_file}
     [Documentation]     Creates the first version of a new COMPOSITION
-    ...                 DEPENDENCY: `upload OPT`, `create EHR`
+    ...                 DEPENDENCY: `upload OPT`, `Create EHR`
     ...
     ...                 ENDPOINT: POST /ehr/${ehr_id}/composition
 
@@ -132,10 +132,10 @@ commit invalid composition (XML)
                         Should Be Equal As Strings   ${resp.status_code}   400
 
 
-commit composition - no referenced OPT
+Commit Composition - No Referenced OPT
     [Arguments]         ${opt_file}
     [Documentation]     Creates a new COMPOSITION with missing referenced OPT
-    ...                 DEPENDENCY: `create EHR`, `start request session` with proper args!!!
+    ...                 DEPENDENCY: `Create EHR`, `Start Request Session` with proper args!!!
     ...                 ENDPOINT: POST /ehr/${ehr_id}/composition
 
                         get valid OPT file  ${opt_file}
@@ -147,26 +147,26 @@ commit composition - no referenced OPT
                         Should Be Equal As Strings   ${resp.status_code}   400
 
 
-commit composition - no referenced EHR
+Commit Composition - No Referenced EHR
     [Arguments]         ${opt_file}
     [Documentation]     Creates a new COMPOSITION with missing referenced EHR
-    ...                 DEPENDENCY: `create EHR`, `start request session` with proper args!!!
+    ...                 DEPENDENCY: `Create EHR`, `Start Request Session` with proper args!!!
     ...                             e.g. content-type must be application/xml
     ...                 ENDPOINT: POST /ehr/${ehr_id}/composition
 
                         get valid OPT file  ${opt_file}
 
-                        composition_keywords.start request session    application/xml    Prefer=return\=representation
+                        composition_keywords.Start Request Session    application/xml    Prefer=return\=representation
 
     ${resp}=            Post Request        ${SUT}   /ehr/${ehr_id}/composition   data=${file}   headers=${headers}
                         log to console      ${resp.content}
                         Should Be Equal As Strings   ${resp.status_code}   404
 
 
-commit composition (JSON)
+Commit Composition (JSON)
     [Arguments]         ${opt_file}
     [Documentation]     Creates the first version of a new COMPOSITION
-    ...                 DEPENDENCY: `upload OPT`, `create EHR`
+    ...                 DEPENDENCY: `upload OPT`, `Create EHR`
     ...
     ...                 ENDPOINT: POST /ehr/${ehr_id}/composition
 
@@ -190,16 +190,16 @@ commit composition (JSON)
                         Set Test Variable   ${versioned_object_uid}    ${short_uid}
 
                         Set Test Variable   ${response}    ${resp}
-                        capture point in time    1
+                        Capture Point In Time    1
 
 
-check content of composition (JSON)
+Check Content Of Composition (JSON)
                         # Should Be Equal As Strings    ${response.status_code}    200
     ${text}=            Set Variable        ${response.json()['content'][0]['data']['events'][0]['data']['items'][0]['value']['value']}
                         Should Be Equal     ${text}    original value
 
 
-commit composition (XML)
+Commit Composition (XML)
     [Arguments]         ${opt_file}
     [Documentation]     POST /ehr/${ehr_id}/composition
 
@@ -228,17 +228,17 @@ commit composition (XML)
                         Set Test Variable   ${versioned_object_uid}    ${short_uid}
 
                         Set Test Variable   ${response}    ${resp}
-                        capture point in time    1
+                        Capture Point In Time    1
 
 
-check content of composition (XML)
+Check Content Of Updated Composition (XML)
                         # Should Be Equal As Strings    ${response.status_code}    200
     ${xml}=             Parse Xml           ${response.text}
     # ${text}=            Get Element         ${xml}    composition/content/data/events/data/items/value/value     # This works, but is not spec conform!  TODO: remove
     ${text}=            Get Element         ${xml}    content/data/events/data/items/value/value
                         Element Text Should Be    ${text}    original value
 
-commit same composition again
+Commit Same Composition Again
     [Arguments]         ${opt_file}
     [Documentation]     Commits a COMPOSITION a second time
     ...                 DEPENDENCY: `commit composition (JSON/XML)`
@@ -257,7 +257,7 @@ commit same composition again
                         Should Be Equal As Strings   ${resp.status_code}   400
 
 
-update composition (JSON)
+Update Composition (JSON)
     [Arguments]         ${new_version_of_composition}
     [Documentation]     Commit a new version for the COMPOSITION
     ...                 DEPENDENCY: `commit composition (JSON/XML)` keyword
@@ -279,10 +279,10 @@ update composition (JSON)
                         Set Test Variable   ${versioned_object_uid_v2}    ${short_uid}
 
                         Set Test Variable   ${response}    ${resp}
-                        capture point in time    2
+                        Capture Point In Time    2
 
 
-check composition update succeeded
+Check Composition Update Succeeded
     [Documentation]     the uids without the version should be the same
     ...                 DEPENDENCY: `update composition (JSON/XML)` keyword
 
@@ -297,13 +297,13 @@ check composition update succeeded
                         Should Be Equal     ${uid_v1}    ${uid_v2}
 
 
-check content of updated composition (JSON)
+Check Content Of Updated Composition (JSON)
                         Should Be Equal As Strings    ${response.status_code}    200
     ${text}=            Set Variable    ${response.json()['content'][0]['data']['events'][0]['data']['items'][0]['value']['value']}
                         Should Be Equal     ${text}    modified value
 
 
-update composition (XML)
+Update Composition (XML)
     [Arguments]         ${new_version_of_composition}
     [Documentation]     Commit a new version for the COMPOSITION
     ...                 DEPENDENCY: `commit composition (JSON/XML)` keyword
@@ -330,10 +330,10 @@ update composition (XML)
                         Set Test Variable   ${versioned_object_uid_v2}    ${short_uid}
 
                         Set Test Variable   ${response}    ${resp}
-                        capture point in time    2
+                        Capture Point In Time    2
 
 
-check content of updated composition (XML)
+Check Content Of Updated Composition (XML)
                         Should Be Equal As Strings    ${response.status_code}    200
     ${xml}=             Parse Xml           ${response.text}
 
@@ -343,7 +343,7 @@ check content of updated composition (XML)
                         Element Text Should Be    ${text}    modified value
 
 
-update non-existent composition (JSON)
+Update Non-Existent Composition (JSON)
     [Arguments]         ${new_version_of_composition}
     [Documentation]     Commit a new version for a non-existent COMPOSITION
     ...                 DEPENDENCY: `generate random composition uid(s)` keyword
@@ -380,10 +380,10 @@ update non-existent composition (XML)
 
 
 # TODO: rename keyword properly e.g. by version_uid
-get composition by composition_uid
+Get Composition By Composition UID
     [Arguments]         ${uid}
     [Documentation]     :uid: version_uid
-    ...                 DEPENDENCY: `start request session` with proper Headers
+    ...                 DEPENDENCY: `Start Request Session` with proper Headers
     ...                     e.g. Content-Type=application/xml  Accept=application/xml  Prefer=return\=representation
     ...                     and `commit composition (JSON/XML)` keywords
 
@@ -397,10 +397,10 @@ get composition by composition_uid
                         Set Test Variable   ${response}    ${resp}
 
 
-get versioned composition by uid
+Get Versioned Composition By UID
     [Arguments]         ${uid}
     [Documentation]     :uid: versioned_object_uid
-    ...                 DEPENDENCY: `start request session`
+    ...                 DEPENDENCY: `Start Request Session`
     ...                     and `commit composition (JSON/XML)` keywords
     ...
     ...                 ENDPOINT: /ehr/${ehr_id}/versioned_composition/${versioned_object_uid}
@@ -417,21 +417,21 @@ get versioned composition by uid
 #                         Pass Execution    TODO    PLACEHOLDER
 
 
-check content of versioned composition (JSON)
+Check Content Of Versioned Composition (JSON)
                         Should Be Equal As Strings   ${response.status_code}   200
                         Should Be Equal   ${response.json()['uid']['value']}    ${versioned_object_uid}
 
 
-check content of versioned composition (XML)
+Check Content Of Versioned Composition (XML)
                         Should Be Equal As Strings    ${response.status_code}   200
     ${xml}=             Parse Xml           ${response.text}
     ${uid}=             Get Element         ${xml}    uid/value
                         Element Text Should Be    ${uid}    ${versioned_object_uid}
 
 
-get composition - latest version
+Get Composition - Latest Version
 
-                        composition_keywords.start request session    Prefer=return\=representation
+                        composition_keywords.Start Request Session    Prefer=return\=representation
     # The way to return the latest version is using the versioned_composition with
     # the versioned_object_uid and without the version_at_time param.
 
@@ -446,10 +446,10 @@ get composition - latest version
                         Set Test Variable     ${response}    ${resp}
 
 
-get composition - latest version (XML)
+Get Composition - Latest Version (XML)
     [Documentation]     ENDPOINT: /ehr/${ehr_id}/versioned_composition/${versioned_object_uid}/version
 
-                        composition_keywords.start request session    application/xml    application/xml    Prefer=return\=representation
+                        composition_keywords.Start Request Session    application/xml    application/xml    Prefer=return\=representation
 
     # The way to return the latest version is using the versioned_composition with
     # the versioned_object_uid and without the version_at_time param.
@@ -465,8 +465,8 @@ get composition - latest version (XML)
                         Set Test Variable     ${response}    ${resp}
 
 
-check content of compositions latest version (JSON)
-    [Documentation]     DEPENDENCY: `get composition - latest version` keyword
+Check Content Of Compositions Latest Version (JSON)
+    [Documentation]     DEPENDENCY: `Get Composition - Latest Version` keyword
                         Should Be Equal As Strings   ${response.status_code}   200
                         Set Test Variable     ${version_uid_latest}    ${resp.json()['uid']['value']}
 
@@ -494,10 +494,10 @@ check content of compositions latest version (XML)
                         Element Text Should Be    ${xtext}    modified value
 
 
-get versioned composition - version at time
+Get Versioned Composition - Version At Time
     [Arguments]         ${time_x}
-    [Documentation]     DEPENDENCY: `commit composition (JSON)`
-    ...                 :time_x: variable w. DateTime-TimeZone (like returned from `capture point in time` kw)
+    [Documentation]     DEPENDENCY: `Commit Composition (JSON)`
+    ...                 :time_x: variable w. DateTime-TimeZone (like returned from `Capture Point In Time` kw)
     ...
     ...                 ENDPOINT: /ehr/{ehr_id}/versioned_composition/{versioned_object_uid}/version{?version_at_time}
 
@@ -528,10 +528,10 @@ get versioned composition - version at time
                         Set Test Variable     ${response}    ${resp}
 
 
-get composition - version at time (XML)
+Get Composition - Version At Time (XML)
     [Arguments]         ${time_x}
-    [Documentation]     DEPENDENCY: `commit composition (XML)`
-    ...                 :time_x: variable w. DateTime-TimeZone (like returned from `capture point in time` kw)
+    [Documentation]     DEPENDENCY: `Commit Composition (XML)`
+    ...                 :time_x: variable w. DateTime-TimeZone (like returned from `Capture Point In Time` kw)
     ...                 ENDPOINT: /ehr/{ehr_id}/versioned_composition/{versioned_object_uid}/version{?version_at_time}
 
     &{params}=          Create Dictionary     version_at_time=$${time_x}
@@ -551,7 +551,7 @@ get composition - version at time (XML)
                         Set Test Variable     ${response}    ${resp}
 
 
-check content of compositions version at time (JSON)
+Check Content Of Compositions Version At Time (JSON)
     [Arguments]         ${time_x_nr}
     [Documentation]     DEPENDENCY: `get compostion - version at time`
     ...                 :time_x_nr:  a string like `time_1`
@@ -568,7 +568,7 @@ check content of compositions version at time (JSON)
                         Should Be Equal       ${text}    original value
 
 
-check content of compositions version at time (XML)
+Check Content Of Compositions Version At Time (XML)
     [Arguments]         ${time_x_nr}
     [Documentation]     DEPENDENCY: `get compostion - version at time (XML)`
     ...                 :time_x_nr:  a string like `time_1`
@@ -586,31 +586,31 @@ check content of compositions version at time (XML)
                         Element Text Should Be    ${xtext}    original value
 
 
-check composition exists
+Check Composition Exists
     [Documentation]     DEPENDENCY: `get composition` keywords
 
                         Should Be Equal As Strings   ${response.status_code}   200
 
 
-check composition does not exist
+Check Composition Does Not Exist
     [Documentation]     DEPENDENCY: `get composition` keywords
 
                         Should Be Equal As Strings   ${response.status_code}   404
 
 
-check composition does not exist (version at time)
+Check Composition Does Not Exist - Version At Time
     [Documentation]     DEPENDENCY: `get composition - version at time` keywords
 
                         Should Be Equal As Strings   ${response.status_code}   404
 
 
-check versioned composition does not exist
+Check Versioned Composition Does Not Exist
     [Documentation]     DEPENDENCY: `get versioned composition`
 
                         Should Be Equal As Strings   ${response.status_code}   404
 
 
-delete composition
+Delete Composition
     [Arguments]         ${uid}
     [Documentation]     :uid: preceding_version_uid (format of version_uid)
 
@@ -626,7 +626,7 @@ delete composition
                         Set Test Variable       ${del_version_uid}    ${del_version_uid}
 
 
-get deleted composition
+Get Deleted Composition
     [Documentation]     The deleted compo should not exist
     ...                 204 is the code for deleted - as per OpenEHR spec
 
@@ -635,10 +635,10 @@ get deleted composition
                         Should Be Equal As Strings   ${resp.status_code}   204
 
 
-delete non-existent composition
-    [Documentation]     DEPENDENCY `start request session`, `generate random composition_uid`
+Delete Non-Existent Composition
+    [Documentation]     DEPENDENCY `Start Request Session`, `Generate Random Composition UID`
 
-                        composition_keywords.start request session
+                        composition_keywords.Start Request Session
     ${resp}=            Delete Request        ${SUT}   /ehr/${ehr_id}/composition/${preceding_version_uid}
                         log to console    ${resp.content}
                         Should Be Equal As Strings   ${resp.status_code}   404
@@ -648,36 +648,36 @@ upload OPT
     [Arguments]     ${opt_file}   ${accept-header}=JSON
 
     # setting proper Accept=application/xxx header
-    Run Keyword If    '${accept-header}'=='JSON'   template_opt1.4_keywords.start request session
-    Run Keyword If    '${accept-header}'=='XML'    start request session (XML)
+    Run Keyword If    '${accept-header}'=='JSON'   template_opt1.4_keywords.Start Request Session
+    Run Keyword If    '${accept-header}'=='XML'    Start Request Session (XML)
 
     get valid OPT file    ${opt_file}
     upload OPT file
     server accepted OPT
 
 
-create EHR
+Create EHR
     [Arguments]     ${accept-header}=JSON
 
     Run Keyword If  '${accept-header}'=='JSON'
-    ...             Run Keywords    ehr_keywords.start request session    JSON
+    ...             Run Keywords    ehr_keywords.Start Request Session    JSON
     ...             AND             create new EHR
     ...             AND             extract ehr_id from response (JSON)
     ...             AND             extract ehrstatus_uid (JSON)
 
     Run Keyword If  '${accept-header}'=='XML'
-    ...             Run Keywords    ehr_keywords.start request session    XML
+    ...             Run Keywords    ehr_keywords.Start Request Session    XML
     ...             AND             create new EHR (XML)
     ...             AND             extract ehr_id from response (XML)
     ...             AND             extract ehrstatus_uid (XML)
 
 
-capture time before first commit
-    capture point in time   0
+Capture Time Before First Commit
+    Capture Point In Time   0
     # Sleep                   1
 
 
-capture point in time
+Capture Point In Time
     [Arguments]         ${point_in_time}
     [Documentation]     :point_in_time: integer [0, 1, 2]
     ...                 exposes to test level scope a variable e.g. `${time_1}`
@@ -705,11 +705,11 @@ capture point in time
 #
 # [ BACKUP ]
 
-# commit composition (XML)
+# Commit Composition (XML)
 #     [Arguments]         ${xml_composition}
 #     [Documentation]     Creates a composition by using POST method and XML file
 #     ...                 from `/test_data_sets/xml_compositions/` folder
-#     ...                 DEPENDENCY: use it right after `create EHR XML` which
+#     ...                 DEPENDENCY: use it right after `Create EHR XML` which
 #     ...                             provides the `ehr_id`.
 #
 #     ${file}=            Get File           ${CURDIR}/../test_data_sets/xml_compositions/${xml_composition}
@@ -724,7 +724,7 @@ capture point in time
 #                         Set Test Variable  ${compo_version_uid}     ${xcompo_version_uid.text}
 #                         # Log To Console     ${compo_version_uid}
 
-# get composition by composition_uid (XML)
+# Get Composition By Composition UID (XML)
 #     [Arguments]         ${uid}
 #     [Documentation]     DEPENDENCY: `commit composition (JSON/XML)` keywords
 #

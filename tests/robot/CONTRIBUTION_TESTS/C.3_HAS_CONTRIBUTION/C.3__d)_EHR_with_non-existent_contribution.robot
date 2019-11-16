@@ -32,17 +32,17 @@ Documentation   Contribution Integration Tests
 ...         None.
 
 
-Resource    ${CURDIR}${/}../../_resources/suite_settings.robot
-Resource    ${CURDIR}${/}../../_resources/keywords/generic_keywords.robot
-Resource    ${CURDIR}${/}../../_resources/keywords/contribution_keywords.robot
-Resource    ${CURDIR}${/}../../_resources/keywords/composition_keywords.robot
-Resource    ${CURDIR}${/}../../_resources/keywords/template_opt1.4_keywords.robot
-Resource    ${CURDIR}${/}../../_resources/keywords/ehr_keywords.robot
+Resource    ${EXECDIR}${/}tests${/}robot${/}_resources${/}suite_settings.robot
+Resource    ${EXECDIR}${/}tests${/}robot${/}_resources${/}keywords${/}generic_keywords.robot
+Resource    ${EXECDIR}${/}tests${/}robot${/}_resources${/}keywords${/}contribution_keywords.robot
+Resource    ${EXECDIR}${/}tests${/}robot${/}_resources${/}keywords${/}composition_keywords.robot
+Resource    ${EXECDIR}${/}tests${/}robot${/}_resources${/}keywords${/}template_opt1.4_keywords.robot
+Resource    ${EXECDIR}${/}tests${/}robot${/}_resources${/}keywords${/}ehr_keywords.robot
 
-#Suite Setup  startup SUT
+#Suite Setup  Startup SUT
 # Test Setup  start openehr server
 # Test Teardown  restore clean SUT state
-#Suite Teardown  shutdown SUT
+#Suite Teardown  Shutdown SUT
 
 Force Tags    refactor
 
@@ -51,9 +51,9 @@ Force Tags    refactor
 *** Test Cases ***
 Alternative flow 3: has CONTRIBUTION, EHR with CONTRIBUTIONS, but CONTRIBUTION doesn't exist
 
-    upload OPT    minimal/minimal_instruction.opt
+    Upload OPT    minimal/minimal_instruction.opt
 
-    create EHR
+    Create EHR
 
     commit CONTRIBUTION (JSON)    minimal/minimal_instruction.contribution.json
 
@@ -61,4 +61,4 @@ Alternative flow 3: has CONTRIBUTION, EHR with CONTRIBUTIONS, but CONTRIBUTION d
 
     check response: is negative indicating non-existent contribution_uid
 
-    [Teardown]    restart SUT
+    [Teardown]    Restart SUT

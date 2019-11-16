@@ -83,7 +83,7 @@ extract template_id from OPT file
                         # Log To Console      ${template_id}
 
 
-start request session
+Start Request Session
     Create Session      ${SUT}    ${${SUT}.URL}
     ...                 auth=${${SUT}.CREDENTIALS}    debug=2    verify=True
     &{headers}=         Create Dictionary    Content-Type=application/xml
@@ -91,7 +91,7 @@ start request session
                         Set Test Variable    ${headers}    ${headers}
 
 
-start request session (XML)
+Start Request Session (XML)
     Create Session      ${SUT}    ${${SUT}.URL}
     ...                 auth=${${SUT}.CREDENTIALS}    debug=2    verify=True
     &{headers}=         Create Dictionary    Content-Type=application/xml
@@ -103,7 +103,7 @@ start request session (XML)
 upload valid OPT
     [Arguments]           ${opt file}
 
-    start request session
+    Start Request Session
     get valid OPT file    ${opt file}
     upload OPT file
     server accepted OPT
@@ -126,7 +126,7 @@ retrieve versioned OPT
     Log               NOT APPLICABLE FOR ADL 1.4    level=WARN
     Pass Execution    NOT APPLICABLE FOR ADL 1.4    not-ready
 
-    start request session
+    Start Request Session
     get valid OPT file                  ${opt file}
     extract template_id from OPT file
     retrieve OPT by template_id         ${template_id}

@@ -40,8 +40,8 @@ Resource    ${CURDIR}${/}../_resources/keywords/generic_keywords.robot
 Resource    ${CURDIR}${/}../_resources/keywords/ehr_keywords.robot
 
 # Setup/Teardown from __init.robot is used
-# Suite Setup       startup SUT
-# Suite Teardown    shutdown SUT
+# Suite Setup       Startup SUT
+# Suite Teardown    Shutdown SUT
 
 Force Tags    ehr_status
 
@@ -55,8 +55,8 @@ EHRBASE:    endpoint not implemented yet, resulting in a false positive.
 *** Test Cases ***
 Get status of a non existing EHR
 
-    ehr_keywords.start request session    JSON
+    ehr_keywords.Start Request Session    JSON
 
-    create fake EHR
+    Create Fake EHR
 
     get ehr_status of fake EHR

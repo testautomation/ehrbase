@@ -22,13 +22,13 @@ Documentation   QUERY SERVICE Integration Tests
 
 
 
-Resource    ${CURDIR}${/}../../_resources/suite_settings.robot
-Resource    ${CURDIR}${/}../../_resources/keywords/generic_keywords.robot
-Resource    ${CURDIR}${/}../../_resources/keywords/aql_query_keywords.robot
-Resource    ${CURDIR}${/}../../_resources/keywords/ehr_keywords.robot
-Resource    ${CURDIR}${/}../../_resources/keywords/contribution_keywords.robot
-Resource    ${CURDIR}${/}../../_resources/keywords/composition_keywords.robot
-Resource    ${CURDIR}${/}../../_resources/keywords/template_opt1.4_keywords.robot
+Resource    ${EXECDIR}${/}tests${/}robot${/}_resources${/}suite_settings.robot
+Resource    ${EXECDIR}${/}tests${/}robot${/}_resources${/}keywords${/}generic_keywords.robot
+Resource    ${EXECDIR}${/}tests${/}robot${/}_resources${/}keywords/aql_query_keywords.robot
+Resource    ${EXECDIR}${/}tests${/}robot${/}_resources${/}keywords${/}ehr_keywords.robot
+Resource    ${EXECDIR}${/}tests${/}robot${/}_resources${/}keywords${/}contribution_keywords.robot
+Resource    ${EXECDIR}${/}tests${/}robot${/}_resources${/}keywords${/}composition_keywords.robot
+Resource    ${EXECDIR}${/}tests${/}robot${/}_resources${/}keywords${/}template_opt1.4_keywords.robot
 
 
 # Test Setup  start openehr server

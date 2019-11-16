@@ -23,17 +23,17 @@ Documentation    Alternative flow 2: has path on EHR with given folder structure
 ...         DS 9 | ...
 
 
-Resource    ${CURDIR}${/}../../_resources/suite_settings.robot
-Resource    ${CURDIR}${/}../../_resources/keywords/generic_keywords.robot
-Resource    ${CURDIR}${/}../../_resources/keywords/contribution_keywords.robot
-Resource    ${CURDIR}${/}../../_resources/keywords/directory_keywords.robot
-Resource    ${CURDIR}${/}../../_resources/keywords/template_opt1.4_keywords.robot
-Resource    ${CURDIR}${/}../../_resources/keywords/ehr_keywords.robot
+Resource    ${EXECDIR}${/}tests${/}robot${/}_resources${/}suite_settings.robot
+Resource    ${EXECDIR}${/}tests${/}robot${/}_resources${/}keywords${/}generic_keywords.robot
+Resource    ${EXECDIR}${/}tests${/}robot${/}_resources${/}keywords${/}contribution_keywords.robot
+Resource    ${EXECDIR}${/}tests${/}robot${/}_resources${/}keywords${/}directory_keywords.robot
+Resource    ${EXECDIR}${/}tests${/}robot${/}_resources${/}keywords${/}template_opt1.4_keywords.robot
+Resource    ${EXECDIR}${/}tests${/}robot${/}_resources${/}keywords${/}ehr_keywords.robot
 
-#Suite Setup  startup SUT
+#Suite Setup  Startup SUT
 # Test Setup  start openehr server
 # Test Teardown  restore clean SUT state
-#Suite Teardown  shutdown SUT
+#Suite Teardown  Shutdown SUT
 
 Force Tags    todo-data-driven
 
@@ -42,7 +42,7 @@ Force Tags    todo-data-driven
 *** Test Cases ***
 Alternative flow 2: has path on EHR with given folder structure (DS 1)
 
-    create EHR
+    Create EHR
 
     create DIRECTORY (JSON)    subfolders_in_directory.json
 
@@ -54,7 +54,7 @@ Alternative flow 2: has path on EHR with given folder structure (DS 1)
 
 Alternative flow 2: has path on EHR with given folder structure (DS 2)
 
-    create EHR
+    Create EHR
 
     create DIRECTORY (JSON)    subfolders_in_directory.json
 
@@ -66,7 +66,7 @@ Alternative flow 2: has path on EHR with given folder structure (DS 2)
 
 Alternative flow 2: has path on EHR with given folder structure (DS 3)
 
-    create EHR
+    Create EHR
 
     create DIRECTORY (JSON)    subfolders_in_directory.json
 
@@ -78,7 +78,7 @@ Alternative flow 2: has path on EHR with given folder structure (DS 3)
 
 Alternative flow 2: has path on EHR with given folder structure (DS 4)
 
-    create EHR
+    Create EHR
 
     create DIRECTORY (JSON)    subfolders_in_directory.json
 
@@ -90,7 +90,7 @@ Alternative flow 2: has path on EHR with given folder structure (DS 4)
 
 Alternative flow 2: has path on EHR with given folder structure (DS 5)
 
-    create EHR
+    Create EHR
 
     create DIRECTORY (JSON)    subfolders_in_directory.json
 
@@ -102,7 +102,7 @@ Alternative flow 2: has path on EHR with given folder structure (DS 5)
 
 Alternative flow 2: has path on EHR with given folder structure (DS 6)
 
-    create EHR
+    Create EHR
 
     create DIRECTORY (JSON)    subfolders_in_directory.json
 
@@ -114,7 +114,7 @@ Alternative flow 2: has path on EHR with given folder structure (DS 6)
 
 Alternative flow 2: has path on EHR with given folder structure (DS 7)
 
-    create EHR
+    Create EHR
 
     create DIRECTORY (JSON)    subfolders_in_directory.json
 
@@ -126,7 +126,7 @@ Alternative flow 2: has path on EHR with given folder structure (DS 7)
 
 Alternative flow 2: has path on EHR with given folder structure (DS 8)
 
-    create EHR
+    Create EHR
 
     create DIRECTORY (JSON)    subfolders_in_directory.json
 
@@ -138,7 +138,7 @@ Alternative flow 2: has path on EHR with given folder structure (DS 8)
 
 Alternative flow 2: has path on EHR with given folder structure (DS 9)
 
-    create EHR
+    Create EHR
 
     create DIRECTORY (JSON)    subfolders_in_directory.json
 

@@ -30,8 +30,8 @@ Resource    ${CURDIR}${/}../_resources/suite_settings.robot
 Resource    ${CURDIR}${/}../_resources/keywords/ehr_keywords.robot
 Resource    ${CURDIR}${/}../_resources/keywords/template_opt1.4_keywords.robot
 
-Suite Setup  startup SUT
-Suite Teardown  shutdown SUT
+Suite Setup  Startup SUT
+Suite Teardown  Shutdown SUT
 
 Force Tags      AQL    obsolete
 
@@ -154,7 +154,7 @@ AQL query JSON payload test 1
     ...              exclude keys with dynamic values with `exclude_paths` arg
     ...              check next test as example for Solution 2
     [Tags]   not-ready
-    create ehr   1234-666   namespace_666
+    Create EHR   1234-666   namespace_666
     extract ehrId
 
     &{resp}=  REST.POST   /query  {"aql" : "select a/uid/value as uid, a/composer/name as author, a/context/start_time/value as date_created from EHR e [ehr_id/value = '${ehr_id}'] contains COMPOSITION a[openEHR-EHR-COMPOSITION.health_summary.v1]"}
@@ -172,7 +172,7 @@ AQL query JSON payload test with exclude_paths argument
     [Documentation]  This test demonstrates use of keyword with `exclude_paths` arg
     ...              avoiding FAIL as result of dynamic values in response
     [Tags]    not-ready
-    create ehr   1234-667   namespace_667
+    Create EHR   1234-667   namespace_667
     extract ehrId
 
     &{resp}=  REST.POST   /query    {"aql" : "select a/uid/value as uid, a/composer/name as author, a/context/start_time/value as date_created from EHR e [ehr_id/value = '${ehr_id}'] contains COMPOSITION a[openEHR-EHR-COMPOSITION.health_summary.v1]"}
@@ -191,7 +191,7 @@ AQL for committed data ADMIN_ENTRY (fail)
     ...              some keys in JSON response
     [Tags]  not-ready
     ${subject_id}=    Generate Random String    16    [NUMBERS]abcdef
-    create ehr    ${subject_id}    local.ehr
+    Create EHR    ${subject_id}    local.ehr
     extract ehrId    # sets the ehr_id variable
 
     #create composition
@@ -218,7 +218,7 @@ AQL for committed data ADMIN_ENTRY
     ...              response to avoid failing
     [Tags]  not-ready
     ${subject_id}=    Generate Random String    16    [NUMBERS]abcdef
-    create ehr    ${subject_id}    local.ehr
+    Create EHR    ${subject_id}    local.ehr
     extract ehrId    # sets the ehr_id variable
 
     #create composition
@@ -257,7 +257,7 @@ Find UID's JSON Path
 
 
 *** Keywords ***
-startup SUT
+Startup SUT
     [Documentation]  used in Test Suite Setup
     ...              this keyword overrides another one with same name
     ...              from "generic_keywords.robot" file

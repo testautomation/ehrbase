@@ -16,17 +16,17 @@ Documentation    Alternative flow 1: has directory from existent EHR that has tw
 ...         None
 
 
-Resource    ${CURDIR}${/}../../_resources/suite_settings.robot
-Resource    ${CURDIR}${/}../../_resources/keywords/generic_keywords.robot
-Resource    ${CURDIR}${/}../../_resources/keywords/contribution_keywords.robot
-Resource    ${CURDIR}${/}../../_resources/keywords/directory_keywords.robot
-Resource    ${CURDIR}${/}../../_resources/keywords/template_opt1.4_keywords.robot
-Resource    ${CURDIR}${/}../../_resources/keywords/ehr_keywords.robot
+Resource    ${EXECDIR}${/}tests${/}robot${/}_resources${/}suite_settings.robot
+Resource    ${EXECDIR}${/}tests${/}robot${/}_resources${/}keywords${/}generic_keywords.robot
+Resource    ${EXECDIR}${/}tests${/}robot${/}_resources${/}keywords${/}contribution_keywords.robot
+Resource    ${EXECDIR}${/}tests${/}robot${/}_resources${/}keywords${/}directory_keywords.robot
+Resource    ${EXECDIR}${/}tests${/}robot${/}_resources${/}keywords${/}template_opt1.4_keywords.robot
+Resource    ${EXECDIR}${/}tests${/}robot${/}_resources${/}keywords${/}ehr_keywords.robot
 
-#Suite Setup  startup SUT
+#Suite Setup  Startup SUT
 # Test Setup  start openehr server
 # Test Teardown  restore clean SUT state
-#Suite Teardown  shutdown SUT
+#Suite Teardown  Shutdown SUT
 
 Force Tags    refactor
 
@@ -35,7 +35,7 @@ Force Tags    refactor
 *** Test Cases ***
 Alternative flow 1: has directory from existent EHR that has two versions of directory
 
-    create EHR
+    Create EHR
 
     create DIRECTORY (JSON)    subfolders_in_directory.json
     validate POST response - 201 created
