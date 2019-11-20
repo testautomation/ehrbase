@@ -1,6 +1,17 @@
 name: Java CI
 
-on: [push]
+on:
+  push:
+    branches:
+    - master
+    - develop
+    - feature/*
+    - release/*
+
+  pull_request:
+    branches:
+    - master
+    - develop
 
 jobs:
   build:
@@ -9,13 +20,29 @@ jobs:
 
     steps:
     - uses: actions/checkout@v1
+
+    - name: Cache
+      uses: actions/cache@v1.0.2
+      with:
+        path: ~/.m2
+        key: maven-deps
+        # An ordered list of keys to use for restoring the cache if no cache hit occurred for key
+        restore-keys:
+          - maven-deps
+
     - name: Set up JDK 1.8
       uses: actions/setup-java@v1
       with:
         java-version: 1.8
+
     - name: Set up Docker
       uses: docker-practice/actions-setup-docker@0.0.1
+
     - name: Start PostgreSQL DB container
-      run: docker run --name ehrdb -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=postgres -d -p 5432:5432 ehrbaseorg/ehrbase-database-docker:11.5
+      run: |
+        docker run --name ehrdb -e POSTGRES_USER=postgres \
+                                -e POSTGRES_PASSWORD=postgres \
+                                -d -p 5432:5432 ehrbaseorg/ehrbase-database-docker:11.5
+
     - name: Build with Maven
       run: mvn package
