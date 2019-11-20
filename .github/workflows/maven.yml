@@ -15,13 +15,13 @@ on:
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
-
     steps:
-    - uses: actions/checkout@v1
 
-    - name: Maven Cache
+    - name: Checkout Code
+      uses: actions/checkout@v1
+
+    - name: Cache Maven Dependencies
       uses: actions/cache@v1.0.2
       id: cache-maven
       with:
@@ -30,16 +30,16 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-maven-
 
-    - name: Python Cache
+    - name: Cache Python Dependencies
       uses: actions/cache@v1
-      id: cash-python
+      id: cache-python
       with:
         path: ~/.cache/pip
         key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
         restore-keys: |
           ${{ runner.os }}-pip-
 
-    - name: Set up JDK 1.8
+    - name: Set up Java JDK 1.8
       uses: actions/setup-java@v1
       with:
         java-version: 1.8
@@ -53,5 +53,45 @@ jobs:
                                 -e POSTGRES_PASSWORD=postgres \
                                 -d -p 5432:5432 ehrbaseorg/ehrbase-database-docker:11.5
 
-    - name: Build with Maven
+    - name: Build EHRbase Server with Maven
       run: mvn package
+
+    - name: Cache EHRbase .jar Artefact
+      uses: actions/cache@v1.0.2
+      id: cache-jar
+      with:
+        path: application/target/application*.jar
+        key: ${{ runner.os }}-jar-${{ hashFiles('**/application*.jar') }}
+        restore-keys: |
+          ${{ runner.os }}-jar-
+
+    - name: Upload EHRbase .jar
+      uses: actions/upload-artifact@master
+      with:
+        name: application*.jar
+        path: application/target
+
+
+
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v1
+
+    - name: Set up Docker
+      uses: docker-practice/actions-setup-docker@0.0.1
+
+    - name: Start PostgreSQL DB container
+      run: |
+        docker run --name ehrdb -e POSTGRES_USER=postgres \
+                                -e POSTGRES_PASSWORD=postgres \
+                                -d -p 5432:5432 ehrbaseorg/ehrbase-database-docker:11.5
+
+    - name: Start EHRbase Server
+      run: |
+        ls -la
+        java -jar application/target/application-0.9.0.jar > log &
+        grep -m 1 "Started EhrBase in" <(tail -f log)
+        echo "READY FOR TEST"
