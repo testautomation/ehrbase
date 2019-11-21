@@ -97,6 +97,9 @@ jobs:
       if: steps.cache-python.outputs.cache-hit != 'true'
       run: |
         cd tests/
+        python3 -m pip --version
+        python3 -m pip list
+        pip3 install -U setuptools wheel
         pip3 install -r requirements.txt
         robot --version
 
