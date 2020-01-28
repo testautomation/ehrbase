@@ -101,7 +101,18 @@ tasks:
           # adjust this part to the needs of your current test session
           # - robot -e future -e circleci -e TODO -e obsolete -d results -L TRACE --noncritical not-ready robot/COMPOSITION_TESTS
           # example of "execute single test by it's test-case name" (wildcards accepted):
-          - robot -t "*create directory on empty EHR" -d results -L TRACE robot/DIRECTORY_TESTS
+          - |
+            robot --listener robotframework_reportportal.listener \
+                  --variable RP_UUID:'ac54a464-1099-47ba-8789-b5be8751e9b4' \
+                  --variable RP_ENDPOINT:'http://0.0.0.0:8888' \
+                  --variable RP_LAUNCH:'DIRECTORY' \
+                  --variable RP_LAUNCH_TAGS:"directory" \
+                  --variable RP_PROJECT:'ehrbase' \
+                  --noncritical not-ready \
+                  -e future -e TODO -e obsolete -e libtest \
+                  -d results -L TRACE \
+                  robot/DIRECTORY_TESTS
+          
           - spd-say "Robot is ready! Check the results!"
 
     test_all:
