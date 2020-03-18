@@ -18,17 +18,18 @@
 
 package org.ehrbase.api.service;
 
+import com.nedap.archie.rm.directory.Folder;
 import org.ehrbase.api.definitions.StructuredString;
 import org.ehrbase.api.definitions.StructuredStringFormat;
 import org.ehrbase.api.dto.FolderDto;
 import org.ehrbase.api.exception.ObjectNotFoundException;
-import com.nedap.archie.rm.directory.Folder;
 
+import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.UUID;
 
-public interface FolderService {
+public interface FolderService extends BaseService {
 
     /**
      * Creates a new folder entry at the database from content. The provided
@@ -50,9 +51,12 @@ public interface FolderService {
      *
      * @param folderId - UUID of the folder to fetch
      * @param version - Target version to fetch
+     * @param path - Path of sub folder to get
      * @return Data transfer object to return to client
      */
-    Optional<FolderDto> retrieve(UUID folderId, Integer version);
+    Optional<FolderDto> retrieve(UUID folderId, Integer version, String path);
+
+    Optional<FolderDto> retrieveLatest(UUID ehrId, String path);
 
     /**
      * Returns a versioned folder object which has been or is current at the
@@ -67,7 +71,8 @@ public interface FolderService {
      */
     Optional<FolderDto> retrieveByTimestamp(
             UUID folderId,
-            LocalDateTime timestamp
+            Timestamp timestamp,
+            String path
     );
 
     /**
@@ -78,10 +83,10 @@ public interface FolderService {
      *
      * @param folderId - Id of the target folder
      * @param update - Update content from request body
-     * @param format - Source format of the update data
+     * @param ehrId - EHR id for contribution creation
      * @return Updated folder entry
      */
-    Optional<FolderDto> update(UUID folderId, String update, String format);
+    Optional<FolderDto> update(UUID folderId, Folder update, UUID ehrId);
 
     /**
      * Marks a given folder as deleted and moves it into the history table. The

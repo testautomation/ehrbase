@@ -14,26 +14,21 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-server:
-  port: 8080
-
 spring:
   profiles:
     active: local
   datasource:
     driver-class-name: org.postgresql.Driver
-    type: org.apache.tomcat.jdbc.pool.DataSource
-    tomcat:
-      validationQuery: /* ping */ SELECT 1
-      testOnBorrow: true
+
+  flyway:
+    schemas: ehr
+
 cache:
   config: '/ehcache.xml'
   enabled: true
-flyway:
-  locations:
-    - classpath:db/migration
-    - classpath:org.ehrbase.db.migration
-  schemas: ehr
+
+system:
+  allow-template-overwrite: false
 
 logging:
   level:

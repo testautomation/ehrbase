@@ -19,10 +19,7 @@
 package org.ehrbase.service;
 
 import org.apache.xmlbeans.XmlOptions;
-import org.ehrbase.api.definitions.CompositionFormat;
-import org.ehrbase.api.definitions.OperationalTemplateFormat;
-import org.ehrbase.api.definitions.StructuredString;
-import org.ehrbase.api.definitions.StructuredStringFormat;
+import org.ehrbase.api.definitions.*;
 import org.ehrbase.api.dto.TemplateMetaDataDto;
 import org.ehrbase.api.dto.WebTemplate;
 import org.ehrbase.api.exception.InternalServerException;
@@ -41,6 +38,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.xml.namespace.QName;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -55,8 +53,8 @@ public class TemplateServiceImp extends BaseService implements TemplateService {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Autowired
-    public TemplateServiceImp(KnowledgeCacheService knowledgeCacheService, DSLContext context) {
-        super(knowledgeCacheService, context);
+    public TemplateServiceImp(KnowledgeCacheService knowledgeCacheService, DSLContext context, ServerConfig serverConfig) {
+        super(knowledgeCacheService, context, serverConfig);
         this.knowledgeCacheService = Objects.requireNonNull(knowledgeCacheService);
     }
 
@@ -138,6 +136,6 @@ public class TemplateServiceImp extends BaseService implements TemplateService {
 
     @Override
     public String create(String content) {
-        return this.knowledgeCacheService.addOperationalTemplate(content.getBytes());
+        return this.knowledgeCacheService.addOperationalTemplate(content.getBytes(StandardCharsets.UTF_8));
     }
 }

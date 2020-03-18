@@ -4,6 +4,7 @@ import org.ehrbase.dao.access.interfaces.I_DomainAccess;
 import org.ehrbase.dao.access.interfaces.I_StoredQueryAccess;
 import org.ehrbase.dao.access.support.DummyDataAccess;
 import org.ehrbase.ehr.knowledge.I_KnowledgeCache;
+import org.ehrbase.service.KnowledgeCacheHelper;
 import org.joda.time.format.DateTimeFormat;
 import org.jooq.DSLContext;
 import org.jooq.SQLDialect;
@@ -15,7 +16,8 @@ import org.junit.Test;
 
 import java.sql.Timestamp;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 public class StoredQueryAccessTest {
 
@@ -29,7 +31,7 @@ public class StoredQueryAccessTest {
         context = getMockingContext();
 
         try {
-            testDomainAccess = new DummyDataAccess(context, null, null);
+            testDomainAccess = new DummyDataAccess(context, null, null, KnowledgeCacheHelper.buildServerConfig());
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -40,7 +42,7 @@ public class StoredQueryAccessTest {
         StoredQueryAccessTestMockDataProvider provider = new StoredQueryAccessTestMockDataProvider();
         MockConnection connection = new MockConnection(provider);
         // Pass the mock connection to a jOOQ DSLContext:
-        return DSL.using(connection, SQLDialect.POSTGRES_9_5);
+        return DSL.using(connection, SQLDialect.POSTGRES);
     }
 
     @Test

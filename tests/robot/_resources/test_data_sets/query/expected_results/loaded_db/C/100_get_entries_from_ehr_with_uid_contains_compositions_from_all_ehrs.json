@@ -1,3 +1,4 @@
-{
-  "TODO": "replace with expected result data-set"
+{ 
+    "NOTE1" : "FAILS ON EHRSCAPE",
+    "NOTE2" : "THIS CASE NEEDS TO WAIT UNTIL DE OPENEHR SEC DEFINES WHAT TO DO WITH GENERIC ENTRY CLASS IN AQL" 
 }

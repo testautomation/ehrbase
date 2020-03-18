@@ -99,7 +99,7 @@
 }
 //****
 {
-  "q": "SELECT e/ehr_id/value as uid FROM EHR e WHERE uid='dd616472-9432-4004-ad85-fd47affb1cc8'"
+  "q": "SELECT e/ehr_id/value as uid FROM EHR e WHERE e/ehr_id/value='dd616472-9432-4004-ad85-fd47affb1cc8'"
 }
 //****
 {
@@ -120,7 +120,7 @@
   }
 }
 {
-  "q": "SELECT e/ehr_id/value as uid FROM EHR e WHERE uid=$uid",
+  "q": "SELECT e/ehr_id/value as uid FROM EHR e WHERE e/ehr_id/value=$uid",
   "query_parameters": {
     "uid": "dd616472-9432-4004-ad85-fd47affb1cc8"
   }
@@ -137,36 +137,36 @@
 // Needs data loaded for minimal_observation.opt
 //***
 {
-  "q": "SELECT c FROM EHR e CONTAINS COMPOSITION c [openEHR-EHR-COMPOSITION.minimal.v1] CONTAINS OBSERVATION o [openEHR-EHR-OBSERVATION.minimal.v1] WHERE o/data[at0001]/events[at0002]/data[at0003]/items[at0004]/value/value = 'text 67'"
+  "q": "SELECT c FROM EHR e CONTAINS COMPOSITION c [openEHR-EHR-COMPOSITION.minimal.v1] CONTAINS OBSERVATION o [openEHR-EHR-OBSERVATION.minimal.v1] WHERE o/data[at0001]/events[at0002]/data[at0003]/items[at0004]/value/value = 'first value'"
 }
 // ****
 {
-  "q": "SELECT c FROM EHR e CONTAINS COMPOSITION c [openEHR-EHR-COMPOSITION.minimal.v1] CONTAINS OBSERVATION o [openEHR-EHR-OBSERVATION.minimal.v1] WHERE o/data[at0001]/events[at0002]/data[at0003]/items[at0004]/value/value matches {'text 67'}"
+  "q": "SELECT c FROM EHR e CONTAINS COMPOSITION c [openEHR-EHR-COMPOSITION.minimal.v1] CONTAINS OBSERVATION o [openEHR-EHR-OBSERVATION.minimal.v1] WHERE o/data[at0001]/events[at0002]/data[at0003]/items[at0004]/value/value matches {'first value'}"
 }
 //****
 {
   "q": "SELECT c FROM EHR e CONTAINS COMPOSITION c [openEHR-EHR-COMPOSITION.minimal.v1] CONTAINS OBSERVATION o [openEHR-EHR-OBSERVATION.minimal.v1] WHERE o/data[at0001]/events[at0002]/data[at0003]/items[at0004]/value/value = $value",
   "query_parameters": {
-    "value": "text 67"
+    "value": "first value"
   }
 }
 
 // COMPOSITION by condition over data, different options, with limit
 // Needs data loaded for minimal_observation.opt
 {
-  "q": "SELECT c FROM EHR e CONTAINS COMPOSITION c [openEHR-EHR-COMPOSITION.minimal.v1] CONTAINS OBSERVATION o [openEHR-EHR-OBSERVATION.minimal.v1] WHERE o/data[at0001]/events[at0002]/data[at0003]/items[at0004]/value/value = 'text 67'",
+  "q": "SELECT c FROM EHR e CONTAINS COMPOSITION c [openEHR-EHR-COMPOSITION.minimal.v1] CONTAINS OBSERVATION o [openEHR-EHR-OBSERVATION.minimal.v1] WHERE o/data[at0001]/events[at0002]/data[at0003]/items[at0004]/value/value = 'first value'",
   "offset": 0,
   "fetch": 10
 }
 {
-  "q": "SELECT c FROM EHR e CONTAINS COMPOSITION c [openEHR-EHR-COMPOSITION.minimal.v1] CONTAINS OBSERVATION o [openEHR-EHR-OBSERVATION.minimal.v1] WHERE o/data[at0001]/events[at0002]/data[at0003]/items[at0004]/value/value matches {'text 67'}",
+  "q": "SELECT c FROM EHR e CONTAINS COMPOSITION c [openEHR-EHR-COMPOSITION.minimal.v1] CONTAINS OBSERVATION o [openEHR-EHR-OBSERVATION.minimal.v1] WHERE o/data[at0001]/events[at0002]/data[at0003]/items[at0004]/value/value matches {'first value'}",
   "offset": 0,
   "fetch": 10
 }
 {
   "q": "SELECT c FROM EHR e CONTAINS COMPOSITION c [openEHR-EHR-COMPOSITION.minimal.v1] CONTAINS OBSERVATION o [openEHR-EHR-OBSERVATION.minimal.v1] WHERE o/data[at0001]/events[at0002]/data[at0003]/items[at0004]/value/value = $value",
   "query_parameters": {
-    "value": "text 67"
+    "value": "first value"
   },
   "offset": 0,
   "fetch": 10
@@ -217,7 +217,7 @@
   o/data[at0001]/events[at0002]/data[at0003] as event_data,
   o/data[at0001]/events[at0002]/data[at0003]/items[at0004]/value/value
   FROM EHR e CONTAINS COMPOSITION c [openEHR-EHR-COMPOSITION.minimal.v1] CONTAINS OBSERVATION o [openEHR-EHR-OBSERVATION.minimal.v1]
-  WHERE o/data[at0001]/events[at0002]/data[at0003]/items[at0004]/value/value = 'text 67'"
+  WHERE o/data[at0001]/events[at0002]/data[at0003]/items[at0004]/value/value = 'first value'"
 }
 
 
@@ -264,7 +264,7 @@
   o/data[at0001]/events[at0002]/data[at0003] as event_data,
   o/data[at0001]/events[at0002]/data[at0003]/items[at0004]/value/value
   FROM EHR e CONTAINS COMPOSITION c [openEHR-EHR-COMPOSITION.minimal.v1] CONTAINS OBSERVATION o [openEHR-EHR-OBSERVATION.minimal.v1]
-  WHERE o/data[at0001]/events[at0002]/data[at0003]/items[at0004]/value/value > 'text 67'"
+  WHERE o/data[at0001]/events[at0002]/data[at0003]/items[at0004]/value/value > 'first value'"
 }
 
 // ACTION data from openEHR-EHR-ACTION.minimal.v1

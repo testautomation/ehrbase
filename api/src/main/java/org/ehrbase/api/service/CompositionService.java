@@ -29,7 +29,7 @@ import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.UUID;
 
-public interface CompositionService {
+public interface CompositionService extends BaseService {
     /**
      * @param compositionId The {@link UUID} of the composition to be returned.
      * @param version       The version to returned. If null return the latest
@@ -171,5 +171,18 @@ public interface CompositionService {
      */
     Integer getVersionByTimestamp(UUID compositionId, LocalDateTime timestamp);
 
-    UUID getSystemUuid();    // from BaseService
+    /**
+     * Checks if given ID is a valid composition ID.
+     * @param versionedObjectId ID to check
+     * @return True if ID exists
+     * @throws ObjectNotFoundException if ID does not exist
+     */
+    boolean exists(UUID versionedObjectId);
+
+    /**
+     * Checks if given composition ID is ID of a logically deleted composition.
+     * @param versionedObjectId ID to check
+     * @return True if deleted, false if not
+     */
+    boolean isDeleted(UUID versionedObjectId);
 }

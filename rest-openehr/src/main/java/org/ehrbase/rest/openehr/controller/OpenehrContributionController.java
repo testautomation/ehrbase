@@ -18,6 +18,7 @@
 
 package org.ehrbase.rest.openehr.controller;
 
+import com.nedap.archie.rm.support.identification.ObjectVersionId;
 import org.ehrbase.api.definitions.CompositionFormat;
 import org.ehrbase.api.dto.ContributionDto;
 import org.ehrbase.api.exception.NotAcceptableException;
@@ -121,7 +122,7 @@ public class OpenehrContributionController extends BaseController {
                                              @ApiParam(value = "", required = true) @PathVariable(value = "contribution_uid") String contributionUidString) {
 
         UUID ehrId = getEhrUuid(ehrIdString);
-        UUID contributionUid = getCompositionVersionedObjectUidString(contributionUidString);
+        UUID contributionUid = getContributionVersionedObjectUidString(contributionUidString);
 
         URI uri = URI.create(this.encodePath(getBaseEnvLinkURL() + "/rest/openehr/v1/ehr/" + ehrId.toString() + "/contribution/" + contributionUid.toString()));
 
@@ -153,7 +154,7 @@ public class OpenehrContributionController extends BaseController {
                     respHeaders.setLocation(uri);
                     break;
                 case ETAG:
-                    respHeaders.setETag("\"" + contributionId + "\"");  // TODO - see EHR-206
+                    respHeaders.setETag("\"" + contributionId + "\"");
                     break;
                 case LAST_MODIFIED:
                     // TODO should be VERSION.commit_audit.time_committed.value which is not implemented yet - mock for now
@@ -172,10 +173,10 @@ public class OpenehrContributionController extends BaseController {
 
             // set all response field according to retrieved contribution
             objByReference.setUid(new HierObjectId(contributionId.toString()));
-            List<ObjectRef<HierObjectId>> refs = new LinkedList<>();
+            List<ObjectRef<ObjectVersionId>> refs = new LinkedList<>();
             contribution.get().getObjectReferences().forEach((id, type) ->
                     refs.add(
-                            new ObjectRef<HierObjectId>(new HierObjectId(id), "local", type)
+                            new ObjectRef<>(new ObjectVersionId(id), "local", type)
                     ));
             objByReference.setVersions(refs);
             objByReference.setAudit(contribution.get().getAuditDetails());

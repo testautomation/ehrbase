@@ -18,6 +18,7 @@
 
 package org.ehrbase.rest.openehr.controller;
 
+import io.swagger.annotations.*;
 import org.ehrbase.api.definitions.CompositionFormat;
 import org.ehrbase.api.definitions.StructuredString;
 import org.ehrbase.api.dto.CompositionDto;
@@ -30,7 +31,6 @@ import org.ehrbase.rest.openehr.response.CompositionResponseData;
 import org.ehrbase.rest.openehr.response.ErrorResponseData;
 import org.ehrbase.rest.openehr.response.InternalResponse;
 import org.ehrbase.rest.openehr.response.VersionedCompositionResponseData;
-import io.swagger.annotations.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpHeaders;
@@ -156,8 +156,11 @@ public class OpenehrCompositionController extends BaseController {
 
         CompositionFormat compositionFormat = extractCompositionFormat(contentType);
 
-        // If the If-Match is not the latest latest existing version, throw error       TODO: handling of system ID TBD, see EHR-192
-        if (!((versionedObjectUid + "::" + "local.ehrbase.org" + "::" + compositionService.getLastVersionNumber(extractVersionedObjectUidFromVersionUid(versionedObjectUid.toString()))).equals(ifMatch))) {
+        // check if composition ID path variable is valid
+        compositionService.exists(versionedObjectUid);
+
+        // If the If-Match is not the latest latest existing version, throw error
+        if (!((versionedObjectUid + "::" + compositionService.getServerConfig().getNodename() + "::" + compositionService.getLastVersionNumber(extractVersionedObjectUidFromVersionUid(versionedObjectUid.toString()))).equals(ifMatch))) {
             throw new PreconditionFailedException("If-Match header does not match latest existing version");
         }
 
@@ -180,18 +183,18 @@ public class OpenehrCompositionController extends BaseController {
 
             List<String> headerList = Arrays.asList(LOCATION, ETAG, LAST_MODIFIED);   // whatever is required by REST spec - CONTENT_TYPE only needed for 200, so handled separately
 
-            if (prefer.equals(RETURN_REPRESENTATION)) {
+            if (RETURN_REPRESENTATION.equals(prefer)) {
                 // both options extract needed info from versionUid
                 respData = buildCompositionResponseData(extractVersionedObjectUidFromVersionUid(compositionVersionUid), extractVersionFromVersionUid(compositionVersionUid), accept, uri, headerList, () -> new CompositionResponseData(null, null));
             } else {    // "minimal" is default fallback
-                respData = buildCompositionResponseData(extractVersionedObjectUidFromVersionUid(compositionVersionUid), extractVersionFromVersionUid(compositionVersionUid), accept, uri, headerList,  () -> null);
+                respData = buildCompositionResponseData(extractVersionedObjectUidFromVersionUid(compositionVersionUid), extractVersionFromVersionUid(compositionVersionUid), accept, uri, headerList, () -> null);
             }
         } catch (ObjectNotFoundException e) { // composition not found
             return ResponseEntity.notFound().build();
         }   // composition input not parsable / buildable -> bad request handled by BaseController class
 
         // returns 200 with body + headers, 204 only with headers or 500 error depending on what processing above yields
-        return respData.map(i -> Optional.ofNullable(i.getResponseData().getValue()).map(j -> ResponseEntity.ok().headers(i.getHeaders()).body(j))
+        return respData.map(i -> Optional.ofNullable(i.getResponseData()).map(StructuredString::getValue).map(j -> ResponseEntity.ok().headers(i.getHeaders()).body(j))
                 // when the body is empty
                 .orElse(ResponseEntity.noContent().headers(i.getHeaders()).build()))
                 // when no response could be created at all
@@ -235,8 +238,7 @@ public class OpenehrCompositionController extends BaseController {
         }*/
 
         // prepare header data
-        // TODO dynamic system id --> postponed, see EHR-206
-        String latestVersionId = extractVersionedObjectUidFromVersionUid(precedingVersionUid) + "::local.ehrbase.org::" + compositionService.getLastVersionNumber(extractVersionedObjectUidFromVersionUid(precedingVersionUid));
+        String latestVersionId = extractVersionedObjectUidFromVersionUid(precedingVersionUid) + "::" + compositionService.getServerConfig().getNodename() + "::" + compositionService.getLastVersionNumber(extractVersionedObjectUidFromVersionUid(precedingVersionUid));
         // TODO change to dynamic linking --> postponed, see EHR-230
         URI uri = URI.create(this.encodePath(getBaseEnvLinkURL() + "/rest/openehr/v1/ehr/" + ehrId.toString() + "/composition/" + latestVersionId));
 
@@ -321,6 +323,9 @@ public class OpenehrCompositionController extends BaseController {
         // Note: Since this method can be called by another mapping as "almost overloaded" function some parameters might be semantically named wrong in that case. E.g. versionedObjectUid can contain a versionUid.
         // Note: versionUid should be of format "uuid::domain::version", versionObjectUid of format "uuid"
         UUID compositionUid = extractVersionedObjectUidFromVersionUid(versionedObjectUid);  // extracts UUID from long or short notation
+
+        if (compositionService.isDeleted(compositionUid))
+            return createErrorResponse("Composition is logically deleted.", HttpStatus.NO_CONTENT);
 
         int version = 0;    // fallback 0 means latest version
         if (extractVersionFromVersionUid(versionedObjectUid) != 0) {
@@ -503,7 +508,7 @@ public class OpenehrCompositionController extends BaseController {
                     respHeaders.setLocation(uri);
                     break;
                 case ETAG:
-                    respHeaders.setETag("\"" + compositionId + "::" + compositionService.getLastVersionNumber(compositionId) + "\"");  // TODO - see EHR-206
+                    respHeaders.setETag("\"" + compositionId + "::" + compositionService.getServerConfig().getNodename() + "::" + compositionService.getLastVersionNumber(compositionId) + "\"");
                     break;
                 case LAST_MODIFIED:
                     // TODO should be VERSION.commit_audit.time_committed.value which is not implemented yet - mock for now

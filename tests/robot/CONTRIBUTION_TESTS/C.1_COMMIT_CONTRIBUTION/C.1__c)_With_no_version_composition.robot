@@ -53,6 +53,6 @@ Alternative flow 2: commit invalid CONTRIBUTION (no VERSION<COMPOSITION>)
 
     create EHR
 
-    commit invalid CONTRIBUTION (JSON)    invalid_contributions/no_versions.json
+    commit invalid CONTRIBUTION (JSON)    no_versions.json
 
-    check response: is negative indicating empty versions list
+    check response: is negative - complaining about empty versions list

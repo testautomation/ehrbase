@@ -18,19 +18,22 @@
 
 package org.ehrbase.api.service;
 
+import com.nedap.archie.rm.changecontrol.OriginalVersion;
+import com.nedap.archie.rm.changecontrol.Version;
+import com.nedap.archie.rm.ehr.VersionedEhrStatus;
+import com.nedap.archie.rm.generic.RevisionHistory;
 import org.ehrbase.api.definitions.CompositionFormat;
 import org.ehrbase.api.dto.EhrStatusDto;
 import org.ehrbase.api.exception.DuplicateObjectException;
 import com.nedap.archie.rm.ehr.EhrStatus;
 import org.ehrbase.api.exception.InternalServerException;
 
-import java.sql.Time;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.UUID;
 
-public interface EhrService {
+public interface EhrService extends BaseService {
     /**
      * Creates new EHR instance, with default settings and values when no status or ID is supplied.
      * @param status Optional, sets custom status
@@ -58,7 +61,7 @@ public interface EhrService {
      * @param version Given version of EHR_STATUS
      * @return Matching EHR_STATUS or empty
      */
-    Optional<EhrStatus> getEhrStatusAtVersion(UUID ehrUuid, UUID versionedObjectUid, int version);
+    Optional<OriginalVersion<EhrStatus>> getEhrStatusAtVersion(UUID ehrUuid, UUID versionedObjectUid, int version);
 
     /**
      * Update the EHR_STATUS linked to the given EHR
@@ -87,8 +90,6 @@ public interface EhrService {
      */
     String getLatestVersionUidOfStatus(UUID ehrId);
 
-    UUID getSystemUuid();    // from BaseService
-
     LocalDateTime getCreationTime(UUID ehrId);
 
     /**
@@ -113,5 +114,27 @@ public interface EhrService {
      * @return UUID of corresponding EHR_STATUS
      */
     UUID getEhrStatusVersionedObjectUidByEhr(UUID ehrUid);
+
+    /**
+     * Gets version container EhrStatus associated with given EHR.
+     * @param ehrUid Given EHR ID
+     * @return Version container object
+     */
+    VersionedEhrStatus getVersionedEhrStatus(UUID ehrUid);
+
+    /**
+     * Gets revision history of EhrStatus associated with given EHR.
+     * @param ehrUid Given EHR ID
+     * @return Revision history object
+     */
+    RevisionHistory getRevisionHistoryOfVersionedEhrStatus(UUID ehrUid);
+
+    /**
+     * Reads the EHR entry from database and returns the ID of the root directory entry.
+     *
+     * @param ehrId - EHR id to find the directory for
+     * @return UUID of the root directory if existing
+     */
+    UUID getDirectoryId(UUID ehrId);
 
 }

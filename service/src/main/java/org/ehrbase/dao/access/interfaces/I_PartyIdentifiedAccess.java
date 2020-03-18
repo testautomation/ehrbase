@@ -37,7 +37,7 @@ import static org.ehrbase.jooq.pg.Tables.PARTY_IDENTIFIED;
  * Party Identified access layer
  * Created by Christian Chevalley on 4/21/2015.
  */
-public interface I_PartyIdentifiedAccess extends I_SimpleCRUD<I_PartyIdentifiedAccess, UUID> {
+public interface I_PartyIdentifiedAccess extends I_SimpleCRUD {
 
     /**
      * get a new access layer instance for a party name
@@ -47,7 +47,7 @@ public interface I_PartyIdentifiedAccess extends I_SimpleCRUD<I_PartyIdentifiedA
      * @return an new access layer instance
      */
     static I_PartyIdentifiedAccess getInstance(I_DomainAccess domain, String partyName) {
-        return new PartyIdentifiedAccess(domain.getContext(), partyName);
+        return new PartyIdentifiedAccess(domain.getContext(), domain.getServerConfig(), partyName);
     }
 
 

@@ -56,9 +56,6 @@ Force Tags    refactor
 Alternative flow 3: commit CONTRIBUTION with multiple valid and invalid VERSION<COMPOSITION>
 
     upload OPT    minimal/minimal_instruction.opt
-
     create EHR
-
-    commit invalid CONTRIBUTION (JSON)    invalid_contributions/multiple_valid_and_invalid_compos.json
-
-    check response: is negative indicating invalid version_composition
+    commit invalid CONTRIBUTION (JSON)    multiple_valid_and_invalid_compos.json
+    check response: is negative indicating errors in committed data

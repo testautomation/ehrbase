@@ -21,6 +21,7 @@ package org.ehrbase.dao.access.jooq;
 import org.ehrbase.dao.access.interfaces.I_DomainAccess;
 import org.ehrbase.dao.access.support.DummyDataAccess;
 import org.ehrbase.ehr.knowledge.I_KnowledgeCache;
+import org.ehrbase.service.KnowledgeCacheHelper;
 import org.jooq.DSLContext;
 import org.jooq.SQLDialect;
 import org.jooq.impl.DSL;
@@ -47,23 +48,23 @@ public class CompositionAccessTest {
 	@Before
     public  void beforeClass() {
         /*DSLContext*/ 
-        context = getMockingContext();;
+        context = getMockingContext();
 
         try {
-            testDomainAccess = new DummyDataAccess(context, null, null);
+            testDomainAccess = new DummyDataAccess(context, null, null, KnowledgeCacheHelper.buildServerConfig());
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
     
     private DSLContext getMockingContext() {
-    	// Initialize  data provider 
-    	CompAccessTestMockDataProvider provider = new CompAccessTestMockDataProvider();
-    	MockConnection connection = new MockConnection(provider);
-    	// Pass the mock connection to a jOOQ DSLContext:
-    	return DSL.using(connection, SQLDialect.POSTGRES_9_5);
-    	
-    }
+		// Initialize  data provider
+		CompAccessTestMockDataProvider provider = new CompAccessTestMockDataProvider();
+		MockConnection connection = new MockConnection(provider);
+		// Pass the mock connection to a jOOQ DSLContext:
+		return DSL.using(connection, SQLDialect.POSTGRES);
+
+	}
     
 	@Test
 	public void shouldReturnVersionByTimestamp() throws Exception {

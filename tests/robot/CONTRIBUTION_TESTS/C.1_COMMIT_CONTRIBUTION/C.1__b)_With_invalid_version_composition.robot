@@ -53,11 +53,7 @@ Force Tags    refactor
 Alternative flow 1: commit CONTRIBUTION with errors in VERSION<COMPOSITION>
 
     upload OPT    minimal/minimal_instruction.opt
-
     create EHR
-
-    commit invalid CONTRIBUTION (JSON)    invalid_contributions/multiple_valid_and_invalid_compos.json
-
+    commit invalid CONTRIBUTION (JSON)    multiple_valid_and_invalid_compos.json
     check response: is negative indicating errors in committed data
-
     [Teardown]    restart SUT

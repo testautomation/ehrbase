@@ -30,8 +30,11 @@ import com.nedap.archie.rm.generic.PartyProxy;
 import com.nedap.archie.rm.support.identification.ObjectVersionId;
 import com.nedap.archie.rm.support.identification.TerminologyId;
 import org.ehrbase.api.definitions.CompositionFormat;
+import org.ehrbase.api.definitions.ServerConfig;
 import org.ehrbase.api.dto.CompositionDto;
 import org.ehrbase.api.dto.ContributionDto;
+import org.ehrbase.api.exception.InternalServerException;
+import org.ehrbase.api.exception.InvalidApiParameterException;
 import org.ehrbase.api.exception.ObjectNotFoundException;
 import org.ehrbase.api.exception.UnexpectedSwitchCaseException;
 import org.ehrbase.api.service.CompositionService;
@@ -67,25 +70,47 @@ public class ContributionServiceImp extends BaseService implements ContributionS
     }
 
     @Autowired
-    public ContributionServiceImp(KnowledgeCacheService knowledgeCacheService, CompositionService compositionService, EhrService ehrService, DSLContext context) {
-        super(knowledgeCacheService, context);
+    public ContributionServiceImp(KnowledgeCacheService knowledgeCacheService, CompositionService compositionService, EhrService ehrService, DSLContext context, ServerConfig serverConfig) {
+        super(knowledgeCacheService, context, serverConfig);
         this.compositionService = compositionService;
         this.ehrService = ehrService;
     }
 
     @Override
-    public Optional<ContributionDto> getContribution(UUID ehrId, UUID contributionId) {
+    public boolean hasContribution(UUID ehrId, UUID contributionId) {
         //pre-step: check for valid ehrId
         if (ehrService.hasEhr(ehrId).equals(Boolean.FALSE)) {
             throw new ObjectNotFoundException("ehr", "No EHR found with given ID: " + ehrId.toString());
         }
+
+        I_ContributionAccess contributionAccess;
+        // doesn't exist on error
+        try {
+            contributionAccess = I_ContributionAccess.retrieveInstance(this.getDataAccess(), contributionId);
+        } catch (InternalServerException e) {
+            return false;
+        }
+
+        // doesn't exist on empty result, too
+        if (contributionAccess == null)
+            return false;
+        
+        // with both pre-checks about only checking of contribution is part of EHR is left
+        return contributionAccess.getEhrId().equals(ehrId);
+    }
+
+    @Override
+    public Optional<ContributionDto> getContribution(UUID ehrId, UUID contributionId) {
+        //pre-step: check for valid ehr and contribution ID
+        if (!hasContribution(ehrId, contributionId))
+            throw new ObjectNotFoundException("contribution", "Contribution with given ID does not exist");
 
         ContributionDto contribution = new ContributionDto(contributionId, retrieveUuidsOfContributionObjects(contributionId), retrieveAuditDetails(contributionId));
 
         return Optional.of(contribution);
     }
 
-    @Override   // TODO: this will need to be one transaction, as the contribution itself will be created before the object handling. revoking it if the objects are failing will be necessary - see EHR-259
+    @Override
     public UUID commitContribution(UUID ehrId, String content, CompositionFormat format) {
         //pre-step: check for valid ehrId
         if (ehrService.hasEhr(ehrId).equals(Boolean.FALSE)) {
@@ -94,9 +119,15 @@ public class ContributionServiceImp extends BaseService implements ContributionS
 
         // create new empty/standard-value contribution - will be updated later with full details
         I_ContributionAccess contributionAccess = I_ContributionAccess.getInstance(this.getDataAccess(), ehrId);
-        // commits with all default values
-        UUID contributionId = contributionAccess.commit(null, null, null, null, null, null, null);
-        List<Version> versions = ContributionServiceHelper.getVersions(content, format);
+        // parse and set audit information from input
+        AuditDetails audit = ContributionServiceHelper.parseAuditDetails(content, format);
+        contributionAccess.setAuditDetailsValues(audit);
+        // commits with all default values (but without audit handling as it is done above)
+        UUID contributionId = contributionAccess.commit(null, null, null);
+        List<Version> versions = ContributionServiceHelper.parseVersions(content, format);
+
+        if (versions.isEmpty())
+            throw new InvalidApiParameterException("Invalid Contribution, must have at least one Version object.");
 
         // go through those RM objects and execute the action of it (as listed in its audit) and connect it to new contribution
         for (Version version : versions) {
@@ -152,7 +183,7 @@ public class ContributionServiceImp extends BaseService implements ContributionS
                 /*String versionUid =*/ compositionService.update(getVersionedUidFromVersion(version), versionRmObject, contributionId);
                 break;
             case DELETED:   // case of deletion change type, but request also has payload (TODO: should that be even allowed? specification-wise it's not forbidden)
-                /*LocalDateTime localDateTime =*/ compositionService.delete(getVersionedUidFromVersion(version));
+                /*LocalDateTime localDateTime =*/ compositionService.delete(getVersionedUidFromVersion(version), contributionId);
                 break;
             case SYNTHESIS:     // TODO
             case UNKNOWN:       // TODO
@@ -224,9 +255,9 @@ public class ContributionServiceImp extends BaseService implements ContributionS
         Map<String, String> objRefs = new HashMap<>();
 
         // query for compositions
-        Map<UUID, I_CompositionAccess> compositions = I_CompositionAccess.retrieveInstancesInContributionVersion(this.getDataAccess(), contribution);
-        // for each fetched composition: add it to the return map and add the composition type tag - ignoring the value (the access)
-        compositions.forEach((k, v) -> objRefs.put(k.toString(), TYPE_COMPOSITION));
+        Map<I_CompositionAccess, Integer> compositions = I_CompositionAccess.retrieveInstancesInContribution(this.getDataAccess(), contribution);
+        // for each fetched composition: add it to the return map and add the composition type tag - ignoring the access obj
+        compositions.forEach((k, v) -> objRefs.put(k.getId() + "::" + getServerConfig().getNodename() + "::" + v, TYPE_COMPOSITION));
 
         // TODO query for folders
 
@@ -243,7 +274,7 @@ public class ContributionServiceImp extends BaseService implements ContributionS
     private AuditDetails retrieveAuditDetails(UUID contributionId){
         UUID auditId = I_ContributionAccess.retrieveInstance(this.getDataAccess(), contributionId).getHasAuditDetails();
 
-        I_AuditDetailsAccess auditDetailsAccess = new AuditDetailsAccess(this.getDataAccess().getContext()).retrieveInstance(this.getDataAccess().getContext(), auditId);
+        I_AuditDetailsAccess auditDetailsAccess = new AuditDetailsAccess(this.getDataAccess()).retrieveInstance(this.getDataAccess(), auditId);
 
         String systemId = auditDetailsAccess.getSystemId().toString();
         PartyProxy committer = I_PartyIdentifiedAccess.retrievePartyIdentified(this.getDataAccess(), auditDetailsAccess.getCommitter());
