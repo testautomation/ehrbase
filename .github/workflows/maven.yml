@@ -118,9 +118,9 @@ jobs:
       with:
         name: results
         path: |
-          tests/results/output.xml
-          tests/results/log.html
-          tests/results/report.html
+          /home/runner/work/ehrbase/ehrbase/tests/results/output.xml
+          /home/runner/work/ehrbase/ehrbase/tests/results/log.html
+          /home/runner/work/ehrbase/ehrbase/tests/results/report.html
 
     
 
