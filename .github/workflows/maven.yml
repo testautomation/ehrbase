@@ -99,7 +99,6 @@ jobs:
 
 
     - name: INSTALL TEST DEPENDENCIES
-      if: steps.cache-python.outputs.cache-hit != 'true'
       run: |
         python -m pip install --upgrade pip
         cd tests/
