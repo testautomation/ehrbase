@@ -117,12 +117,8 @@ jobs:
       uses: actions/upload-artifact@master
       if: always()
       with:
-        name: |
-          output.xml
-          log.html
-          report.html
-
-        path: tests/results/
+        name: report
+        path: tests/results/report.html
 
     
 
