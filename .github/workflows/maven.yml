@@ -103,31 +103,6 @@ jobs:
     #     path: application/target
 
 
-    - name: START POSTGRESQL DB
-      run: |
-        docker run --name ehrdb -e POSTGRES_USER=postgres \
-                                -e POSTGRES_PASSWORD=postgres \
-                                -d -p 5432:5432 ehrbaseorg/ehrbase-database-docker:11.5
-
-
-    - name: RESTORE CACHE EHRBASE .jar
-      uses: actions/cache@v1
-      id: cache-jar
-      with:
-        path: application/target
-        key: ${{ runner.os }}-jar-
-        restore-keys: |
-          ${{ runner.os }}-jar-
-
-
-    - name: START EHRBASE SERVER
-      run: |
-        ls -la
-        java -jar application/target/application-*.jar > log &
-        grep -m 1 "Started EhrBase in" <(tail -f log)
-        echo "READY FOR TEST"
-
-
     - name: RUN ROBOT TESTS
       run: |
         cd tests/
@@ -139,6 +114,34 @@ jobs:
       with:
         name: results
         path: tests/results
+
+
+
+
+    - name: START POSTGRESQL DB
+      run: |
+        docker run --name ehrdb -e POSTGRES_USER=postgres \
+                                -e POSTGRES_PASSWORD=postgres \
+                                -d -p 5432:5432 ehrbaseorg/ehrbase-database-docker:11.5
+
+    - name: RESTORE CACHE EHRBASE .jar
+      uses: actions/cache@v1
+      id: cache-jar
+      with:
+        path: application/target
+        key: ${{ runner.os }}-jar-
+        restore-keys: |
+          ${{ runner.os }}-jar-
+    
+    - name: START EHRBASE SERVER
+      run: |
+        ls -la
+        java -jar ../application/target/application-*.jar --cache.enabled=false > log &
+        sleep 20
+        echo "READY FOR TEST"
+    
+    - name: Setup tmate session
+      uses: mxschmitt/action-tmate@v1
 
 
 
