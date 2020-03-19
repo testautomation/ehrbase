@@ -113,12 +113,12 @@ jobs:
         sleep 5
 
 
-    - name: UPLOAD TEST RESULTS
+    - name: UPLOAD TEST REPORT
       uses: actions/upload-artifact@v2-preview
       if: always()
       with:
-        name: results
-        path: tests/results/*
+        name: report
+        path: tests/results/report.html
 
     
 
