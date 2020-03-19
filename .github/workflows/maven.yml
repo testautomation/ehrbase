@@ -117,11 +117,12 @@ jobs:
       uses: actions/upload-artifact@master
       if: always()
       with:
-        # name: results
-        path: |
-          /home/runner/work/ehrbase/ehrbase/tests/results/output.xml
-          /home/runner/work/ehrbase/ehrbase/tests/results/log.html
-          /home/runner/work/ehrbase/ehrbase/tests/results/report.html
+        name: |
+          output.xml
+          log.html
+          report.html
+
+        path: tests/results/
 
     
 
