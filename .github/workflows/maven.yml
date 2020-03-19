@@ -1,12 +1,7 @@
 name: Java CI
 
 on:
-  push:
-    branches:
-    - master
-    - develop
-    - feature/*
-    - release/*
+  push: [push]
 
   pull_request:
     branches:
@@ -83,7 +78,9 @@ jobs:
         docker run --name ehrdb -e POSTGRES_USER=postgres \
                                 -e POSTGRES_PASSWORD=postgres \
                                 -d -p 5432:5432 ehrbaseorg/ehrbase-database-docker:11.5
-
+    - name: Setup tmate session
+      uses: mxschmitt/action-tmate@v1
+      
     - name: Cache Python Dependencies
       uses: actions/cache@v1
       id: cache-python
@@ -97,6 +94,8 @@ jobs:
       if: steps.cache-python.outputs.cache-hit != 'true'
       run: |
         cd tests/
+        python --version
+        pip --version
         python3 -m pip --version
         python3 -m pip list
         pip3 install -U setuptools wheel
