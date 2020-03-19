@@ -117,7 +117,10 @@ jobs:
       if: always()
       with:
         name: results
-        path: [tests/results/output.xml, tests/results/log.html, tests/results/report.html]
+        path: |
+          tests/results/output.xml
+          tests/results/log.html
+          tests/results/report.html
 
     
 
