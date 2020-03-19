@@ -114,11 +114,11 @@ jobs:
 
 
     - name: UPLOAD TEST RESULTS
-      uses: actions/upload-artifact@master
+      uses: actions/upload-artifact@v2-preview
       if: always()
       with:
-        name: report
-        path: tests/results/report.html
+        name: test results
+        path: tests/results/*
 
     
 
