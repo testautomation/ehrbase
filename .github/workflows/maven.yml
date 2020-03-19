@@ -31,9 +31,6 @@ jobs:
   #     with:
   #       java-version: 11
 
-  #   # - name: Set Up Docker
-  #   #   uses: docker-practice/actions-setup-docker@0.0.1
-
   #   - name: Start PostgreSQL DB container
   #     run: |
   #       docker run --name ehrdb -e POSTGRES_USER=postgres \
@@ -65,13 +62,24 @@ jobs:
     name: Test EHRbase Services
     runs-on: ubuntu-latest
     # needs: build
+    strategy:
+      matrix:
+        python-version: [3.8]
 
     steps:
     - name: Checkout Code
       uses: actions/checkout@v2
 
-    # - name: Set up Docker
-    #   uses: docker-practice/actions-setup-docker@0.0.1
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v1
+      with:
+        python-version: ${{ matrix.python-version }}
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        cd tests/
+        pip install -r requirements.txt
+
 
     - name: Start PostgreSQL DB container
       run: |
