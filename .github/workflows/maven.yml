@@ -114,9 +114,10 @@ jobs:
 
     - name: UPLOAD TEST RESULTS
       uses: actions/upload-artifact@master
+      if: always()
       with:
         name: results
-        path: tests/results
+        path: [tests/results/output.xml, tests/results/log.html, tests/results/report.html]
 
     
 
