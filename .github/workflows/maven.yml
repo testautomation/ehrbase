@@ -163,7 +163,7 @@ jobs:
     # - name: START EHRBASE SERVER
     #   run: |
     #     ls -la
-    #     java -jar ../application/target/application-*.jar --cache.enabled=false > log &
+    #     java -jar application/target/application-*.jar --cache.enabled=false > log &
     #     sleep 20
     #     echo "READY FOR TEST"
 
