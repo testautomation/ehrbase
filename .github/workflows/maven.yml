@@ -109,7 +109,7 @@ jobs:
       run: |
         cd tests/
         robot -i circleci -d results -L TRACE robot/
-        while [ ! -e ./results/log.html ] && echo "files not ready!"; do sleep 0.1; done
+        while [ ! -e ./results/output.xml ] && echo "files not ready!"; do sleep 0.1; done
 
 
     - name: UPLOAD TEST RESULTS
