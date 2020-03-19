@@ -59,7 +59,7 @@ jobs:
 
 
   test:
-    name: Test EHRbase Services
+    name: TEST EHRBASE SERVICES
     runs-on: ubuntu-latest
     # needs: build
     strategy:
@@ -67,29 +67,26 @@ jobs:
         python-version: [3.8]
 
     steps:
-    - name: Checkout Code
+
+    - name: CHECKOUT CODE
       uses: actions/checkout@v2
 
-    - name: Set up Python ${{ matrix.python-version }}
+
+    - name: SET UP PYTHON ${{ matrix.python-version }}
       uses: actions/setup-python@v1
       with:
         python-version: ${{ matrix.python-version }}
-    - name: Install dependencies
+
+
+    - name: INSTALL TEST DEPENDENCIES
+      # if: steps.cache-python.outputs.cache-hit != 'true'
       run: |
         python -m pip install --upgrade pip
         cd tests/
         pip install -r requirements.txt
 
 
-    - name: Start PostgreSQL DB container
-      run: |
-        docker run --name ehrdb -e POSTGRES_USER=postgres \
-                                -e POSTGRES_PASSWORD=postgres \
-                                -d -p 5432:5432 ehrbaseorg/ehrbase-database-docker:11.5
-    - name: Setup tmate session
-      uses: mxschmitt/action-tmate@v1
-      
-    - name: Cache Python Dependencies
+    - name: CACHE PYTHON DEPENDENCIES
       uses: actions/cache@v1
       id: cache-python
       with:
@@ -98,18 +95,6 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-pip-
 
-    - name: Install Python/Test Dependencies
-      if: steps.cache-python.outputs.cache-hit != 'true'
-      run: |
-        cd tests/
-        python --version
-        pip --version
-        python3 -m pip --version
-        python3 -m pip list
-        pip3 install -U setuptools wheel
-        pip3 install -r requirements.txt
-        robot --version
-
     ## NOTE: download is slower than cache | use cache!
     # - name: Download EHRbase .jar
     #   uses: actions/download-artifact@v1
@@ -117,7 +102,15 @@ jobs:
     #     name: application-0.9.0.jar
     #     path: application/target
 
-    - name: Restore Cache EHRbase .jar
+
+    - name: START POSTGRESQL DB
+      run: |
+        docker run --name ehrdb -e POSTGRES_USER=postgres \
+                                -e POSTGRES_PASSWORD=postgres \
+                                -d -p 5432:5432 ehrbaseorg/ehrbase-database-docker:11.5
+
+
+    - name: RESTORE CACHE EHRBASE .jar
       uses: actions/cache@v1
       id: cache-jar
       with:
@@ -126,20 +119,45 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-jar-
 
-    - name: Start EHRbase Server
+
+    - name: START EHRBASE SERVER
       run: |
         ls -la
         java -jar application/target/application-*.jar > log &
         grep -m 1 "Started EhrBase in" <(tail -f log)
         echo "READY FOR TEST"
 
-    - name: Run Robot Tests
+
+    - name: RUN ROBOT TESTS
       run: |
         cd tests/
         robot -i circleci -d results -L TRACE robot/
 
-    - name: Upload Test Results
+
+    - name: UPLOAD TEST RESULTS
       uses: actions/upload-artifact@master
       with:
         name: results
         path: tests/results
+
+
+
+
+
+
+
+# oooooooooo.        .o.         .oooooo.   oooo    oooo ooooo     ooo ooooooooo.
+# `888'   `Y8b      .888.       d8P'  `Y8b  `888   .8P'  `888'     `8' `888   `Y88.
+#  888     888     .8"888.     888           888  d8'     888       8   888   .d88'
+#  888oooo888'    .8' `888.    888           88888[       888       8   888ooo88P'
+#  888    `88b   .88ooo8888.   888           888`88b.     888       8   888
+#  888    .88P  .8'     `888.  `88b    ooo   888  `88b.   `88.    .8'   888
+# o888bood8P'  o88o     o8888o  `Y8bood8P'  o888o  o888o    `YbodP'    o888o
+#
+# [ BACKUP ]
+
+    # steps:
+
+    # # NOTE: Use this step for live debugging on CI runner
+    # - name: Setup tmate session
+    #   uses: mxschmitt/action-tmate@v1
