@@ -9,52 +9,49 @@ on:
     - develop
 
 jobs:
-  # build:
-  #   name: Build EHRbase .jar
-  #   runs-on: ubuntu-latest
-  #   steps:
+  build:
+    name: BUILD EHRBASE .jar
+    runs-on: ubuntu-latest
+    steps:
 
-  #   - name: Checkout Code
-  #     uses: actions/checkout@v2
+    - name: Checkout Code
+      uses: actions/checkout@v2
 
-  #   - name: Cache Maven Dependencies
-  #     uses: actions/cache@v1
-  #     id: cache-maven
-  #     with:
-  #       path: ~/.m2/repository
-  #       key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
-  #       restore-keys: |
-  #         ${{ runner.os }}-maven-
 
-  #   - name: Set Up Java JDK 11
-  #     uses: actions/setup-java@v1
-  #     with:
-  #       java-version: 11
+    - name: CACHE MAVEN DEPENDENCIES
+      uses: actions/cache@v1
+      id: cache-maven
+      with:
+        path: ~/.m2/repository
+        key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+        restore-keys: |
+          ${{ runner.os }}-maven-
 
-  #   - name: Start PostgreSQL DB container
-  #     run: |
-  #       docker run --name ehrdb -e POSTGRES_USER=postgres \
-  #                               -e POSTGRES_PASSWORD=postgres \
-  #                               -d -p 5432:5432 ehrbaseorg/ehrbase-database-docker:11.5
 
-  #   - name: Build EHRbase Server with Maven
-  #     run: mvn package
+    - name: SET UP JAVA JDK 11
+      uses: actions/setup-java@v1
+      with:
+        java-version: 11
 
-  #   - name: Cache EHRbase .jar Artefact
-  #     uses: actions/cache@v1
-  #     id: cache-jar
-  #     with:
-  #       path: application/target
-  #       key: ${{ runner.os }}-jar-
-  #       restore-keys: |
-  #         ${{ runner.os }}-jar-
 
-  #   ## NOTE: cache is faster than this! | use cache!
-  #   # - name: Upload EHRbase .jar
-  #   #   uses: actions/upload-artifact@master
-  #   #   with:
-  #   #     name: application-0.9.0.jar
-  #   #     path: application/target/application-0.9.0.jar
+    - name: START POSTGRESQL DB
+      run: |
+        docker run --name ehrdb -e POSTGRES_USER=postgres \
+                                -e POSTGRES_PASSWORD=postgres \
+                                -d -p 5432:5432 ehrbaseorg/ehrbase-database-docker:11.5
+
+    - name: BUILD EHRBASE SERVER WITH MAVEN
+      run: mvn package
+
+
+    - name: CACHE EHRBASE .jar ARTEFACT
+      uses: actions/cache@v1
+      id: cache-jar
+      with:
+        path: application/target
+        key: ${{ runner.os }}-jar-
+        restore-keys: |
+          ${{ runner.os }}-jar-
 
 
 
@@ -108,7 +105,7 @@ jobs:
     - name: RUN ROBOT TESTS
       run: |
         cd tests/
-        robot -i circleci -d results -L TRACE robot/
+        - robot -e future -e circleci -e TODO -e obsolete -e libtest -d results/xml -L TRACE --noncritical not-ready--name "QUERY empty_db"  -i empty_db  robot/QUERY_SERVICE_TESTS
         while [ ! -e ./results/output.xml ] && echo "files not ready!"; do sleep 1; done
 
 
