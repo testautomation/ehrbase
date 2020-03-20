@@ -83,6 +83,9 @@ jobs:
       uses: actions/setup-python@v1
       with:
         python-version: ${{ matrix.python-version }}
+    
+    - name: Setup tmate session
+      uses: mxschmitt/action-tmate@v1
 
 
     - name: CACHE PIP (PYTHON DEPENDENCIES)
@@ -134,6 +137,15 @@ jobs:
 
     # steps:
 
+    ###########################################################
+    #                                                         #
+    #   NOTE: Use this step for live debugging on CI runner   #
+    #                                                         #
+    ###########################################################
+    # - name: Setup tmate session
+    #   uses: mxschmitt/action-tmate@v1
+
+
     # - name: START POSTGRESQL DB
     #   run: |
     #     docker run --name ehrdb -e POSTGRES_USER=postgres \
@@ -155,10 +167,6 @@ jobs:
     #     java -jar application/target/application-0.11.0.jar --cache.enabled=false > log &
     #     sleep 20
     #     echo "READY FOR TEST"
-
-    # # NOTE: Use this step for live debugging on CI runner
-    # - name: Setup tmate session
-    #   uses: mxschmitt/action-tmate@v1
 
     ## NOTE: download is slower than cache | use cache!
     # - name: Download EHRbase .jar
