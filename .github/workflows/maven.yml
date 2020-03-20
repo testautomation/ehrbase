@@ -105,7 +105,7 @@ jobs:
     - name: RUN ROBOT TESTS
       run: |
         cd tests/
-        - robot -e future -e circleci -e TODO -e obsolete -e libtest -d results/xml -L TRACE --noncritical not-ready--name "QUERY empty_db"  -i empty_db  robot/QUERY_SERVICE_TESTS
+        - robot -e future -e circleci -e TODO -e obsolete -e libtest -d results -L TRACE --noncritical not-ready --name "QUERY empty_db"  -i empty_db  robot/QUERY_SERVICE_TESTS
         while [ ! -e ./results/output.xml ] && echo "files not ready!"; do sleep 1; done
 
 
