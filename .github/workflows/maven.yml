@@ -110,15 +110,17 @@ jobs:
         cd tests/
         robot -i circleci -d results -L TRACE robot/
         while [ ! -e ./results/output.xml ] && echo "files not ready!"; do sleep 1; done
-        sleep 5
 
 
-    - name: UPLOAD TEST REPORT
+    - name: UPLOAD TEST RESULTS
       uses: actions/upload-artifact@v2-preview
       if: always()
       with:
-        name: report
-        path: tests/results/report.html
+        # name: results
+        path: |
+          tests/results/output.xml
+          tests/results/log.html
+          tests/results/report.html
 
     
 
