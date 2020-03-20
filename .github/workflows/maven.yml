@@ -116,11 +116,8 @@ jobs:
       uses: actions/upload-artifact@v2-preview
       if: always()
       with:
-        # name: results
-        path: |
-          tests/results/output.xml
-          tests/results/log.html
-          tests/results/report.html
+        name: robot_results
+        path: tests/results/*
 
     
 
