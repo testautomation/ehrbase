@@ -1,0 +1,87 @@
+<!--
+ Copyright (C) 2019 Vitasystems GmbH and Hannover Medical School.
+
+ This file is part of Project EHRbase
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+ http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+-->
+
+<!--
+Notes on configuration:
+
+More on XML configuration can be found at: https://www.ehcache.org/documentation/3.3/xml.html
+
+1. The cache persistence directory is specified with:
+     <persistence directory="${java.io.tmpdir}/ehcache"/>, on a linux platform this translate as:
+
+     /tmp/ehcache
+
+     with the actual cache files in subdirectory file
+
+2. For tests and development we recommend the following Tier configuration for persistence:
+        <resources>
+            ...
+            <disk unit="MB" persistent="false">400</disk>
+        </resources>
+    The attribute 'persistent="false"' implies that cache resources (e.g. disk files) are removed upon termination of the JVM
+    This is specifically important as there might be serialization discrepancies depending on the SDK release
+
+-->
+
+<config
+        xmlns='http://www.ehcache.org/v3'
+        xmlns:jsr107='http://www.ehcache.org/v3/jsr107'>
+
+    <service>
+        <jsr107:defaults>
+            <jsr107:cache name="introspectCache" template="introspect-cache"/>
+            <jsr107:cache name="operationaltemplateCache" template="template-cache"/>
+            <jsr107:cache name="validatorCache" template="template-cache"/>
+            <jsr107:cache name="queryCache" template="query-cache"/>
+            <jsr107:cache name="fieldsCache" template="query-cache"/>
+            <jsr107:cache name="multivaluedCache" template="query-cache"/>
+        </jsr107:defaults>
+    </service>
+    <persistence directory="${java.io.tmpdir}/ehcache"/>
+
+
+    <cache-template name="template-cache">
+        <expiry>
+            <none/>
+        </expiry>
+        <resources>
+            <heap unit="entries">20</heap>
+        </resources>
+    </cache-template>
+
+
+    <cache-template name="introspect-cache">
+        <expiry>
+            <none/>
+        </expiry>
+        <resources>
+            <heap unit="entries">300</heap>
+            <disk unit="MB" persistent="false">400</disk>
+        </resources>
+    </cache-template>
+
+    <cache-template name="query-cache">
+        <expiry>
+            <none/>
+        </expiry>
+        <resources>
+            <heap unit="MB">200</heap>
+            <disk unit="MB" persistent="false">400</disk>
+        </resources>
+    </cache-template>
+</config>
