@@ -65,13 +65,13 @@ RUN mvn compile dependency:go-offline \
 
 # START DB AND COMPILE EHRBASE
 RUN su - postgres -c "pg_ctl -D ${PGDATA} -w start" && \
-    mvn compile && \
+    mvn compile -Dmaven.test.skip && \
     su - postgres -c "pg_ctl -D ${PGDATA} -w stop"
 
 # START DB AND PACKAGE EHRBASE .JAR
 RUN ls -la; \
     su - postgres -c "pg_ctl -D ${PGDATA} -w start" && \
-    mvn package -Dmaven.javadoc.skip=true -Djacoco.skip=true && \
+    mvn package -Dmaven.javadoc.skip=true -Djacoco.skip=true -Dmaven.test.skip && \
     su - postgres -c "pg_ctl -D ${PGDATA} -w stop"
 
 # WRITE EHRBASE VERSION TO A FILE
