@@ -17,7 +17,6 @@ jobs:
         run: |
           echo $GITHUB_REF
           echo "${GITHUB_REF#refs/heads/}"
-          BRANCH = "$(echo ${GITHUB_BRANCH#refs/heads/})"
           echo BRANCH: $BRANCH
           TAG="$(echo '${GITHUB_REF#refs/heads/}' | awk -F'/' '{print $2;}')"
           echo $TAG
