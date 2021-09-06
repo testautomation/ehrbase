@@ -14,9 +14,14 @@ jobs:
         uses: actions/checkout@v2
       -
         name: Set TAG from version of release Branch
+        env:
+          GITHUB_BRANCH: ${{ github.ref }}
         run: |
           echo $GITHUB_REF
-          TAG="$(echo $GITHUB_REF | awk -F'/' '{print $2;}')-rc"
+          echo "${GITHUB_REF#refs/heads/}"
+          echo "${GITHUB_BRANCH#refs/heads/}"
+          BRANCH = ${GITHUB_BRANCH#refs/heads/}
+          TAG="$(echo $BRANCH | awk -F'/' '{print $2;}')-rc"
           echo $TAG
       -
         name: Echo TAG
