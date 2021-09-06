@@ -17,8 +17,8 @@ jobs:
         run: |
           echo $GITHUB_REF
           echo "${GITHUB_REF#refs/heads/}"
-          echo BRANCH: $BRANCH
-          TAG="$(echo '${GITHUB_REF#refs/heads/}' | awk -F'/' '{print $2;}')"
+          BRANCH=$(echo "${GITHUB_REF#refs/heads/}")
+          TAG="$(echo $BRANCH | awk -F'/v' '{print $2;}')"
           echo $TAG
       -
         name: Echo TAG
@@ -52,6 +52,8 @@ jobs:
       - 
         name: Create and push MultiArch Manifest
         run: |
+          BRANCH=$(echo "${GITHUB_REF#refs/heads/}")
+          TAG="$(echo $BRANCH | awk -F'/v' '{print $2;}')"
           docker buildx imagetools create \
                  ehrbase/buildx:tag-arm64 \
                  ehrbase/buildx:tag-amd64 \
