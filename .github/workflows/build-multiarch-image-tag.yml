@@ -20,13 +20,13 @@ jobs:
           BRANCH=$(echo "${GITHUB_REF#refs/heads/}")
           TAG="$(echo $BRANCH | awk -F'/v' '{print $2;}')"
           echo $TAG
-          echo "tag=$TAG" >> $GITHUB_ENV
+          echo "TAG=$TAG" >> $GITHUB_ENV
       -
         name: Echo TAG
         run: |
-          echo "${{ env.tag }}"
-          echo ${{ env.tag }}
-          echo ${{env.tag}}
+          echo "${{ env.TAG }}"
+          echo ${{ env.TAG }}
+          echo ${{env.TAG}}
       -
         name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v1
@@ -60,11 +60,11 @@ jobs:
           docker buildx imagetools create \
                  ehrbase/buildx:tag-arm64 \
                  ehrbase/buildx:tag-amd64 \
-                 -t ehrbase/buildx:"${{env.TAG}}"
-          docker pull ehrbase/buildx:"${{env.TAG}}"
+                 -t ehrbase/buildx:${{ env.TAG }}
+          docker pull ehrbase/buildx:${{ env.TAG }}
       -
         name: Inspect MultiArch Manifest
-        run:  docker manifest inspect ehrbase/buildx:"${{env.TAG}}"
+        run:  docker manifest inspect ehrbase/buildx:${{ env.TAG }}
 
 
 
