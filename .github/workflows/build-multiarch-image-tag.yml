@@ -22,12 +22,6 @@ jobs:
           echo $TAG
           echo "TAG=$TAG" >> $GITHUB_ENV
       -
-        name: Echo TAG
-        run: |
-          echo "${{ env.TAG }}"
-          echo ${{ env.TAG }}
-          echo ${{env.TAG}}
-      -
         name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v1
       -
