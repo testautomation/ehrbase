@@ -15,6 +15,7 @@ jobs:
       -
         name: Set TAG from version of release Branch
         run: |
+          echo $GITHUB_REF
           TAG="$(echo $GITHUB_REF | awk -F'/' '{print $2;}')-rc"
           echo $TAG
       -
