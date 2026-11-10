@@ -1,188 +1,176 @@
+/*
+ * Copyright (c) 2024 vitasystems GmbH.
+ *
+ * This file is part of project EHRbase
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package org.ehrbase.rest.openehr;
+
+import static org.ehrbase.api.rest.HttpRestContext.EHR_ID;
+import static org.ehrbase.api.rest.HttpRestContext.VERSION;
+import static org.springframework.web.util.UriComponentsBuilder.fromPath;
 
 import com.nedap.archie.rm.changecontrol.OriginalVersion;
 import com.nedap.archie.rm.ehr.EhrStatus;
 import com.nedap.archie.rm.ehr.VersionedEhrStatus;
 import com.nedap.archie.rm.generic.RevisionHistory;
-import java.sql.Timestamp;
-import java.time.LocalDateTime;
+import com.nedap.archie.rm.support.identification.ObjectVersionId;
+import java.time.OffsetDateTime;
+import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.UUID;
-import org.ehrbase.api.exception.InternalServerException;
+import java.util.function.Consumer;
 import org.ehrbase.api.exception.InvalidApiParameterException;
 import org.ehrbase.api.exception.ObjectNotFoundException;
-import org.ehrbase.api.service.ContributionService;
+import org.ehrbase.api.rest.HttpRestContext;
 import org.ehrbase.api.service.EhrService;
-import org.ehrbase.response.ehrscape.ContributionDto;
-import org.ehrbase.response.openehr.OriginalVersionResponseData;
-import org.ehrbase.response.openehr.RevisionHistoryResponseData;
-import org.ehrbase.response.openehr.VersionedObjectResponseData;
+import org.ehrbase.openehr.sdk.util.rmconstants.RmConstants;
 import org.ehrbase.rest.BaseController;
 import org.ehrbase.rest.openehr.specification.VersionedEhrStatusApiSpecification;
-import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.http.HttpHeaders;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.util.UriComponentsBuilder;
 
 /**
  * Controller for /ehr/{ehrId}/versioned_ehr_status resource of openEHR REST API
  */
+@ConditionalOnMissingBean(name = "primaryopenehrversionedehrstatuscontroller")
 @RestController
-@RequestMapping(path = "${openehr-api.context-path:/rest/openehr}/v1/ehr/{ehr_id}/versioned_ehr_status",
+@RequestMapping(
+        path = BaseController.API_CONTEXT_PATH_WITH_VERSION + "/ehr/{ehr_id}/versioned_ehr_status",
         produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
 public class OpenehrVersionedEhrStatusController extends BaseController implements VersionedEhrStatusApiSpecification {
 
-    private final ContributionService contributionService;
+    private static final String REVISION_HISTORY = "revision_history";
 
     private final EhrService ehrService;
 
-    public OpenehrVersionedEhrStatusController(EhrService ehrService, ContributionService contributionService) {
+    public OpenehrVersionedEhrStatusController(EhrService ehrService) {
         this.ehrService = Objects.requireNonNull(ehrService);
-        this.contributionService = Objects.requireNonNull(contributionService);
     }
 
     @GetMapping
     @Override
-    public ResponseEntity<VersionedObjectResponseData<EhrStatus>> retrieveVersionedEhrStatusByEhr(
-            @PathVariable(value = "ehr_id") String ehrIdString,
-            @RequestHeader(value = HttpHeaders.ACCEPT, required = false) String accept) {
+    public ResponseEntity<VersionedEhrStatus> retrieveVersionedEhrStatusByEhr(
+            @PathVariable(value = "ehr_id") String ehrIdString) {
 
         UUID ehrId = getEhrUuid(ehrIdString);
-
-        // check if EHR is valid
-        if(!ehrService.hasEhr(ehrId)) {
-            throw new ObjectNotFoundException("ehr", "No EHR with this ID can be found");
-        }
+        createRestContext(ehrId, Map.of());
 
         VersionedEhrStatus versionedEhrStatus = ehrService.getVersionedEhrStatus(ehrId);
 
-        VersionedObjectResponseData<EhrStatus> response = new VersionedObjectResponseData<>(versionedEhrStatus);
-
-        HttpHeaders respHeaders = new HttpHeaders();
-        respHeaders.setContentType(resolveContentType(accept));
-
-        return ResponseEntity.ok().headers(respHeaders).body(response);
+        return ResponseEntity.ok().body(versionedEhrStatus);
     }
 
     @GetMapping(path = "/revision_history")
     @Override
-    public ResponseEntity<RevisionHistoryResponseData> retrieveVersionedEhrStatusRevisionHistoryByEhr(
-            @RequestHeader(value = HttpHeaders.ACCEPT, required = false) String accept,
+    public ResponseEntity<RevisionHistory> retrieveVersionedEhrStatusRevisionHistoryByEhr(
             @PathVariable(value = "ehr_id") String ehrIdString) {
 
         UUID ehrId = getEhrUuid(ehrIdString);
-
-        // check if EHR is valid
-        if(!ehrService.hasEhr(ehrId)) {
-            throw new ObjectNotFoundException("ehr", "No EHR with this ID can be found");
-        }
-
         RevisionHistory revisionHistory = ehrService.getRevisionHistoryOfVersionedEhrStatus(ehrId);
 
-        RevisionHistoryResponseData response = new RevisionHistoryResponseData(revisionHistory);
+        createRestContext(ehrId, Map.of(), REVISION_HISTORY);
 
-        HttpHeaders respHeaders = new HttpHeaders();
-        respHeaders.setContentType(resolveContentType(accept));
-
-        return ResponseEntity.ok().headers(respHeaders).body(response);
+        return ResponseEntity.ok().body(revisionHistory);
     }
 
     @GetMapping(path = "/version")
-    // checkAbacPre /-Post attributes (type, subject, payload, content type)
-    @PreAuthorize("checkAbacPre(@openehrVersionedEhrStatusController.EHR_STATUS, "
-            + "@ehrService.getSubjectExtRef(#ehrIdString), null, null)")
     @Override
-    public ResponseEntity<OriginalVersionResponseData<EhrStatus>> retrieveVersionOfEhrStatusByTime(
-            @RequestHeader(value = HttpHeaders.ACCEPT, required = false) String accept,
+    public ResponseEntity<OriginalVersion<EhrStatus>> retrieveVersionOfEhrStatusByTime(
             @PathVariable(value = "ehr_id") String ehrIdString,
-            @RequestParam(value = "version_at_time", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime versionAtTime) {
+            @RequestParam(value = "version_at_time", required = false) String versionAtTime) {
 
         UUID ehrId = getEhrUuid(ehrIdString);
+        ObjectVersionId objectVersionId;
+        Map<String, String> contextParams;
 
-        // check if EHR is valid
-        if(!ehrService.hasEhr(ehrId)) {
-            throw new ObjectNotFoundException("ehr", "No EHR with this ID can be found");
-        }
-
-        UUID versionedObjectId = ehrService.getEhrStatusVersionedObjectUidByEhr(ehrId);
-        int version;
         if (versionAtTime != null) {
-            version = ehrService.getEhrStatusVersionByTimestamp(ehrId, Timestamp.valueOf(versionAtTime));
+            OffsetDateTime time = decodeVersionAtTime(versionAtTime).orElseThrow();
+            objectVersionId = ehrService.getEhrStatusVersionByTimestamp(ehrId, time);
+            contextParams = Map.of("version_at_time", versionAtTime);
         } else {
-            version = Integer.parseInt(ehrService.getLatestVersionUidOfStatus(ehrId).split("::")[2]);
+            objectVersionId = ehrService.getLatestVersionUidOfStatus(ehrId);
+            contextParams = Map.of();
         }
 
-        Optional<OriginalVersion<EhrStatus>> ehrStatusOriginalVersion = ehrService.getEhrStatusAtVersion(ehrId, versionedObjectId, version);
-        UUID contributionId = ehrStatusOriginalVersion
-                .map(i -> UUID.fromString(i.getContribution().getId().getValue()))
-                .orElseThrow(() -> new InvalidApiParameterException("Couldn't retrieve EhrStatus with given parameters"));
+        int version = extractVersionFromVersionUid(objectVersionId.getValue()).orElseThrow();
+        UUID ehrStatusId = extractVersionedObjectUidFromVersionUid(objectVersionId.getValue());
 
-        Optional<ContributionDto> optionalContributionDto = contributionService.getContribution(ehrId, contributionId);
-        ContributionDto contributionDto = optionalContributionDto.orElseThrow(() -> new InternalServerException("Couldn't fetch contribution for existing EhrStatus")); // shouldn't happen
-
-        OriginalVersionResponseData<EhrStatus> originalVersionResponseData = new OriginalVersionResponseData<>(ehrStatusOriginalVersion.get(), contributionDto);
-
-        HttpHeaders respHeaders = new HttpHeaders();
-        respHeaders.setContentType(resolveContentType(accept));
-
-        return ResponseEntity.ok().headers(respHeaders).body(originalVersionResponseData);
+        return retrieveVersionOfEhrStatus(
+                ehrId, ehrStatusId, version, versionId -> createRestContext(ehrId, contextParams, "version"));
     }
 
     @GetMapping(path = "/version/{version_uid}")
-    // checkAbacPre /-Post attributes (type, subject, payload, content type)
-    @PreAuthorize("checkAbacPre(@openehrVersionedEhrStatusController.EHR_STATUS, "
-            + "@ehrService.getSubjectExtRef(#ehrIdString), null, null)")
     @Override
-    public ResponseEntity<OriginalVersionResponseData<EhrStatus>> retrieveVersionOfEhrStatusByVersionUid(
-            @RequestHeader(value = HttpHeaders.ACCEPT, required = false) String accept,
+    public ResponseEntity<OriginalVersion<EhrStatus>> retrieveVersionOfEhrStatusByVersionUid(
             @PathVariable(value = "ehr_id") String ehrIdString,
             @PathVariable(value = "version_uid") String versionUid) {
 
         UUID ehrId = getEhrUuid(ehrIdString);
 
-        // check if EHR is valid
-        if(!ehrService.hasEhr(ehrId)) {
-            throw new ObjectNotFoundException("ehr", "No EHR with this ID can be found.");
-        }
-
         // parse given version uid
-        UUID versionedObjectId;
+        UUID ehrStatusId;
         int version;
         try {
-            versionedObjectId = UUID.fromString(versionUid.split("::")[0]);
-            version = Integer.parseInt(versionUid.split("::")[2]);
+            ehrStatusId = extractVersionedObjectUidFromVersionUid(versionUid);
+            version = extractVersionFromVersionUid(versionUid)
+                    .orElseThrow(() -> new IllegalArgumentException("no version found"));
         } catch (Exception e) {
             throw new InvalidApiParameterException("VERSION UID parameter has wrong format: " + e.getMessage());
         }
 
-        if (version < 1)
-            throw new InvalidApiParameterException("Version can't be negative.");
+        return retrieveVersionOfEhrStatus(
+                ehrId,
+                ehrStatusId,
+                version,
+                versionId -> createRestContext(ehrId, Map.of(), "version", versionId.toString()));
+    }
 
-        if(!ehrService.hasStatus(versionedObjectId)) {
-            throw new ObjectNotFoundException("ehr_status", "No EHR_STATUS with given ID can be found.");
-        }
+    private ResponseEntity<OriginalVersion<EhrStatus>> retrieveVersionOfEhrStatus(
+            UUID ehrId, UUID ehrStatusId, int version, Consumer<ObjectVersionId> initContext) {
 
-        Optional<OriginalVersion<EhrStatus>> ehrStatusOriginalVersion = ehrService.getEhrStatusAtVersion(ehrId, versionedObjectId, version);
-        UUID contributionId = ehrStatusOriginalVersion
-                .map(i -> UUID.fromString(i.getContribution().getId().getValue()))
-                .orElseThrow(() -> new InvalidApiParameterException("Couldn't retrieve EhrStatus with given parameters"));
+        HttpRestContext.register(VERSION, version);
 
-        Optional<ContributionDto> optionalContributionDto = contributionService.getContribution(ehrId, contributionId);
-        ContributionDto contributionDto = optionalContributionDto.orElseThrow(() -> new InternalServerException("Couldn't fetch contribution for existing EhrStatus")); // shouldn't happen
+        OriginalVersion<EhrStatus> originalVersion = ehrService
+                .getEhrStatusAtVersion(ehrId, ehrStatusId, version)
+                .orElseThrow(() -> new ObjectNotFoundException(
+                        RmConstants.EHR_STATUS, "Couldn't retrieve EhrStatus with given parameters"));
 
-        OriginalVersionResponseData<EhrStatus> originalVersionResponseData = new OriginalVersionResponseData<>(ehrStatusOriginalVersion.get(), contributionDto);
+        initContext.accept(originalVersion.getUid());
 
-        HttpHeaders respHeaders = new HttpHeaders();
-        respHeaders.setContentType(resolveContentType(accept));
+        return ResponseEntity.ok().body(originalVersion);
+    }
 
-        return ResponseEntity.ok().headers(respHeaders).body(originalVersionResponseData);
+    private void createRestContext(UUID ehrId, Map<String, String> queryParams, String... pathSegments) {
+
+        UriComponentsBuilder uriComponentsBuilder = fromPath("")
+                .pathSegment(EHR, ehrId.toString(), VERSIONED_EHR_STATUS)
+                .pathSegment(pathSegments);
+
+        queryParams.forEach(uriComponentsBuilder::queryParam);
+
+        HttpRestContext.register(
+                EHR_ID,
+                ehrId,
+                HttpRestContext.LOCATION,
+                uriComponentsBuilder.build().toString());
     }
 }

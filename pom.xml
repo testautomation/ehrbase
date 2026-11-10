@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <!--
-    Copyright (C) 2019 Vitasystems GmbH and Hannover Medical School.
+    Copyright (c) 2024 vitasystems GmbH.
 
     This file is part of Project EHRbase
 
@@ -23,719 +23,267 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
-    <modelVersion>4.0.0</modelVersion>
+  <modelVersion>4.0.0</modelVersion>
 
-    <parent>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.5.6</version>
-    </parent>
-
+  <parent>
     <groupId>org.ehrbase.openehr</groupId>
-    <artifactId>server</artifactId>
-    <version>0.19.0</version>
-    <packaging>pom</packaging>
+    <artifactId>bom</artifactId>
+    <version>2.38.0</version>
+    <relativePath>/bom/pom.xml</relativePath>
+  </parent>
 
-    <name>EHRbase</name>
-    <description>EHRbase is a Free, Libre, Open Source openEHR Clinical Data Repository</description>
-    <url>https://ehrbase.org</url>
+  <artifactId>server</artifactId>
+  <version>2.38.0</version>
+  <packaging>pom</packaging>
+  <name>EHRbase</name>
+  <description>EHRbase openEHR server</description>
 
-    <licenses>
-        <license>
-            <name>The Apache License, Version 2.0</name>
-            <url>https://www.apache.org/licenses/LICENSE-2.0</url>
-        </license>
-    </licenses>
+  <modules>
+    <module>openEHR_SDK</module>
+    <module>bom</module>
+    <module>application</module>
+    <module>api</module>
+    <module>cli</module>
+    <module>jooq-pg</module>
+    <module>rest-ehr-scape</module>
+    <module>rest-openehr</module>
+    <module>service</module>
+    <module>test-coverage</module>
+    <module>plugin</module>
+    <module>rm-db-format</module>
+    <module>aql-engine</module>
+    <module>configuration</module>
+  </modules>
 
-    <modules>
-        <module>api</module>
-        <module>application</module>
-        <module>base</module>
-        <module>jooq-pq</module>
-        <module>rest-ehr-scape</module>
-        <module>rest-openehr</module>
-        <module>service</module>
-        <module>test-coverage</module>
-    </modules>
+  <properties>
+    <maven.compiler.source>25</maven.compiler.source>
+    <maven.compiler.target>25</maven.compiler.target>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <!-- PostgreSQL Database Properties -->
+    <database.host>localhost</database.host>
+    <!-- use a port different from the default postgres port, so people do not have to stop their postgres servers-->
+    <database.port>5449</database.port>
+    <database.user>ehrbase</database.user>
+    <database.pass>ehrbase</database.pass>
+    <database.name>ehrbase</database.name>
+    <database.timeout>120000</database.timeout>
+    <database.external>false</database.external>
+    <skipTests>false</skipTests>
+    <skipITs>false</skipITs>
+    <failsafeArgLine/>
+    <surefireArgLine/>
+  </properties>
 
-    <distributionManagement>
-        <snapshotRepository>
-            <id>ossrh</id>
-            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
-        </snapshotRepository>
-        <repository>
-            <id>ossrh</id>
-            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
-        </repository>
-    </distributionManagement>
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-dependency-plugin</artifactId>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>versions-maven-plugin</artifactId>
+        <configuration>
+          <generateBackupPoms>false</generateBackupPoms>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.jacoco</groupId>
+        <artifactId>jacoco-maven-plugin</artifactId>
+        <version>${maven-jacoco-plugin.version}</version>
+        <executions>
+          <!-- SET ARG LINE PROPERTY FOR SUREFIRE -->
+          <execution>
+            <id>agent for unit tests</id>
+            <goals>
+              <goal>prepare-agent</goal>
+            </goals>
+            <configuration>
+              <propertyName>surefireArgLine</propertyName>
+            </configuration>
+          </execution>
+          <!-- SET ARG LINE PROPERTY FOR FAILSAFE -->
+          <execution>
+            <id>agent for integration tests</id>
+            <goals>
+              <goal>prepare-agent-integration</goal>
+            </goals>
+            <configuration>
+              <propertyName>failsafeArgLine</propertyName>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <!-- HANDLES JUNIT UNIT TESTS -->
+        <!-- https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-surefire-plugin -->
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <configuration>
+          <!-- SETS THE VM ARGUMENT LINE USED WHEN UNIT TESTS ARE RUN. -->
+          <argLine>@{surefireArgLine}</argLine>
+          <skipTests>${skipTests}</skipTests>
+            <!-- Ensure tests have a stable local to prevent localized
+            XML parsing error messages -->
+            <systemPropertyVariables>
+                <user.language>en</user.language>
+                <user.region>US</user.region>
+            </systemPropertyVariables>
+          <includes>
+            <include>**/*Test.java</include>
+          </includes>
+        </configuration>
+      </plugin>
+      <plugin>
+        <!-- HANDLES JUNIT INTEGRATION TESTS -->
+        <!-- https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-failsafe-plugin -->
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-failsafe-plugin</artifactId>
+        <configuration>
+          <skipITs>${skipITs}</skipITs>
+          <additionalClasspathElements>
+            <additionalClasspathElement>${basedir}/target/classes</additionalClasspathElement>
+          </additionalClasspathElements>
+          <!-- SETS THE VM ARGUMENT LINE USED WHEN INTEGRATION TESTS ARE RUN. -->
+          <argLine>@{failsafeArgLine}</argLine>
+          <includes>
+            <include>**/*IT.java</include>
+          </includes>
+        </configuration>
+        <executions>
+          <execution>
+            <goals>
+              <goal>integration-test</goal>
+              <goal>verify</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-enforcer-plugin</artifactId>
+        <version>${maven-enforcer-plugin.version}</version>
+        <configuration>
+          <rules>
+            <bannedDependencies>
+              <searchTransitive>true</searchTransitive>
+              <excludes>
+                <exclude>org.apache.logging.log4j</exclude>
+              </excludes>
 
-    <developers>
-        <developer>
-            <name>Stefan Spiska</name>
-            <email>stefan.spiska@vitagroup.ag</email>
-            <organization>vitasystems GmbH</organization>
-            <organizationUrl>https://www.vitagroup.ag/</organizationUrl>
-        </developer>
-        <developer>
-            <name>Axel Siebert</name>
-            <email>axel.siebert@vitasystems.de</email>
-            <organization>vitasystems GmbH</organization>
-            <organizationUrl>https://www.vitagroup.ag/</organizationUrl>
-        </developer>
-        <developer>
-            <name>Wladislaw Wagner</name>
-            <email>wladislaw.wagner@vitasystems.de</email>
-            <organization>vitasystems GmbH</organization>
-            <organizationUrl>https://www.vitagroup.ag/</organizationUrl>
-        </developer>
-        <developer>
-            <name>Luis Marco-Ruiz</name>
-            <email>luis.marco-ruiz@plri.de</email>
-            <organization>Hannover Medical School</organization>
-            <organizationUrl>https://plri.de/</organizationUrl>
-        </developer>
-        <developer>
-            <name>Jake Smolka</name>
-            <email>jake.smolka@plri.de</email>
-            <organization>Hannover Medical School</organization>
-            <organizationUrl>https://plri.de/</organizationUrl>
-        </developer>
-        <developer>
-            <name>Pablo Pazos</name>
-            <email>pablo.pazos@cabolabs.com</email>
-            <organization>Hannover Medical School</organization>
-            <organizationUrl>https://plri.de/</organizationUrl>
-        </developer>
-        <developer>
-            <name>Christian Chevalley</name>
-            <email>christian@adoc.co.th</email>
-            <organization>Hannover Medical School</organization>
-            <organizationUrl>https://plri.de/</organizationUrl>
-        </developer>
-        <developer>
-            <name>Renaud Subiger</name>
-            <email>renaud.subiger.ext@vitagroup.ag</email>
-            <organization>vitasystems GmbH</organization>
-            <organizationUrl>https://www.vitagroup.ag/</organizationUrl>
-        </developer>
-    </developers>
+            </bannedDependencies>
+            <requireMavenVersion>
+              <version>3.0</version>
+            </requireMavenVersion>
+          </rules>
+          <fail>true</fail>
+        </configuration>
+        <executions>
+          <execution>
+            <id>enforce-banned-dependencies</id>
+            <goals>
+              <goal>enforce</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>com.diffplug.spotless</groupId>
+        <artifactId>spotless-maven-plugin</artifactId>
+      </plugin>
+      <plugin>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-maven-plugin</artifactId>
+        <configuration>
+          <skip>true</skip>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+      </plugin>
+    </plugins>
+  </build>
 
-    <scm>
-        <connection>scm:git:git://github.com/ehrbase/ehrbase.git</connection>
-        <developerConnection>scm:git:ssh://github.com:ehrbase/ehrbase.git</developerConnection>
-        <url>https://github.com/ehrbase/ehrbase</url>
-    </scm>
+  <profiles>
+    <!-- RUN UNIT TESTS ONLY -->
+    <profile>
+      <id>fast</id>
+      <properties>
+        <skipTests>false</skipTests>
+        <skipITs>true</skipITs>
+      </properties>
+    </profile>
 
-    <properties>
-        <java.version>11</java.version>
-        <!-- PostgreSQL Database Properties -->
-        <database.host>localhost</database.host>
-        <database.port>5432</database.port>
-        <database.user>ehrbase</database.user>
-        <database.pass>ehrbase</database.pass>
-        <database.name>ehrbase</database.name>
-        <!-- Dependency Versions -->
-        <archie.version>1.0.4</archie.version>
-        <commons-io.version>2.11.0</commons-io.version>
-        <commons-lang3.version>3.12.0</commons-lang3.version>
-        <maven-gpg-plugin.version>3.0.1</maven-gpg-plugin.version>
-        <nexus-staging-maven-plugin.version>1.6.8</nexus-staging-maven-plugin.version>
-        <assertj.core>3.11.1</assertj.core>
-        <json.path.version>2.4.0</json.path.version>
-        <jooq.version>3.12.3</jooq.version>
-        <keycloak.version>4.0.0.Final</keycloak.version>
-        <spring.version>2.5.6</spring.version>
-        <springdoc-openapi.version>1.5.11</springdoc-openapi.version>
-        <postgressql.version>42.2.25</postgressql.version>
-        <ehrbase.sdk.version>1.17.0</ehrbase.sdk.version>
-        <flyway.version>7.11.3</flyway.version>
-        <joda.version>2.10.6</joda.version>
-        <jacoco.version>0.8.6</jacoco.version>
-        <surefire.version>3.0.0-M5</surefire.version>
-        <failsafe.version>3.0.0-M5</failsafe.version>
-        <prometheus.version>1.6.1</prometheus.version>
-        <antlr4.version>4.9.1</antlr4.version>
-        <javamelody.version>1.88.0</javamelody.version>
-        <json-api.version>2.0.0</json-api.version>
-        <skipIntegrationTests>true</skipIntegrationTests>
-        <include.tests>**/*Test.java</include.tests>
-        <test.profile>unit</test.profile>
-    </properties>
+    <!-- RUN INTEGRATION TESTS ONLY -->
+    <profile>
+      <id>slow</id>
+      <properties>
+        <skipTests>true</skipTests>
+        <skipITs>false</skipITs>
+      </properties>
+    </profile>
 
-    <build>
+    <!-- RUN ALL JAVA TESTS (UNIT & INTEGRATION) -->
+    <profile>
+      <id>full</id>
+      <properties>
+        <skipTests>false</skipTests>
+        <skipITs>false</skipITs>
+      </properties>
+    </profile>
+
+    <profile>
+      <id>release</id>
+      <properties>
+        <skipTests>true</skipTests>
+        <skipITs>true</skipITs>
+      </properties>
+      <build>
         <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-dependency-plugin</artifactId>
-            </plugin>
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>versions-maven-plugin</artifactId>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-source-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>attach-sources</id>
+                <goals>
+                  <goal>jar</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-javadoc-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>attach-javadocs</id>
+                <goals>
+                  <goal>jar</goal>
+                </goals>
                 <configuration>
-                    <generateBackupPoms>false</generateBackupPoms>
+                  <additionalJOption>-Xdoclint:none</additionalJOption>
                 </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.sonatype.plugins</groupId>
-                <artifactId>nexus-staging-maven-plugin</artifactId>
-                <extensions>true</extensions>
-                <configuration>
-                    <serverId>ossrh</serverId>
-                    <nexusUrl>https://oss.sonatype.org/</nexusUrl>
-                    <autoReleaseAfterClose>true</autoReleaseAfterClose>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.jacoco</groupId>
-                <artifactId>jacoco-maven-plugin</artifactId>
-                <version>${jacoco.version}</version>
-                <executions>
-                    <!-- SET ARG LINE PROPERTY FOR SUREFIRE -->
-                    <execution>
-                        <id>agent for unit tests</id>
-                        <goals>
-                            <goal>prepare-agent</goal>
-                        </goals>
-                        <configuration>
-                            <propertyName>surefireArgLine</propertyName>
-                        </configuration>
-                    </execution>
-                    <!-- SET ARG LINE PROPERTY FOR FAILSAFE -->
-                    <execution>
-                        <id>agent for integration tests</id>
-                        <goals>
-                            <goal>prepare-agent-integration</goal>
-                        </goals>
-                        <configuration>
-                            <propertyName>failsafeArgLine</propertyName>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <!-- HANDLES JUNIT UNIT TESTS -->
-                <!-- https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-surefire-plugin -->
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-surefire-plugin</artifactId>
-                <!-- TODO: CAN THIS BE REMOVED? SEEMS TO HAVE NO IMPACT ON TEST EXECUTION. -->
-                <!-- MOREOVER TEST WITH DB ACCESS SHOULD BE INTEGRATION NOT UNIT TESTS! -->
-                <!-- <configuration>
-                    <useSystemClassLoader>false</useSystemClassLoader>
-                    <systemPropertyVariables>
-                        <test.db.host>${database.host}</test.db.host>
-                        <test.db.port>${database.port}</test.db.port>
-                        <test.db.name>${database.name}</test.db.name>
-                        <test.db.user>${database.user}</test.db.user>
-                        <test.db.password>${database.pass}</test.db.password>
-                    </systemPropertyVariables>
-                </configuration> -->
-                <configuration>
-                    <skipTests>true</skipTests>
-                    <!-- SETS THE VM ARGUMENT LINE USED WHEN UNIT TESTS ARE RUN. -->
-                    <argLine>${surefireArgLine}</argLine>
-                </configuration>
-                <executions>
-                    <execution>
-                        <id>${test.profile} tests</id>
-                        <phase>test</phase>
-                        <goals>
-                            <goal>test</goal>
-                        </goals>
-                        <configuration>
-                            <skipTests>false</skipTests>
-                            <includes>
-                                <include>${include.tests}</include>
-                            </includes>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-
-            <plugin>
-                <!-- HANDLES JUNIT INTEGRATION TESTS -->
-                <!-- https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-failsafe-plugin -->
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-failsafe-plugin</artifactId>
-                <version>${failsafe.version}</version>
-                <configuration>
-                    <skipITs>${skipIntegrationTests}</skipITs>
-                </configuration>
-                <executions>
-                    <execution>
-                        <id>integration-test</id>
-                        <phase>verify</phase>
-                        <goals>
-                            <goal>integration-test</goal>
-                            <goal>verify</goal>
-                        </goals>
-                        <configuration>
-                            <!-- SETS THE VM ARGUMENT LINE USED WHEN INTEGRATION TESTS ARE RUN. -->
-                            <argLine>${failsafeArgLine}</argLine>
-                            <includes>
-                                <include>**/*IT.java</include>
-                            </includes>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-enforcer-plugin</artifactId>
-                <configuration>
-                    <rules>
-                        <bannedDependencies>
-                            <searchTransitive>true</searchTransitive>
-                            <excludes>
-                                <exclude>org.apache.logging.log4j</exclude>
-                            </excludes>
-
-                        </bannedDependencies>
-                        <requireMavenVersion>
-                            <version>3.0</version>
-                        </requireMavenVersion>
-                    </rules>
-                    <fail>true</fail>
-                </configuration>
-                <executions>
-                    <execution>
-                        <id>enforce-banned-dependencies</id>
-                        <goals>
-                            <goal>enforce</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
+              </execution>
+            </executions>
+          </plugin>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-gpg-plugin</artifactId>
+              <version>${maven-gpg-plugin.version}</version>
+            <executions>
+              <execution>
+                <id>sign-artifacts</id>
+                <phase>verify</phase>
+                <goals>
+                  <goal>sign</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
         </plugins>
-
-        <pluginManagement>
-            <plugins>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-gpg-plugin</artifactId>
-                    <version>${maven-gpg-plugin.version}</version>
-                </plugin>
-                <plugin>
-                    <groupId>org.sonatype.plugins</groupId>
-                    <artifactId>nexus-staging-maven-plugin</artifactId>
-                    <version>${nexus-staging-maven-plugin.version}</version>
-                </plugin>
-                <plugin>
-                    <groupId>com.spotify</groupId>
-                    <artifactId>dockerfile-maven-plugin</artifactId>
-                    <version>1.4.13</version>
-                    <configuration>
-                        <dockerConfigFile/>
-                    </configuration>
-                </plugin>
-                <plugin>
-                    <groupId>org.antlr</groupId>
-                    <artifactId>antlr4-maven-plugin</artifactId>
-                    <version>${antlr4.version}</version>
-                    <configuration>
-                        <listener>true</listener>
-                        <visitor>true</visitor>
-                    </configuration>
-                    <executions>
-                        <execution>
-                            <id>antlr</id>
-                            <goals>
-                                <goal>antlr4</goal>
-                            </goals>
-                        </execution>
-                    </executions>
-                </plugin>
-                <plugin>
-
-                    <!-- Specify the maven code generator plugin -->
-                    <!-- Use org.jooq            for the Open Source Edition
-                             org.jooq.pro        for commercial editions,
-                             org.jooq.pro-java-6 for commercial editions with Java 6 support,
-                             org.jooq.trial      for the free trial edition
-
-                         Note: Only the Open Source Edition is hosted on Maven Central.
-                               Import the others manually from your distribution -->
-                    <groupId>org.jooq</groupId>
-                    <artifactId>jooq-codegen-maven</artifactId>
-                    <version>${jooq.version}</version>
-
-                    <!-- The plugin should hook into the generate goal -->
-                    <executions>
-                        <execution>
-                            <phase>generate-sources</phase>
-                            <goals>
-                                <goal>generate</goal>
-                            </goals>
-                        </execution>
-                    </executions>
-
-                    <!-- Manage the plugin's dependency. In this example, we'll use a PostgreSQL database -->
-                    <dependencies>
-                        <dependency>
-                            <groupId>org.postgresql</groupId>
-                            <artifactId>postgresql</artifactId>
-                            <version>${postgressql.version}</version>
-                        </dependency>
-                    </dependencies>
-
-                    <!-- Specify the plugin configuration.
-                         The configuration format is the same as for the standalone code generator -->
-                    <configuration>
-                        <!-- Configure the database connection here -->
-                        <jdbc>
-                            <driver>org.postgresql.Driver</driver>
-                            <url>jdbc:postgresql://${database.host}:${database.port}/${database.name}</url>
-                            <user>${database.user}</user>
-                            <password>${database.pass}</password>
-                        </jdbc>
-                    </configuration>
-                </plugin>
-                <plugin>
-                    <groupId>org.flywaydb</groupId>
-                    <artifactId>flyway-maven-plugin</artifactId>
-                    <version>${flyway.version}</version>
-                    <dependencies>
-                        <dependency>
-                            <groupId>org.postgresql</groupId>
-                            <artifactId>postgresql</artifactId>
-                            <version>${postgressql.version}</version>
-                        </dependency>
-                    </dependencies>
-                    <executions>
-                        <execution>
-                            <phase>generate-sources</phase>
-                            <goals>
-                                <goal>migrate</goal>
-                            </goals>
-                        </execution>
-                    </executions>
-                </plugin>
-                <plugin>
-                    <groupId>org.springframework.boot</groupId>
-                    <artifactId>spring-boot-maven-plugin</artifactId>
-                    <configuration>
-                        <mainClass>org.ehrbase.application.EhrBase</mainClass>
-                    </configuration>
-                    <executions>
-                        <execution>
-                            <id>build-info</id>
-                            <goals>
-                                <goal>build-info</goal>
-                            </goals>
-                            <configuration>
-                                <additionalProperties>
-                                    <archie.version>${archie.version}</archie.version>
-                                    <openEHR_SDK.version>${ehrbase.sdk.version}</openEHR_SDK.version>
-                                </additionalProperties>
-                            </configuration>
-                        </execution>
-                    </executions>
-                </plugin>
-            </plugins>
-
-        </pluginManagement>
-    </build>
-
-    <profiles>
-        <!-- RUN UNIT TESTS ONLY -->
-        <profile>
-            <id>fast</id>
-            <properties>
-                <include.tests>**/*Test.java</include.tests>
-                <test.profile>unit</test.profile>
-            </properties>
-        </profile>
-
-        <!-- RUN INTEGRATION TESTS ONLY -->
-        <profile>
-            <id>slow</id>
-            <properties>
-                <include.tests>**/*IT.java</include.tests>
-                <test.profile>integration</test.profile>
-            </properties>
-        </profile>
-
-        <!-- RUN ALL JAVA TESTS (UNIT & INTEGRATION) -->
-        <profile>
-            <id>full</id>
-            <properties>
-                <include.tests>**/*</include.tests>
-                <test.profile>all</test.profile>
-            </properties>
-        </profile>
-
-        <profile>
-            <id>release</id>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-source-plugin</artifactId>
-                        <executions>
-                            <execution>
-                                <id>attach-sources</id>
-                                <goals>
-                                    <goal>jar</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-javadoc-plugin</artifactId>
-                        <executions>
-                            <execution>
-                                <id>attach-javadocs</id>
-                                <goals>
-                                    <goal>jar</goal>
-                                </goals>
-                                <configuration>
-                                    <additionalJOption>-Xdoclint:none</additionalJOption>
-                                </configuration>
-                            </execution>
-                        </executions>
-                    </plugin>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-gpg-plugin</artifactId>
-                        <executions>
-                            <execution>
-                                <id>sign-artifacts</id>
-                                <phase>verify</phase>
-                                <goals>
-                                    <goal>sign</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-    </profiles>
-
-    <dependencyManagement>
-        <dependencies>
-            <dependency>
-                <groupId>commons-io</groupId>
-                <artifactId>commons-io</artifactId>
-                <version>${commons-io.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.commons</groupId>
-                <artifactId>commons-lang3</artifactId>
-                <version>${commons-lang3.version}</version>
-            </dependency>
-
-            <!-- modules -->
-            <dependency>
-                <groupId>org.ehrbase.openehr</groupId>
-                <artifactId>base</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.ehrbase.openehr</groupId>
-                <artifactId>service</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.ehrbase.openehr</groupId>
-                <artifactId>rest-ehr-scape</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.ehrbase.openehr</groupId>
-                <artifactId>rest-openehr</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.ehrbase.openehr</groupId>
-                <artifactId>application</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.ehrbase.openehr</groupId>
-                <artifactId>api</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.ehrbase.openehr</groupId>
-                <artifactId>jooq-pg</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-
-            <!-- sdk -->
-            <dependency>
-                <groupId>org.ehrbase.openehr.sdk</groupId>
-                <artifactId>response-dto</artifactId>
-                <version>${ehrbase.sdk.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.ehrbase.openehr.sdk</groupId>
-                <artifactId>opt-1.4</artifactId>
-                <version>${ehrbase.sdk.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.ehrbase.openehr.sdk</groupId>
-                <artifactId>serialisation</artifactId>
-                <version>${ehrbase.sdk.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.ehrbase.openehr.sdk</groupId>
-                <artifactId>terminology</artifactId>
-                <version>${ehrbase.sdk.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.ehrbase.openehr.sdk</groupId>
-                <artifactId>validation</artifactId>
-                <version>${ehrbase.sdk.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.ehrbase.openehr.sdk</groupId>
-                <artifactId>web-template</artifactId>
-                <version>${ehrbase.sdk.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.ehrbase.openehr.sdk</groupId>
-                <artifactId>test-data</artifactId>
-                <version>${ehrbase.sdk.version}</version>
-                <scope>test</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-starter-logging</artifactId>
-                <exclusions>
-                    <exclusion>
-                        <groupId>org.apache.logging.log4j</groupId>
-                        <artifactId>log4j-api</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>org.apache.logging.log4j</groupId>
-                        <artifactId>log4j-core</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>org.apache.logging.log4j</groupId>
-                        <artifactId>log4j-to-slf4j</artifactId>
-                    </exclusion>
-                </exclusions>
-            </dependency>
-
-            <dependency>
-                <groupId>org.apache.logging.log4j</groupId>
-                <artifactId>log4j-api</artifactId>
-                <version>${log4j.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.postgresql</groupId>
-                <artifactId>postgresql</artifactId>
-                <version>${postgressql.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.jooq</groupId>
-                <artifactId>jooq</artifactId>
-                <version>${jooq.version}</version>
-                <scope>compile</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.jooq</groupId>
-                <artifactId>jooq-codegen-maven</artifactId>
-                <version>${jooq.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.antlr</groupId>
-                <artifactId>antlr4-runtime</artifactId>
-                <version>${antlr4.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.jayway.jsonpath</groupId>
-                <artifactId>json-path</artifactId>
-                <version>${json.path.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.nedap.healthcare.archie</groupId>
-                <artifactId>openehr-rm</artifactId>
-                <version>${archie.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.commons</groupId>
-                <artifactId>commons-collections4</artifactId>
-                <version>4.1</version>
-            </dependency>
-            <dependency>
-                <groupId>com.fasterxml.jackson.datatype</groupId>
-                <artifactId>jackson-datatype-jsr310</artifactId>
-                <version>2.9.10</version>
-            </dependency>
-            <dependency>
-                <groupId>com.google.code.gson</groupId>
-                <artifactId>gson</artifactId>
-                <version>2.8.6</version>
-            </dependency>
-            <dependency>
-                <groupId>org.springdoc</groupId>
-                <artifactId>springdoc-openapi-ui</artifactId>
-                <version>${springdoc-openapi.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.flywaydb</groupId>
-                <artifactId>flyway-core</artifactId>
-                <version>${flyway.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>javax.annotation</groupId>
-                <artifactId>javax.annotation-api</artifactId>
-                <version>1.3.2</version>
-            </dependency>
-            <dependency>
-                <groupId>pl.project13.maven</groupId>
-                <artifactId>git-commit-id-plugin</artifactId>
-            </dependency>
-            <dependency>
-                <groupId>io.micrometer</groupId>
-                <artifactId>micrometer-registry-prometheus</artifactId>
-                <version>${prometheus.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.springframework.security</groupId>
-                <artifactId>spring-security-web</artifactId>
-                <version>${spring-security.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.springframework.security</groupId>
-                <artifactId>spring-security-config</artifactId>
-                <version>${spring-security.version}</version>
-            </dependency>
-            <dependency>
-                <!-- TODO migrate away from joda -->
-                <groupId>joda-time</groupId>
-                <artifactId>joda-time</artifactId>
-                <version>${joda.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>jakarta.json</groupId>
-                <artifactId>jakarta.json-api</artifactId>
-                <version>${json-api.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>net.bull.javamelody</groupId>
-                <artifactId>javamelody-spring-boot-starter</artifactId>
-                <version>${javamelody.version}</version>
-            </dependency>
-        </dependencies>
-    </dependencyManagement>
-
-    <repositories>
-        <repository>
-            <id>ossrh-snapshots</id>
-            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
-            <releases>
-                <enabled>false</enabled>
-            </releases>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
-        </repository>
-        <repository>
-            <id>jitpack.io</id>
-            <url>https://jitpack.io</url>
-        </repository>
-    </repositories>
+      </build>
+    </profile>
+  </profiles>
 </project>

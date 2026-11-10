@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 Vitasystems GmbH and Hannover Medical School.
+ * Copyright (c) 2024 vitasystems GmbH.
  *
  * This file is part of project EHRbase
  *
@@ -7,7 +7,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -15,38 +15,31 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.ehrbase.api.exception;
 
 import org.apache.commons.lang3.StringUtils;
 
 /**
  * <p>
- * Diese Exception wird geworfen, wenn in einem Switch-Block ein Case eingetreten ist, der nicht korrekt behandelt werden kann. Eigentlich
- * sollte dieser Fall nicht auftreten (außer man ignoriert die Eclipse-Warning zum unvollständigen Switch).
+ * This exception is thrown when a case has occurred in a switch block that cannot be handled correctly.
  * </p>
  * <p>
- * Typische Verwendungen in einer Switch-Definition:
+ * Typical uses in a switch statement:
  * <ol>
- * <li>Im unerwarteten default-Case</li>
- * <li>Im explizit nicht sinnvoll behandelbaren Case</li>
- * <li>Im unerwarteten default-Case eines Switch mit Fall-Through von nicht sinnvoll behandelbaren Cases (Kombination aus 1. und 2.)</li>
+ * <li>unexpected default case</li>
+ * <li>explicitly not sensibly treatable case</li>
+ * <li>unexpected default case with fall-through of not sensibly treatable case (combination of 1. and 2.)</li>
  * </ol>
- * <p>
- * Siehe dazu auch: <a href="https://owl.symeda/wiki/doku.php?id=code-conventions#vollstaendige_switch-statements">Code Conventions -
- * Vollständige Switch-Statements</a>
- * </p>
  *
- * @author Jan Falkenstern, Stefan Kock
  */
 public class UnexpectedSwitchCaseException extends RuntimeException {
 
     private static final long serialVersionUID = 5695009820197756438L;
 
     /**
-     * Erzeugt aus dem übergebenen enumValue eine message.<br />
-     * Ausgegeben in der Exception-Message wird <code>enumValue.name()</code>,
-     * damit z.B. bei lokalisierten Enums immer denselbe Wert ausgegeben wird.
+     * Creates a message from the <code>enumValue</code> parameter.<br />
+     * The message is based on <code>enumValue.name()</code>,
+     * so that the format is stable, e.g. in case of i18n.
      *
      * @param enumValue must not be null
      */
@@ -55,9 +48,9 @@ public class UnexpectedSwitchCaseException extends RuntimeException {
     }
 
     /**
-     * Erzeugt aus dem übergebenen enumValue eine message.<br />
-     * Ausgegeben in der Exception-Message wird <code>enumValue.name()</code>,
-     * damit z.B. bei lokalisierten Enums immer denselbe Wert ausgegeben wird.
+     * Creates a message from the <code>enumValue</code> parameter.<br />
+     * The message is based on <code>enumValue.name()</code>,
+     * so that the format is stable, e.g. in case of i18n.
      *
      * @param enumValue         must not be null
      * @param additionalMessage additional text for generated message
@@ -67,7 +60,7 @@ public class UnexpectedSwitchCaseException extends RuntimeException {
     }
 
     /**
-     * Erzeugt aus dem übergebenen intValue eine message.
+     * Creates a message from the <code>intValue</code> parameter
      *
      * @param intValue
      */
@@ -76,7 +69,7 @@ public class UnexpectedSwitchCaseException extends RuntimeException {
     }
 
     /**
-     * Erzeugt aus dem übergebenen intValue eine message.
+     * Creates a message from the <code>intValue</code> parameter
      *
      * @param intValue
      * @param additionalMessage additional text for generated message
@@ -86,13 +79,7 @@ public class UnexpectedSwitchCaseException extends RuntimeException {
     }
 
     /**
-     * Erzeugt aus dem übergebenen stringValue eine message.
-     *
-     * <strong>
-     * <h2>Achtung: Breaking Change!</h2>
-     * <p>Mit Version 0.1.3-SNAPSHOT hat sich die Bedeutung des Konstruktors geändert!<br/>
-     * Statt der Meldung wird jetzt nur der Wert angegeben!</p>
-     * </strong>
+     * Creates a message from the <code>stringValue</code> parameter
      *
      * @param stringValue
      */
@@ -101,7 +88,7 @@ public class UnexpectedSwitchCaseException extends RuntimeException {
     }
 
     /**
-     * Erzeugt aus dem übergebenen stringValue eine message.
+     * Creates a message from the <code>stringValue</code> parameter
      *
      * @param stringValue
      * @param additionalMessage additional text for generated message
@@ -111,10 +98,9 @@ public class UnexpectedSwitchCaseException extends RuntimeException {
     }
 
     /**
-     * Erzeugt die Message der {@link UnexpectedSwitchCaseException} anhand der übergebenen Parameter mit Ausgabe von
-     * <code>enumValue.getClass().getSimpleName()</code>.<br />
-     * Ausgegeben in der Exception-Message wird <code>enumValue.name()</code>,
-     * damit z.B. bei lokalisierten Enums immer denselbe Wert ausgegeben wird.
+     * Creates the message of a {@link UnexpectedSwitchCaseException} containing the simple class name of the <code>enumValue</code> parameter.
+     * The message is based on <code>enumValue.name()</code>,
+     * so that the format is stable, e.g. in case of i18n.
      *
      * @param enumValue         must not be null
      * @param additionalMessage additional text for generated message (optional)
@@ -126,7 +112,7 @@ public class UnexpectedSwitchCaseException extends RuntimeException {
     }
 
     /**
-     * Erzeugt die Message der {@link UnexpectedSwitchCaseException} anhand der übergebenen Parameter.
+     * Creates the message of a {@link UnexpectedSwitchCaseException} based on the given parameters.
      *
      * @param value
      * @param additionalMessage additional text for generated message (optional)
@@ -138,7 +124,7 @@ public class UnexpectedSwitchCaseException extends RuntimeException {
     }
 
     /**
-     * Erzeugt die Message der {@link UnexpectedSwitchCaseException} anhand der übergebenen Parameter.
+     * Creates the message of a {@link UnexpectedSwitchCaseException} based on the given parameters.
      *
      * @param type              e.g. <code>enumValue.getClass().getSimpleName()</code>
      * @param value             unsupported value in switch

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020 Axel Siebert (Vitasystems GmbH) and Hannover Medical School.
+ * Copyright (c) 2024 vitasystems GmbH.
  *
  * This file is part of project EHRbase
  *
@@ -7,7 +7,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,31 +17,55 @@
  */
 package org.ehrbase.service;
 
-import org.ehrbase.api.definitions.ServerConfig;
+import static org.ehrbase.util.Lazy.lazy;
+
+import java.lang.management.ManagementFactory;
+import java.util.Optional;
+import java.util.function.Supplier;
 import org.ehrbase.api.service.StatusService;
-import org.ehrbase.dao.access.interfaces.I_DatabaseStatusAccess;
 import org.jooq.DSLContext;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.jooq.impl.DSL;
 import org.springframework.boot.info.BuildProperties;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.lang.management.ManagementFactory;
-
 @Service
-@Transactional
-public class StatusServiceImp extends BaseServiceImp implements StatusService {
+public class StatusServiceImp implements StatusService {
 
-    @Autowired
-    private BuildProperties buildProperties;
+    public static final String UNKNOWN = "<unknown>";
+    private final Supplier<String> operatingSystemInformation;
+    private final Supplier<String> javaVMInformation;
+    private final Supplier<String> ehrbaseVersion;
+    private final Supplier<String> databaseInformation;
+    private final Supplier<String> archieVersion;
+    private final Supplier<String> ehrbaseSdkVersion;
 
-    @Autowired
-    public StatusServiceImp(
-            KnowledgeCacheService knowledgeCacheService,
-            DSLContext dslContext,
-            ServerConfig serverConfig
-    ) {
-        super(knowledgeCacheService, dslContext, serverConfig);
+    public StatusServiceImp(DSLContext dslContext, Optional<BuildProperties> buildProperties) {
+
+        this.operatingSystemInformation = lazy(() -> String.format(
+                "%s %s %s",
+                ManagementFactory.getOperatingSystemMXBean().getName(),
+                ManagementFactory.getOperatingSystemMXBean().getArch(),
+                ManagementFactory.getOperatingSystemMXBean().getVersion()));
+
+        this.javaVMInformation = lazy(() -> String.format(
+                "%s %s",
+                ManagementFactory.getRuntimeMXBean().getVmVendor(),
+                ManagementFactory.getRuntimeMXBean().getSystemProperties().get("java.runtime.version")));
+
+        this.ehrbaseVersion =
+                lazy(() -> buildProperties.map(BuildProperties::getVersion).orElse(UNKNOWN));
+
+        this.databaseInformation = lazy(() -> dslContext
+                .select(DSL.function("VERSION", String.class))
+                .fetchOne()
+                .value1());
+
+        this.archieVersion =
+                lazy(() -> buildProperties.map(p -> p.get("archie.version")).orElse(UNKNOWN));
+
+        this.ehrbaseSdkVersion = lazy(
+                () -> buildProperties.map(p -> p.get("openEHR_SDK.version")).orElse(UNKNOWN));
     }
 
     /**
@@ -49,12 +73,7 @@ public class StatusServiceImp extends BaseServiceImp implements StatusService {
      */
     @Override
     public String getOperatingSystemInformation() {
-        return String.format(
-                "%s %s %s",
-                ManagementFactory.getOperatingSystemMXBean().getName(),
-                ManagementFactory.getOperatingSystemMXBean().getArch(),
-                ManagementFactory.getOperatingSystemMXBean().getVersion()
-        );
+        return operatingSystemInformation.get();
     }
 
     /**
@@ -62,19 +81,16 @@ public class StatusServiceImp extends BaseServiceImp implements StatusService {
      */
     @Override
     public String getJavaVMInformation() {
-        return String.format(
-                "%s %s",
-                ManagementFactory.getRuntimeMXBean().getVmVendor(),
-                ManagementFactory.getRuntimeMXBean().getSystemProperties().get("java.runtime.version")
-        );
+        return javaVMInformation.get();
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
+    @Transactional
     public String getDatabaseInformation() {
-        return I_DatabaseStatusAccess.retrieveDatabaseVersion(getDataAccess());
+        return databaseInformation.get();
     }
 
     /**
@@ -82,7 +98,7 @@ public class StatusServiceImp extends BaseServiceImp implements StatusService {
      */
     @Override
     public String getEhrbaseVersion() {
-        return this.buildProperties.getVersion();
+        return ehrbaseVersion.get();
     }
 
     /**
@@ -90,7 +106,7 @@ public class StatusServiceImp extends BaseServiceImp implements StatusService {
      */
     @Override
     public String getArchieVersion() {
-        return this.buildProperties.get("archie.version");
+        return archieVersion.get();
     }
 
     /**
@@ -98,6 +114,6 @@ public class StatusServiceImp extends BaseServiceImp implements StatusService {
      */
     @Override
     public String getOpenEHR_SDK_Version() {
-        return this.buildProperties.get("openEHR_SDK.version");
+        return ehrbaseSdkVersion.get();
     }
 }

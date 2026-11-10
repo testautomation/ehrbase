@@ -1,41 +1,77 @@
+/*
+ * Copyright (c) 2024 vitasystems GmbH.
+ *
+ * This file is part of project EHRbase
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package org.ehrbase.rest.openehr;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.tags.Tag;
-import org.ehrbase.api.service.QueryService;
-import org.ehrbase.response.openehr.ErrorBodyPayload;
-import org.ehrbase.response.openehr.QueryDefinitionListResponseData;
-import org.ehrbase.response.openehr.QueryDefinitionResponseData;
-import org.ehrbase.rest.BaseController;
-import org.ehrbase.rest.openehr.specification.DefinitionQueryApiSpecification;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import static org.apache.commons.lang3.StringUtils.isBlank;
+import static org.ehrbase.api.rest.HttpRestContext.QUERY_ID;
+import static org.springframework.http.MediaType.APPLICATION_JSON;
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+import static org.springframework.http.MediaType.APPLICATION_XML_VALUE;
+import static org.springframework.http.MediaType.TEXT_PLAIN;
+import static org.springframework.http.MediaType.TEXT_PLAIN_VALUE;
+import static org.springframework.web.util.UriComponentsBuilder.fromPath;
 
-import java.util.Map;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import org.ehrbase.api.exception.GeneralRequestProcessingException;
+import org.ehrbase.api.exception.InvalidApiParameterException;
+import org.ehrbase.api.exception.UnexpectedSwitchCaseException;
+import org.ehrbase.api.exception.UnsupportedMediaTypeException;
+import org.ehrbase.api.rest.HttpRestContext;
+import org.ehrbase.api.service.StoredQueryService;
+import org.ehrbase.openehr.sdk.response.dto.QueryDefinitionResponseData;
+import org.ehrbase.openehr.sdk.response.dto.ehrscape.QueryDefinitionResultDto;
+import org.ehrbase.rest.BaseController;
+import org.ehrbase.rest.openehr.specification.DefinitionQueryApiSpecification;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
+@ConditionalOnMissingBean(name = "primaryopenehrdefinitionquerycontroller")
 @RestController
-@RequestMapping(path = "${openehr-api.context-path:/rest/openehr}/v1/definition/query", produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
+@RequestMapping(
+        path = BaseController.API_CONTEXT_PATH_WITH_VERSION + "/definition/query",
+        produces = {APPLICATION_JSON_VALUE, APPLICATION_XML_VALUE})
 public class OpenehrDefinitionQueryController extends BaseController implements DefinitionQueryApiSpecification {
 
-    static final Logger log = LoggerFactory.getLogger(OpenehrDefinitionQueryController.class);
-
-    private final QueryService queryService;
+    private final StoredQueryService storedQueryService;
 
     @Autowired
-    public OpenehrDefinitionQueryController(QueryService queryService) {
-        this.queryService = Objects.requireNonNull(queryService);
+    public OpenehrDefinitionQueryController(StoredQueryService storedQueryService) {
+        this.storedQueryService = Objects.requireNonNull(storedQueryService);
     }
 
-    //----- DEFINITION: Manage Stored Query, From definition package https://openehr.github.io/specifications-ITS-REST/definitions.html#definitions-stored-query
+    // ----- DEFINITION: Manage Stored Query, From definition package
+    // https://openehr.github.io/specifications-ITS-REST/definitions.html#definitions-stored-query
 
     /**
      * Get a stored query
@@ -44,66 +80,125 @@ public class OpenehrDefinitionQueryController extends BaseController implements 
      * @param qualifiedQueryName
      * @return
      */
-    @RequestMapping(value = {"/{qualified_query_name}", ""}, method = RequestMethod.GET)
     @Override
-    public ResponseEntity<QueryDefinitionListResponseData> getStoredQueryList(@RequestHeader(value = ACCEPT, required = false) String accept,
-                                                                              @PathVariable(value = "qualified_query_name", required = false) String qualifiedQueryName) {
+    @GetMapping(value = {"/{qualified_query_name}", ""})
+    public ResponseEntity<List<QueryDefinitionResponseData>> getStoredQueryList(
+            @RequestHeader(value = ACCEPT, required = false) String accept,
+            @PathVariable(value = "qualified_query_name", required = false) String qualifiedQueryName) {
 
-        log.debug("getStoredQueryList invoked with the following input: " + qualifiedQueryName);
+        registerLocation(qualifiedQueryName, null);
+        List<QueryDefinitionResponseData> responseData =
+                storedQueryService.retrieveStoredQueries(qualifiedQueryName).stream()
+                        .map(QueryDefinitionResponseData::new)
+                        .toList();
 
-        QueryDefinitionListResponseData responseData = new QueryDefinitionListResponseData(queryService.retrieveStoredQueries(qualifiedQueryName));
+        HttpRestContext.register(QUERY_ID, qualifiedQueryName);
+
         return ResponseEntity.ok(responseData);
     }
 
-    @RequestMapping(value = {"/{qualified_query_name}/{version}"}, method = RequestMethod.GET)   //
     @Override
-    public ResponseEntity<QueryDefinitionResponseData> getStoredQueryVersion(@RequestHeader(value = ACCEPT, required = false) String accept,
-                                                                             @PathVariable(value = "qualified_query_name") String qualifiedQueryName,
-                                                                             @PathVariable(value = "version") Optional<String> version) {
+    @GetMapping(value = {"/{qualified_query_name}/{version}"})
+    public ResponseEntity<QueryDefinitionResponseData> getStoredQueryVersion(
+            @RequestHeader(value = ACCEPT, required = false) String accept,
+            @PathVariable(value = "qualified_query_name") String qualifiedQueryName,
+            @PathVariable(value = "version") Optional<String> version) {
 
-        log.debug("getStoredQueryVersion invoked with the following input: " + qualifiedQueryName + ", version:" + version);
+        registerLocation(qualifiedQueryName, version.orElse(null));
 
-        QueryDefinitionResponseData queryDefinitionResponseData = new QueryDefinitionResponseData(queryService.retrieveStoredQuery(qualifiedQueryName, version.isPresent() ? version.get() : null));
+        QueryDefinitionResponseData queryDefinitionResponseData = new QueryDefinitionResponseData(
+                storedQueryService.retrieveStoredQuery(qualifiedQueryName, version.orElse(null)));
+
+        HttpRestContext.register(QUERY_ID, qualifiedQueryName);
 
         return ResponseEntity.ok(queryDefinitionResponseData);
     }
 
-    @RequestMapping(value = {"/{qualified_query_name}/{version}{?type}", "/{qualified_query_name}{?type}"}, method = RequestMethod.PUT)
     @Override
-    public ResponseEntity<QueryDefinitionResponseData> putStoreQuery(@RequestHeader(value = ACCEPT, required = false) String accept,
-                                                                     @PathVariable(value = "qualified_query_name") String qualifiedQueryName,
-                                                                     @PathVariable(value = "version") Optional<String> version,
-                                                                     @RequestParam(value = "type", required = false, defaultValue = "AQL") String type,
-                                                                     @RequestBody String queryPayload) {
+    @PutMapping(
+            value = {"/{qualified_query_name}/{version}", "/{qualified_query_name}"},
+            consumes = {TEXT_PLAIN_VALUE, APPLICATION_JSON_VALUE},
+            produces = {APPLICATION_JSON_VALUE})
+    public ResponseEntity<QueryDefinitionResponseData> putStoredQuery(
+            @RequestHeader(value = CONTENT_TYPE, required = false) String contentType,
+            @RequestHeader(value = ACCEPT, required = false) String accept,
+            @PathVariable(value = "qualified_query_name") String qualifiedQueryName,
+            @PathVariable(value = "version") Optional<String> version,
+            @RequestParam(value = "query_type", required = false, defaultValue = StoredQueryService.AQL_QUERY_TYPE)
+                    String queryType,
+            @RequestBody String queryPayload) {
 
-        log.debug("putStoreQuery invoked with the following input: " + qualifiedQueryName + ", version:" + version + ", query:" + queryPayload + ", type=" + type);
+        if (!isQueryTypeSupported(queryType)) {
+            throw new InvalidApiParameterException("Query type:%s not supported!".formatted(queryType));
+        }
 
-        //use the payload from adhoc POST:
-        //get the query and parameters if any
-        Gson gson = new GsonBuilder().create();
+        MediaType mediaType = MediaType.parseMediaType(contentType);
+        String query = extractQueryFromPayload(mediaType, queryPayload);
 
-        Map<String, Object> mapped = gson.fromJson(queryPayload, Map.class);
-        String aql = (String) mapped.get("q");
+        if (isBlank(query)) {
+            throw new InvalidApiParameterException("No %s query provided.".formatted(queryType));
+        }
 
-        if (aql == null || aql.isEmpty())
-            return new ResponseEntity(new ErrorBodyPayload("Invalid query", "no aql query provided in payload").toString(), HttpStatus.BAD_REQUEST);
+        registerLocation(qualifiedQueryName, version.orElse(null));
 
-        QueryDefinitionResponseData queryDefinitionResponseData = new QueryDefinitionResponseData(queryService.createStoredQuery(qualifiedQueryName, version.orElse(null), aql));
+        QueryDefinitionResultDto storedQuery =
+                storedQueryService.createStoredQuery(qualifiedQueryName, version.orElse(null), query, queryType);
 
-        return ResponseEntity.ok(queryDefinitionResponseData);
+        HttpRestContext.register(QUERY_ID, qualifiedQueryName);
 
+        return getPutDefenitionResponseEntity(mediaType, storedQuery);
     }
 
-    @RequestMapping(value = {"/{qualified_query_name}/{version}"}, method = RequestMethod.DELETE)
-    @Override
-    public ResponseEntity<QueryDefinitionResponseData> deleteStoredQuery(@RequestHeader(value = ACCEPT, required = false) String accept,
-                                                                         @PathVariable(value = "qualified_query_name") String qualifiedQueryName,
-                                                                         @PathVariable(value = "version") String version) {
+    protected boolean isQueryTypeSupported(String queryType) {
+        return StoredQueryService.AQL_QUERY_TYPE.equals(queryType);
+    }
 
-        log.debug("deleteStoredQuery for the following input: {} , version: {}", qualifiedQueryName, version);
+    protected String extractQueryFromPayload(MediaType mediaType, String payload) {
+        // assume same format as adhoc POST
+        if (APPLICATION_JSON.isCompatibleWith(mediaType)) {
+            return Optional.of(payload)
+                    .map(p -> {
+                        try {
+                            return new ObjectMapper().readTree(p);
+                        } catch (JsonProcessingException e) {
+                            throw new GeneralRequestProcessingException("Invalid content format", e);
+                        }
+                    })
+                    .map(n -> n.get("q"))
+                    .filter(JsonNode::isTextual)
+                    .map(JsonNode::asText)
+                    .orElse(null);
+        }
 
-        QueryDefinitionResponseData queryDefinitionResponseData = new QueryDefinitionResponseData(queryService.deleteStoredQuery(qualifiedQueryName, version));
+        if (TEXT_PLAIN.isCompatibleWith(mediaType)) {
+            return payload;
+        }
 
-        return ResponseEntity.ok(queryDefinitionResponseData);
+        throw new UnsupportedMediaTypeException(mediaType.toString());
+    }
+
+    private ResponseEntity<QueryDefinitionResponseData> getPutDefenitionResponseEntity(
+            MediaType mediaType, QueryDefinitionResultDto storedQuery) {
+        if (APPLICATION_JSON.isCompatibleWith(mediaType)) {
+            return ResponseEntity.ok(new QueryDefinitionResponseData(storedQuery));
+        } else if (TEXT_PLAIN.isCompatibleWith(mediaType)) {
+            HttpHeaders respHeaders = new HttpHeaders();
+            respHeaders.setContentType(APPLICATION_JSON);
+            respHeaders.setLocation(
+                    createLocationUri(DEFINITION, QUERY, storedQuery.getQualifiedName(), storedQuery.getVersion()));
+
+            return ResponseEntity.ok().headers(respHeaders).build();
+        } else {
+            throw new UnexpectedSwitchCaseException(mediaType.getType());
+        }
+    }
+
+    private void registerLocation(String queryName, String version) {
+        HttpRestContext.register(
+                HttpRestContext.LOCATION,
+                fromPath("")
+                        .pathSegment(DEFINITION, QUERY, queryName, version)
+                        .build()
+                        .toString());
     }
 }
