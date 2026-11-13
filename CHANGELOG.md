@@ -2,453 +2,376 @@
 
 All notable changes to this project will be documented in this file.
 
-The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project
-adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres
+to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [unreleased]
+ ### Added
+ ### Changed 
+ ### Fixed 
 
+## [2.38.0]
+ ### Added
+- Upgrade to Spring Boot 4.1.1 [#1658](https://github.com/ehrbase/ehrbase/pull/1658)
+- Exception messages and logs no longer contain subject identifiers. The conflict error for a duplicate EHR subject no longer includes the party id and namespace [#1658](https://github.com/ehrbase/ehrbase/pull/1658)
+ ### Fixed
+- Concurrent creation of the same user now returns `409 Conflict` instead of `500 Internal Server Error` [#1658](https://github.com/ehrbase/ehrbase/pull/1658)
+
+## [2.37.1]
+ ### Changed
+- Updated the gitmodules to point to the SDK release branch
+
+## [2.37.0]
+ ### Added
+- Validation of temporal pattern constraints [#1654](https://github.com/ehrbase/ehrbase/pull/1654) [SDK #767](https://github.com/ehrbase/openEHR_SDK/pull/767)
+ ### Changed
+- Extended `If-Match` header validation for versioned objects [#1644](https://github.com/ehrbase/ehrbase/pull/1644)
+ ### Fixed 
+- Accept double-quoted (RFC 7232 ETag-style) `If-Match` header values on composition and EHR_STATUS update, fixes [#1639](https://github.com/ehrbase/ehrbase/issues/1639)
+
+## [2.36.0]
+ ### Added
+ ### Changed
+ - Upgrade to Spring Boot 4 [#1652](https://github.com/ehrbase/ehrbase/pull/1652)
+ ### Fixed 
+
+## [2.35.1]
+ ### Added
+ ### Changed 
+ ### Fixed 
+ - [#1648](https://github.com/ehrbase/ehrbase/pull/1648) Fixes possibly misplaced or removed folder items when retrieving a directory, as well as corruption of the folder history.
+   Since EHRbase version 2.30.0, the order of references to compositions may have changed, references may have disappeared, or appeared in a different subfolder.
+
+## [2.35.0]
+ ### Added
+ ### Changed 
+ ### Fixed 
+
+## [2.34.0]
+ ### Added
+ ### Changed 
+ ### Fixed 
+
+## [2.33.0]
+ ### Added
+- Option to rely on ValueSets expansion for fhir terminology validation [1636](https://github.dev/ehrbase/ehrbase/pull/1636)
+ ### Changed 
+ ### Fixed 
+- (openEHR_SDK 2.33.1) string primitives that could represent compact temporals are no longer transformed to extended format when executing AQL [#752](https://github.com/ehrbase/openEHR_SDK/pull/752)
+- Validation of DV_CODED_TEXT.value for template-defined terminologies [1636](https://github.dev/ehrbase/ehrbase/pull/1636)
+
+## [2.32.0]
+ ### Added
+- Support for partial time, see SDK changelog [#1633](https://github.com/ehrbase/ehrbase/pull/1633) [SDK#747](https://github.dev/ehrbase/openEHR_SDK/pull/747)
+ ### Changed 
+ ### Fixed 
+ - Terminology fixes, for details see SDK changelog [#1616](https://github.com/ehrbase/ehrbase/pull/1616)
+ - Improved external terminology validation performance and stability [#1623](https://github.com/ehrbase/ehrbase/pull/1623)
+ - Added metrics for external FHIR terminology server HTTP calls [#1623](https://github.com/ehrbase/ehrbase/pull/1623)
+- Validation of limits of intervals with partial dates, see SDK changelog [#1633](https://github.com/ehrbase/ehrbase/pull/1633) [SDK#747](https://github.dev/ehrbase/openEHR_SDK/pull/747)
+- Prevent mixing of long and short time format,see SDK changelog [#1633](https://github.com/ehrbase/ehrbase/pull/1633) [SDK#747](https://github.dev/ehrbase/openEHR_SDK/pull/747)
+
+## [2.30.2]
+### Fixed
+- (openEHR_SDK 2.31.1) string primitives that could represent compact temporals are no longer transformed to extended format when executing AQL
+
+## [2.31.0]
+ ### Added
+ ### Changed
+- Improved template cache configuration,  [#1618](https://github.com/ehrbase/ehrbase/pull/1618)
+- Improved performance of template service [#1618](https://github.com/ehrbase/ehrbase/pull/1618)
+ ### Fixed 
+
+## [2.30.1]
+ ### Added
+ ### Changed 
+ ### Fixed 
+
+## [2.30.0]
+ ### Added
+- RM constraint validation for DIRECTORY (with feature toggle) [#1584](https://github.com/ehrbase/ehrbase/pull/1584)
+ ### Changed
+- update to java 25 [#1595](https://github.com/ehrbase/ehrbase/pull/1595)
+- changed history DB model for better compression [#1584](https://github.com/ehrbase/ehrbase/pull/1584)
+- migrating `management` properties deprecated since Spring Boot 3.5 [#1605](https://github.com/ehrbase/ehrbase/pull/1605)
+ ### Fixed
+- Adjusted some endpoints to comply with openEHR REST API specs; see [UPDATING.md](./UPDATING.md) [#1599](https://github.com/ehrbase/ehrbase/pull/1599)
+- For existing EHR directory entries, missing `archetype_node_id`s of `FOLDER`s are set to `openEHR-EHR-FOLDER.generic.v1` [#1584](https://github.com/ehrbase/ehrbase/pull/1584)
+
+## [2.29.0]
+ ### Added
+ ### Changed 
+- Updating compositions with newer template versions now supports SemVer version syntax [#1597](https://github.com/ehrbase/ehrbase/pull/1597)
+ ### Fixed
+- Fixed parsing of template versions when updating compositions [#1597](https://github.com/ehrbase/ehrbase/pull/1597)
+- When deleting templates, all composition versions are considered for graceful error handling [#1597](https://github.com/ehrbase/ehrbase/pull/1597)
+
+## [2.28.0]
+ ### Added
+ ### Changed 
+ ### Fixed 
+- AQL: COMPOSITION CONTAINS COMPOSITION and EHR_STATUS CONTAINS EHR_STATUS no longer wrongly return results [#1580](https://github.com/ehrbase/ehrbase/pull/1580)
+
+## [2.27.0]
+ ### Added
+ ### Changed 
+ ### Fixed 
+ - Fixed an error where the deletion date of versioned objects was set to the creation date of the previous version  [#1573](https://github.com/ehrbase/ehrbase/pull/1573)
+
+## [2.26.0]
+ ### Added
+ ### Changed 
+ ### Fixed 
+
+## [2.25.0]
+ ### Added
+ ### Changed 
+ ### Fixed 
+- Fixed an error during AQL parameter replacement, when using COUNT(*) [#1564](https://github.com/ehrbase/ehrbase/pull/1564)
+
+## [2.24.0]
+ ### Added
+ ### Changed 
+- When executing a stored query, the response no longer includes the variable `q` with the query definition [#1563](https://github.com/ehrbase/ehrbase/pull/1536)
+ ### Fixed 
+- Proper escaping of AQL LIKE operands [#1542](https://github.com/ehrbase/ehrbase/pull/1542)
+
+## [2.23.0]
+ ### Added
+ ### Changed 
+- Upgrade openEHR_SDK to version 2.26.0 see https://github.com/ehrbase/openEHR_SDK/blob/develop/CHANGELOG.md
+ ### Fixed 
+- Proper escaping of AQL LIKE operands [#1542](https://github.com/ehrbase/ehrbase/pull/1542)
+- Renaming the query type parameter when storing queries to match the specification [#1536](https://github.com/ehrbase/ehrbase/pull/1536)
+
+## [2.22.0]
+ ### Added
+ ### Changed 
+ ### Fixed 
+- AQL: deterministic SQL generation [#1534](https://github.com/ehrbase/ehrbase/pull/1534)
+
+## [2.21.1]
+ ### Added
+ ### Changed 
+ ### Fixed 
+
+## [2.21.0]
+ ### Added 
+- Option `ehrbase.aql.path-node-skipping` to improve AQL performance for paths containing consecutive node predicates. 
+  Disabled by default, since it may produce unexpected results if the paths do not follow the archetype definitions. 
+  [#1521](https://github.com/ehrbase/ehrbase/pull/1521)
+ ### Changed 
+- AQL: CONTAINS with a node predicate now excludes results from nested archetypes.
+  To restore the previous behaviour set `ehrbase.aql.archetype-local-node-predicates = false`[#1524](https://github.com/ehrbase/ehrbase/pull/1524)
+ ### Fixed
+- Fix terminology validation URL extraction [#1507](https://github.com/ehrbase/ehrbase/pull/1507)
+
+## [2.20.0]
+ ### Added
+ ### Changed 
+ ### Fixed 
+
+## [2.19.0]
+ ### Added
+ ### Changed 
+- Publishing artifacts directly to central.sonatype.com [#1512](https://github.com/ehrbase/ehrbase/pull/1512)
+ ### Fixed 
+
+## [2.18.0]
+ ### Added
+ ### Changed 
+ ### Fixed 
+- Add missing test dependency scope to assertj [#1502](https://github.com/ehrbase/ehrbase/pull/1502)
+- Allow for retrieving COMPOSITIONs containing ELEMENTs with FEEDER_AUDIT [#1506](https://github.com/ehrbase/ehrbase/pull/1506)
+
+## [2.17.0]
+ ### Added
+ ### Changed 
+ ### Fixed 
+
+## [2.16.0]
+ ### Added
+ ### Changed 
+ ### Fixed 
+ - Parsing of invalid temporal aql parameters [#1489](https://github.com/ehrbase/ehrbase/pull/1489)
+
+## [2.15.0]
+ ### Added
+ ### Changed 
+ ### Fixed
+ - Prevent concurrent creation of multiple EHRs with same patient reference [#1475](https://github.com/ehrbase/ehrbase/pull/1475)
+
+## [2.14.0]
+ ### Added
+ ### Changed 
+ ### Fixed 
+- fix difference in Web template between openEhr API and etercis API  [#1470](https://github.com/ehrbase/ehrbase/pull/1470)
+
+## [2.13.0]
+ ### Added
+ ### Changed 
+ ### Fixed 
+* Fix AQL handling for "FOLDER CONTAINS VERSION CONTAINS COMPOSITION" [#1459](https://github.com/ehrbase/ehrbase/pull/1459)
+
+## [2.12.0]
+ ### Added
+ ### Changed 
+* Added check for duplicate version IDs during Folder creation as well as check for Folder uid and if-match header id during update ([#1410](https://github.com/ehrbase/ehrbase/pull/1410))
+* Remove EHR from AQL if not needed for the query ([#1448](https://github.com/ehrbase/ehrbase/pull/1448))
+* Update flyway to V11 to Gracefully exit in case installed flyway DB is newer than supported ([#1450](https://github.com/ehrbase/ehrbase/pull/1450))
+ ### Fixed 
+* Allow Template overwrite with renamed property from `system.allow-template-overwrite` to `ehrbase.template.allow-overwrite` ([#1440](https://github.com/ehrbase/ehrbase/pull/1440))
+
+## [2.11.0]
+ ### Added
+ ### Changed 
+* EHR directory: Restriction of FOLDER items to only contain local VERSIONED_COMPOSITION references ([#1433](https://github.com/ehrbase/ehrbase/pull/1433))
+ ### Fixed 
+
+## [2.10.0]
+ ### Added
+* Revived option to pre-fill template cache (`ehrbase.cache.template-init-on-startup`, default: `false`) ([#1394](https://github.com/ehrbase/ehrbase/pull/1394))
+* Added experimental `AQL` support for `FOLDER` (`ehrbase.aql.experimental.aqlOnFolder`, default: `false`) ([#1401](https://github.com/ehrbase/ehrbase/pull/1401))
+ ### Changed
+* Feature toggle for ehrscape API (`ehrbase.rest.ehrscape.enabled`, default: `false`) ([#1415](https://github.com/ehrbase/ehrbase/pull/1415))
+ ### Fixed
+* Validate that compositions only contain nodes that are defined by the template (`ehrbase.validation.checkForExtraNodes`, default: `true`)  ([#1424](https://github.com/ehrbase/ehrbase/pull/1424))
+
+## [2.9.0]
+ ### Added
+ ### Changed 
+ ### Fixed
+* Improved transaction-awareness of caches ([#1407](https://github.com/ehrbase/ehrbase/pull/1407))
+
+## [2.8.1]
+ ### Added
+ ### Changed 
+ ### Fixed 
+* Fixed HTTP 500 in case stored query does not exist [#1409](https://github.com/ehrbase/ehrbase/pull/1409)
+
+## [2.8.0]
+ ### Added
+* AQL: Support query parameter with multiple values ([1399](https://github.com/ehrbase/ehrbase/pull/1399))
+ ### Changed 
+* Enable user access to the welcome page while authentication is enabled ([#1400](https://github.com/ehrbase/ehrbase/pull/1400))
+ ### Fixed 
+* Stored AQL queries: Correctly clean up query cache when storing queries ([#1405](https://github.com/ehrbase/ehrbase/pull/1405))
+* Updating an `EHR_STATUS` or `FOLDER` did not check the `If-Match header` ([1398](https://github.com/ehrbase/ehrbase/pull/1398))
+
+## [2.7.0]
+ ### Added
+* Experimental ItemTag REST endpoints for EHR_STATUS and COMPOSITION (configs: `ehrbase.rest.experimental.tags.*`) ([1343](https://github.com/ehrbase/ehrbase/pull/1343))
+* CLI runner with support for flyway pre-migrations ([1387](https://github.com/ehrbase/ehrbase/pull/1387))
+ ### Changed 
+ ### Fixed 
+* Require EHR_STATUS `is_queryable` and `is_modifiable` to be present ([#1377](https://github.com/ehrbase/ehrbase/pull/1377)) 
+
+## [2.6.0]
+ ### Added
+ ### Changed 
+* Improved data structure for hierarchy of versioned objects ([#1359](https://github.com/ehrbase/ehrbase/pull/1359))
+* Upgrade openEHR_SDK to version 2.15.0 see https://github.com/ehrbase/openEHR_SDK/blob/develop/CHANGELOG.md
+ ### Fixed 
+
+## [2.5.0]
+ ### Added
+* Create a `ehrbase` user to run the Docker container ([#1336](https://github.com/ehrbase/ehrbase/pull/1336))
+ ### Changed
+* Deprecate plugin aspects ([#1344](https://github.com/ehrbase/ehrbase/pull/1344))
+* Add simplified JSON-based “web template” format support for GET Template ADL 1.4 using header `Accept: application/openehr.wt+json` ([1334](https://github.com/ehrbase/ehrbase/pull/1334))
+* Improved AQL performance ([#1358](https://github.com/ehrbase/ehrbase/pull/1358))
+* Upgrade openEHR_SDK to version 2.14.0 see https://github.com/ehrbase/openEHR_SDK/blob/develop/CHANGELOG.md
+
+ ### Fixed
+* Return `201` instead of `204` for EHR creation ([1371](https://github.com/ehrbase/ehrbase/pull/1371))
+* Fixed AQL predicate reduction logic ([#1358](https://github.com/ehrbase/ehrbase/pull/1358))
+* Respect AQL root predicates ([#1358](https://github.com/ehrbase/ehrbase/pull/1358))
+
+## [2.4.0]
+ ### Added
+- Configurable flyway migration strategy
+- Configurable fetch limit checks + default limit for AQL queries
+- Configurable fetch limit precedence strategy for AQL queries
+ ### Changed 
+ - Upgrade openEHR_SDK to version 2.13.0 see https://github.com/ehrbase/openEHR_SDK/blob/develop/CHANGELOG.md 
+ ### Fixed 
+
+## [2.3.0]
+ ### Added
+ ### Changed 
+ - Upgrade openEHR_SDK to version 2.12.0 see https://github.com/ehrbase/openEHR_SDK/blob/develop/CHANGELOG.md
+* AQL-Performance: paths containing non-locatable structure attributes (EVENT_CONTEXT, FEEDER_AUDIT) ([#1341](https://github.com/ehrbase/ehrbase/pull/1341))
+* Removed `@Schema(MediaType.class)` Header declaration from swagger UI ([#1333](https://github.com/ehrbase/ehrbase/pull/1333))
+ ### Fixed
+
+## [2.2.0]
 ### Added
-
-### Changed
-
+* Added AQL debug support ([#1296](https://github.com/ehrbase/ehrbase/pull/1296))
+### Changed 
+ - Upgrade openEHR_SDK to version 2.11.0 see https://github.com/ehrbase/openEHR_SDK/blob/develop/CHANGELOG.md
+* The field `q` of AQL query responses now contain the requested, and not the executed, query string  ([#1296](https://github.com/ehrbase/ehrbase/pull/1296))
+* The field `meta._schema_version` of AQL query responses has been changed to `1.0.3`  ([#1296](https://github.com/ehrbase/ehrbase/pull/1296))
+* Return HTTP 422 Unprocessable Content in case fetch or offset is defined inside the aql query and as parameter ([#1325](https://github.com/ehrbase/ehrbase/pull/1325)).
 ### Fixed
 
-- Remove unused Operational Template cache ([#759](https://github.com/ehrbase/ehrbase/pull/759)).
-
-## [0.19.0] 
-
-### Added
-
-- Add Flyway callback to check `IntervalStyle` configuration
-  parameter ([#720](https://github.com/ehrbase/ehrbase/pull/720)).
-- Validate RM types used in OPT template ([#739](https://github.com/ehrbase/ehrbase/issues/739)).
-
-### Changed
-
-- Upgrade to Archie 1.0.4 ([#719](https://github.com/ehrbase/ehrbase/pull/719)).
-- Improve errors and exceptions logging ([#745](https://github.com/ehrbase/ehrbase/pull/745)).
-- Upgrade openEHR_SDK to version 1.17.0 see  https://github.com/ehrbase/openEHR_SDK/blob/develop/CHANGELOG.md
-
-### Fixed
-
-- Fixed SQL encoding whenever template is
-  unresolved ([#723](https://github.com/ehrbase/ehrbase/issues/723))
-- Modified handling of conflicting identified
-  parties ([#710](https://github.com/ehrbase/ehrbase/issues/710))
-- Fixes wrong status code returned by EHRbase while creating FLAT
-  composition ([#726](https://github.com/ehrbase/ehrbase/pull/726))
-- Fix NullPointerException while deleting unknown (or already deleted) composition
-  parameter ([#722](https://github.com/ehrbase/ehrbase/pull/722)).
-- Fix querying other_participations ([#707](https://github.com/ehrbase/ehrbase/issues/707))
-
-## [0.18.3]
-
-### Added
-
-### Changed
-
-- removed log4j (see https://github.com/ehrbase/ehrbase/pull/711)
-
-### Fixed
-
-## [0.18.2]
-
-### Fixed
-
-- updated log4j from 1.15.0 to 1.60.0
-
-## [0.18.1]
-
-### Fixed
-
-- Fix deployment issue with Flyway migration V62__add_entry_history_missing_columns.sql
-
-## [0.18.0]
-
-### Added
-
-- Migrated to Archie openEHR library version > 1.0.0, incl. its new strict invariant checks (
-  see: https://github.com/ehrbase/ehrbase/pull/570)
-- Support Structured format on ecis composition endpoints (
-  see https://github.com/ehrbase/ehrbase/pull/648)
-- Add new configuration options to customise user/admin role names when using OAuth authentication
-  (see https://github.com/ehrbase/ehrbase/pull/667)
-- Add configuration properties to customize CORS configuration (
-  see https://github.com/ehrbase/ehrbase/pull/697)
-
-### Changed
-
-### Fixed
-
-- Missing details in response returned by Directory REST API (
-  see: https://github.com/ehrbase/ehrbase/pull/605)
-- Add foreign key between `folder` and `ehr` tables (
-  see: https://github.com/ehrbase/ehrbase/pull/616)
-- Improves 'Admin Delete EHR' performance (see https://github.com/ehrbase/ehrbase/pull/626)
-- many fixes to the flat support (see https://github.com/ehrbase/ehrbase/pull/627)
-- Fix conversion between `DvDateTime` and `Timestamp` (
-  see https://github.com/ehrbase/ehrbase/pull/634)
-- Fix FLAT format does not return the archetype data if the archetype_id contains the letters "and"
-- Datetime inconsistent handling (see https://github.com/ehrbase/ehrbase/pull/649)
-- Fix issue using DV_DATE_TIME without time-zone (see https://github.com/ehrbase/ehrbase/pull/658)
-- update lg4j version (see https://github.com/ehrbase/ehrbase/pull/702)
-
-## [0.17.2]
-
-### Added
-
-- Github Action worklows to deploy multiarch images (`latest`, `next`, `version-tag`) to Docker
-  Hub (
-  see: https://github.com/ehrbase/ehrbase/pull/578)
-
-### Changed
-
-- Removes SELECT statement when PartyProxy object is empty (
-  see: https://github.com/ehrbase/ehrbase/pull/581)
-- Provide configuration properties for configuring context paths of openEHR REST API and Admin API (
-  see: https://github.com/ehrbase/ehrbase/pull/585)
-
-### Fixed
-
-- `Accept` header with multiple MIME types causes an IllegalArgumentException (
-  see: https://github.com/ehrbase/ehrbase/pull/583)
-- Composition version Uid schema in EhrScape API (see: https://github.com/ehrbase/ehrbase/pull/520)
-- Terminology Service calls from within AQL queries does not work (
-  see: https://github.com/ehrbase/ehrbase/pull/572)
-
-## [0.17.1] (beta)
-
-### Added
-
-- Default handling for audit metadata (see: https://github.com/ehrbase/ehrbase/pull/552)
-
-### Changed
-
-- Updated the SDK dependency to the latest version (
-  see: https://github.com/ehrbase/ehrbase/pull/565)
-- Refactored versioned object (interfaces) on service and access layer (
-  see: https://github.com/ehrbase/ehrbase/pull/552)
-
-### Fixed
-
-- Assigner in DV_IDENTIFIER not selected in aql (see: https://github.com/ehrbase/ehrbase/pull/561)
-- ehr_status.uuid not selects via aql (see: https://github.com/ehrbase/ehrbase/pull/561)
-- DB migration file conflict (see: https://github.com/ehrbase/ehrbase/pull/564)
-- Ddmin delete of multiple status versions (see: https://github.com/ehrbase/ehrbase/pull/552)
-
-## [0.17.0] (beta)
-
-### Added
-
-- Implement validation of compositions using external FHIR TS (
-  see: https://github.com/ehrbase/ehrbase/pull/493)
-- Support for Attribute-based Access Control (see: https://github.com/ehrbase/ehrbase/pull/499)
-- Support AQL array resolution in EHR_STATUS::other_details
-
-### Changed
-
-- Update paths for Admin API, Management API and `/status` endpoint (
-  see: https://github.com/ehrbase/ehrbase/pull/541)
-
-### Fixed
-
-- Folder handling (update, delete and missing audits) (
-  see: https://github.com/ehrbase/ehrbase/pull/529)
-- Fixed and refactored handling of audits and versioned objects (
-  see: https://github.com/ehrbase/ehrbase/pull/552/)
-
-## [0.16.0] (beta)
-
-### Added
-
-- Endpoints and integration tests for VERSIONED_COMPOSITION (
-  see: https://github.com/ehrbase/ehrbase/pull/448)
-- ATNA Logging for composition endpoints, querying and operations on the EHR object (
-  see: https://github.com/ehrbase/ehrbase/pull/452)
-- EHRbase Release Checklist (see: https://github.com/ehrbase/ehrbase/pull/451)
-- CACHE_ENABLED ENV to Dockerfile (see: https://github.com/ehrbase/ehrbase/pull/467)
-
-### Changed
-
-- Updated the SDK dependency to the latest version (
-  see: https://github.com/ehrbase/ehrbase/pull/463)
-- Force retrieval of operational template from DB (see: https://github.com/ehrbase/ehrbase/pull/468)
-
-### Fixed
-
-- WHERE field construct (see: https://github.com/ehrbase/ehrbase/pull/439)
-- Inconsistent behavior in SMICS Virology Query (see: https://github.com/ehrbase/ehrbase/pull/456)
-- Bunch of AQL issues (see: https://github.com/ehrbase/ehrbase/pull/461)
-- AQL: Error in processing OR in Contains clause (see: https://github.com/ehrbase/ehrbase/pull/462)
-- Cache issue on Startup (see: https://github.com/ehrbase/ehrbase/pull/465)
-
-## [0.15.0] (beta)
-
-### Added
-
-- Adds Admin API endpoints: Del EHR, Del Composition and Del Contribution (
-  see: https://github.com/ehrbase/ehrbase/pull/344)
-- Add ATNA logging configuration capabilities (see https://github.com/ehrbase/ehrbase/pull/355)
-- Support for EHR_STATUS and (partial) FOLDER version objects in contributions (
-  see: https://github.com/ehrbase/ehrbase/pull/372)
-- Add status endpoint to retrieve version information on running EHRbase instance and for heartbeat
-  checks. (
-  see: https://github.com/ehrbase/ehrbase/pull/393)
-- Add /status/info endpoint using actuator for basic info on running app (
-  see: https://github.com/ehrbase/ehrbase/pull/400)
-- Add /status/health endpoint for kubernetes liveness and readiness probes (
-  see: https://github.com/ehrbase/ehrbase/pull/400)
-- Add /status/env endpoint for environment information (
-  see: https://github.com/ehrbase/ehrbase/pull/400)
-- Add /status/metrics endpoint for detailed metrics on specific topics (db connection, http
-  requests, etc.) (
-  see: https://github.com/ehrbase/ehrbase/pull/400)
-- Add /status/prometheus endpoint for prometheus metrics (
-  see: https://github.com/ehrbase/ehrbase/pull/400)
-- Endpoints and integration tests for VERISONED_EHR_STATUS (
-  see: https://github.com/ehrbase/ehrbase/pull/415)
-
-### Changed
-
-- support AQL querying on full EHR (f.e. SELECT e) (see )
-- Update Dockerfile for usage with metrics and status (
-  see https://github.com/ehrbase/ehrbase/pull/408)
-- Refactored DB handling of contributions, removed misleading `CONTIRUBITON_HISTORY` table (
-  see https://github.com/ehrbase/ehrbase/pull/416)
-
-## [0.14.0] (beta)
-
-### Added
-
-- Add admin API endpoint stubs (see: https://github.com/ehrbase/ehrbase/pull/280)
-- Add support for FeederAudit in Locatable. Refactored Composition Serializer for DB encoding (
-  see https://github.com/ehrbase/ehrbase/tree/feature/311_feeder_audit
-  , https://github.com/ehrbase/openEHR_SDK/tree/feature/311_feeder_audit)
-- Change the strategy to resolve CONTAINS in AQL (https://github.com/ehrbase/ehrbase/pull/276)
-- Add admin template API functionality (see: https://github.com/ehrbase/ehrbase/pull/301)
-- Persist caches to java.io.tmpdir  (see: https://github.com/ehrbase/ehrbase/pull/308)
-- Precalculate containment tree from OPT template (see https://github.com/ehrbase/ehrbase/pull/312)
-
-### Changed
-
-- Detection of duplicate directories on EHR on POST
-- Using ObjectVersionId for DIRECTORY Controller and Service Layers (
-  see: https://github.com/ehrbase/ehrbase/pull/297)
-- Added Junit5 support via spring-boot-starter-test (https://github.com/ehrbase/ehrbase/pull/298)
-- Enable cartesian products on embedded arrays in JSONB (
-  see https://github.com/ehrbase/ehrbase/pull/309)
-- Use new OPT-Parser from sdk (see https://github.com/ehrbase/ehrbase/pull/314)
-- Add CORS config to enable clients to detect auth method (
-  see https://github.com/ehrbase/ehrbase/pull/354).
-
-### Fixed
-
-- Detect duplicates on POST Directory (see: https://github.com/ehrbase/ehrbase/pull/281)
-- Support context-less composition (see: https://github.com/ehrbase/ehrbase/pull/288)
-- Fixed missing AQL level of parenthesis when using NOT in WHERE clause (
-  see https://github.com/ehrbase/ehrbase/pull/293)
-- Allow duplicated paths in AQL resultsets (see: https://github.com/ehrbase/ehrbase/issues/263)
-- Transaction timestamps are now truncated to ms (see: https://github.com/ehrbase/ehrbase/pull/299)
-- Change response code on not found directory to 412 if not found (
-  see: https://github.com/ehrbase/ehrbase/pull/304)
-
-## [0.13.0] (beta)
-
-### Added
-
-- Added support for various functions in AQL (aggregation, statistical, string etc.) (
-  see: https://github.com/ehrbase/ehrbase/pull/223/)
-
-### Changed
-
-#### DIRECTORY
-
-- PreconditionFailed error response contains proper ETag and Location headers (
-  see: https://github.com/ehrbase/ehrbase/pull/183)
-
-#### Robot Tests
-
-- Update of AQL-Query test suite (see: https://github.com/ehrbase/ehrbase/pull/179)
-
-### Fixed
-
-- force a default timezone if not present for context/start_time and context/end_time if
-  specified (https://github.com/ehrbase/ehrbase/pull/215)
-- Representation of version uid of EHR_STATUS (see: https://github.com/ehrbase/ehrbase/pull/180)
-- Refactored support of PartyProxy and ObjectId in both CRUD and AQL operations (
-  see https://github.com/ehrbase/ehrbase/pull/248)
-- fix support of mandatory attributes in ENTRY specialization including rm_version (
-  see https://github.com/ehrbase/ehrbase/pull/247)
-
-#### DIRECTORY
-
-- Directory IDs from input path or If-Match header must now be in version_uid format (
-  see https://github.com/ehrbase/ehrbase/pull/183)
-- Folder IDs inside body are now parsed correctly (see: https://github.com/ehrbase/ehrbase/pull/183)
-- PreconditionFailed error response contains proper ETag and Location headers (
-  see: https://github.com/ehrbase/ehrbase/pull/183)
-
-#### Robot Tests
-
-- Added validation checking for other_details and ehr_status. (
-  see: https://github.com/ehrbase/ehrbase/pull/207)
-- Supports archetype_node_id and name for EHR_STATUS (
-  see: https://github.com/ehrbase/ehrbase/pull/207)
-- fixes bad canonical encoding for observation/data/origin (
-  see: https://github.com/ehrbase/ehrbase/pull/213)
-- POST without accept header for ehr, composition and contribution endpoints (
-  see: https://github.com/ehrbase/ehrbase/pull/199)
-
-## [0.12.0] (alpha)
-
-### Added
-
-- Basic Authentication as opt-in (see: https://github.com/ehrbase/ehrbase/pull/200)
-- Allow Templates can now be overwritten via spring configuration (
-  see: https://github.com/ehrbase/ehrbase/pull/194)
-
-### Fixed
-
-- Contribution endpoint checks for some invalid input combinations (
-  see: https://github.com/ehrbase/ehrbase/pull/202)
-- Fixes response code on /ehr PUT with invalid ID (
-  see: https://github.com/ehrbase/project_management/issues/163)
-- Fixes STATUS w/ empty subject bug (see: https://github.com/ehrbase/ehrbase/pull/196)
-- Now querying on composition category returns the correct result (composition/category...)
-- Fixes storage of party self inside compositions (see: https://github.com/ehrbase/ehrbase/pull/195)
-- Added support of AQL query in the form of c/composer (
-  see: https://github.com/ehrbase/ehrbase/pull/184)
-- Java error with UTF-8 encoding resolved (see: https://github.com/ehrbase/ehrbase/pull/173)
-- AQL refactoring and fixes to support correct canonical json representation (
-  see: https://github.com/ehrbase/ehrbase/pull/201)
-- fix terminal value test for non DataValue 'value' attribute (
-  see: https://github.com/ehrbase/ehrbase/pull/189)
-
-## [0.11.0] (alpha)
-
-**Note:** Due to the transition to this changelog the following list is not complete. Starting with
-the next release this file will provide a proper overview.
-
-### Added
-
-- Docker and docker-compose support for both application and database
-- Get folder with version_at_time parameter
-- Get Folder with path parameter
-
-### Changed
-
-- FasterXML Jackson version raised to 2.10.2
-- Java version raised from 8 to 11
-- Jooq version raised to 3.12.3
-- Spring Boot raised to version 2
-
-### Fixed
-
-- Response code when composition is logically deleted (
-  see: https://github.com/ehrbase/ehrbase/pull/144)
-- Response and `PREFER` header handling of `/ehr` endpoints (
-  see: https://github.com/ehrbase/ehrbase/pull/165)
-- Deserialization of EhrStatus attributes is_modifiable and is_queryable are defaulting to `true`
-  now (
-  see: https://github.com/ehrbase/ehrbase/pull/158)
-- Updating of composition with invalid template (e.g. completely different template than the
-  previous version) (
-  see: https://github.com/ehrbase/ehrbase/pull/166)
-- Folder names are checked for duplicates (see: https://github.com/ehrbase/ehrbase/pull/168)
-- AQL parser threw an unspecific exception when an alias was used in a WHERE
-  clause (https://github.com/ehrbase/ehrbase/pull/149)
-- Improved exception handling in composition validation (
-  see: https://github.com/ehrbase/ehrbase/pull/147)
-- Improved Reference Model validation (see: https://github.com/ehrbase/ehrbase/pull/147)
-- Error when reading a composition that has a provider name set(
-  see: https://github.com/ehrbase/ehrbase/pull/143)
-- Allow content to be null inside a composition (see: https://github.com/ehrbase/ehrbase/pull/129)
-- Fixed deletion of compositions through a contribution (
-  see: https://github.com/ehrbase/ehrbase/pull/128)
-- Start time of a composition was not properly updated (
-  see: https://github.com/ehrbase/ehrbase/pull/137)
-- Fixed validation of null values on participations (
-  see: https://github.com/ehrbase/ehrbase/pull/132)
-- Order by in AQL did not work properly (see: https://github.com/ehrbase/ehrbase/pull/112)
-- Order of variables in AQL result was not preserved (
-  see: https://github.com/ehrbase/ehrbase/pull/103)
-- Validation of compositions for unsupported language(
-  see: https://github.com/ehrbase/ehrbase/pull/107)
-- Duplicated ehr attributes in query due to cartesian product (
-  see: https://github.com/ehrbase/ehrbase/pull/106)
-- Retrieve of EHR_STATUS gave Null Pointer Exception for non-existing EHRs (
-  see: https://github.com/ehrbase/ehrbase/pull/136)
-- Correct resolution of ehr/system_id in AQL (see: https://github.com/ehrbase/ehrbase/pull/102)
-- Detection of duplicate aliases in aql select (see: https://github.com/ehrbase/ehrbase/pull/98)
-
-## [0.10.0] (alpha)
-
-### Added
-
-- openEHR REST API DIRECTORY Endpoints
-- openEHR REST API EHR_STATUS Endpoints (including other_details)
-- Spring Transactions: EHRbase now ensures complete rollback if part of a transaction fails.
-- Improved Template storage: openEHR Templates are stored inside the postgres database instead of
-  the file system (
-  including handling of duplicates)
-- AQL queries with partial paths return data in canonical json format (including full compositions)
-- Multimedia data can be correctly stored and retrieved
-- Spring configuration allows setting the System ID
-- Validation of openEHR Terminology (openEHR terminology codes are tested against an internal
-  terminology service)
-
-### Fixed
-
-- Order of columns in AQL result sets are now reliably
-  preserved (https://github.com/ehrbase/ehrbase/issues/37)
-- Some projection issues for EHR attributes have been resolved in AQL
-- Fixed error regarding DISTINCT operator in AQL (https://github.com/ehrbase/ehrbase/issues/50)
-- Fixed null pointer exceptions that could occur in persistent compositions
-
-## [0.9.0] (pre-alpha)
-
-### Added
-
-- openEHR REST API DIRECTORY Endpoints
-- openEHR REST API EHR_STATUS Endpoints (including other_details)
-- Spring Transactions: EHRbase now ensures complete rollback if part of a transaction fails.
-- Improved Template storage: openEHR Templates are stored inside the postgres database instead of
-  the file system (
-  including handling of duplicates)
-- AQL queries with partial paths return data in canonical json format (including full compositions)
-- Multimedia data can be correctly stored and retrieved
-- Spring configuration allows setting the System ID
-- Validation of openEHR Terminology (openEHR terminology codes are tested against an internal
-  terminology service)
-
-### Fixed
-
-- Order of columns in AQL result sets are now reliably
-  preserved (https://github.com/ehrbase/ehrbase/issues/37)
-- Some projection issues for EHR attributes have been resolved in AQL
-- Fixed error regarding DISTINCT operator in AQL (https://github.com/ehrbase/ehrbase/issues/50)
-- Fixed null pointer exceptions that could occur in persistent compositions
-
-[unreleased]: https://github.com/ehrbase/ehrbase/compare/v0.17.2...HEAD
-
-[0.17.2]: https://github.com/ehrbase/ehrbase/compare/v0.17.1...v0.17.2
-
-[0.17.1]: https://github.com/ehrbase/ehrbase/compare/v0.17.0...v0.17.1
-
-[0.17.0]: https://github.com/ehrbase/ehrbase/compare/v0.16.0...v0.17.0
-
-[0.16.0]: https://github.com/ehrbase/ehrbase/compare/v0.15.0...v0.16.0
-
-[0.15.0]: https://github.com/ehrbase/ehrbase/compare/v0.14.0...v0.15.0
-
-[0.14.0]: https://github.com/ehrbase/ehrbase/compare/v0.13.0...v0.14.0
-
-[0.13.0]: https://github.com/ehrbase/ehrbase/compare/v0.12.0...v0.13.0
-
-[0.12.0]: https://github.com/ehrbase/ehrbase/compare/v0.11.0...v0.12.0
-
-[0.11.0]: https://github.com/ehrbase/ehrbase/compare/v0.10.0...v0.11.0
-
-[0.10.0]: https://github.com/ehrbase/ehrbase/compare/v0.9.0...v0.10.0
-
-[0.9.0]: https://github.com/ehrbase/ehrbase/releases/tag/v0.9.0
+## [2.1.0]
+ ### Added
+* Added `STORED_QUERY_CACHE` ([#1258](https://github.com/ehrbase/ehrbase/pull/1258))
+* Added new config option `ehrbase.security.management.endpoints.web.csrf-validation-enabled` ([#1294](https://github.com/ehrbase/ehrbase/pull/1294),[#1297](https://github.com/ehrbase/ehrbase/pull/1297))
+ ### Changed 
+ - Upgrade openEHR_SDK to version 2.10.0 see https://github.com/ehrbase/openEHR_SDK/blob/develop/CHANGELOG.md 
+* Changed `StoredQueryRepository` methods to only accept `StoredQueryQualifiedName` as arguments ([#1258](https://github.com/ehrbase/ehrbase/pull/1258))
+ ### Fixed 
+* Fixed an issue with AQL, which caused NPEs when the query required adding filtering subqueries on a DV_ORDERED path ([#1293](https://github.com/ehrbase/ehrbase/pull/1293))
+* Delete Contribution now returns a 501 Not Implemented instead of 500 as it's not supported since 2.0.0 ([#1278](https://github.com/ehrbase/ehrbase/pull/1278))
+
+## [2.0.0]
+  Welcome to EHRbase 2.0.0. This major release contains a complete overhaul of the data structure and 
+  the Archetype Query Language (AQL) engine.
+  
+  See [UPDATING.md](./UPDATING.md) for details on how to update to the new release.
+
+[2.1.0]: https://github.com/ehrbase/ehrbase/compare/v2.0.0...v2.1.0
+[2.2.0]: https://github.com/ehrbase/ehrbase/compare/v2.1.0...v2.2.0
+[2.3.0]: https://github.com/ehrbase/ehrbase/compare/v2.2.0...v2.3.0
+[2.4.0]: https://github.com/ehrbase/ehrbase/compare/v2.3.0...v2.4.0
+[2.5.0]: https://github.com/ehrbase/ehrbase/compare/v2.4.0...v2.5.0
+[2.6.0]: https://github.com/ehrbase/ehrbase/compare/v2.5.0...v2.6.0
+[2.7.0]: https://github.com/ehrbase/ehrbase/compare/v2.6.0...v2.7.0
+[2.8.0]: https://github.com/ehrbase/ehrbase/compare/v2.7.0...v2.8.0
+[2.8.1]: https://github.com/ehrbase/ehrbase/compare/v2.8.0...v2.8.1
+[2.9.0]: https://github.com/ehrbase/ehrbase/compare/v2.8.1...v2.9.0
+[2.10.0]: https://github.com/ehrbase/ehrbase/compare/v2.9.0...v2.10.0
+[2.11.0]: https://github.com/ehrbase/ehrbase/compare/v2.10.0...v2.11.0
+[2.12.0]: https://github.com/ehrbase/ehrbase/compare/v2.11.0...v2.12.0
+[2.13.0]: https://github.com/ehrbase/ehrbase/compare/v2.12.0...v2.13.0
+[2.14.0]: https://github.com/ehrbase/ehrbase/compare/v2.13.0...v2.14.0
+[2.15.0]: https://github.com/ehrbase/ehrbase/compare/v2.14.0...v2.15.0
+[2.16.0]: https://github.com/ehrbase/ehrbase/compare/v2.15.0...v2.16.0
+[2.17.0]: https://github.com/ehrbase/ehrbase/compare/v2.16.0...v2.17.0
+[2.18.0]: https://github.com/ehrbase/ehrbase/compare/v2.17.0...v2.18.0
+[2.19.0]: https://github.com/ehrbase/ehrbase/compare/v2.18.0...v2.19.0
+[2.20.0]: https://github.com/ehrbase/ehrbase/compare/v2.19.0...v2.20.0
+[2.21.0]: https://github.com/ehrbase/ehrbase/compare/v2.20.0...v2.21.0
+[2.21.1]: https://github.com/ehrbase/ehrbase/compare/v2.21.0...v2.21.1
+[2.22.0]: https://github.com/ehrbase/ehrbase/compare/v2.21.1...v2.22.0
+[2.23.0]: https://github.com/ehrbase/ehrbase/compare/v2.22.0...v2.23.0
+[2.24.0]: https://github.com/ehrbase/ehrbase/compare/v2.23.0...v2.24.0
+[2.25.0]: https://github.com/ehrbase/ehrbase/compare/v2.24.0...v2.25.0
+[2.26.0]: https://github.com/ehrbase/ehrbase/compare/v2.25.0...v2.26.0
+[2.27.0]: https://github.com/ehrbase/ehrbase/compare/v2.26.0...v2.27.0
+[2.28.0]: https://github.com/ehrbase/ehrbase/compare/v2.27.0...v2.28.0
+[2.29.0]: https://github.com/ehrbase/ehrbase/compare/v2.28.0...v2.29.0
+[2.30.0]: https://github.com/ehrbase/ehrbase/compare/v2.29.0...v2.30.0
+[2.30.1]: https://github.com/ehrbase/ehrbase/compare/v2.30.0...v2.30.1
+[2.31.0]: https://github.com/ehrbase/ehrbase/compare/v2.30.1...v2.31.0
+[2.32.0]: https://github.com/ehrbase/ehrbase/compare/v2.31.0...v2.32.0
+[2.33.0]: https://github.com/ehrbase/ehrbase/compare/v2.32.0...v2.33.0
+[2.34.0]: https://github.com/ehrbase/ehrbase/compare/v2.33.0...v2.34.0
+[2.35.0]: https://github.com/ehrbase/ehrbase/compare/v2.34.0...v2.35.0
+[2.35.1]: https://github.com/ehrbase/ehrbase/compare/v2.35.0...v2.35.1
+[2.36.0]: https://github.com/ehrbase/ehrbase/compare/v2.35.1...v2.36.0
+[2.37.0]: https://github.com/ehrbase/ehrbase/compare/v2.36.0...v2.37.0
+[2.37.1]: https://github.com/ehrbase/ehrbase/compare/v2.37.0...v2.37.1
+[2.38.0]: https://github.com/ehrbase/ehrbase/compare/v2.37.1...v2.38.0
+[unreleased]: https://github.com/ehrbase/ehrbase/compare/v2.38.0...HEAD

@@ -1,4 +1,4 @@
-# Copyright (c) 2019 Vitasystems GmbH and Jake Smolka (Hannover Medical School).
+# Copyright (c) 2024 Vitasystems GmbH.
 #
 # This file is part of Project EHRbase
 #
@@ -15,7 +15,10 @@
 # limitations under the License.
 
 spring:
-  profiles: test
+  profiles:
+    active: test
+  cache:
+    type: CAFFEINE
 
 terminology_server:
   tsUrl: 'https://r4.ontoserver.csiro.au/fhir/'

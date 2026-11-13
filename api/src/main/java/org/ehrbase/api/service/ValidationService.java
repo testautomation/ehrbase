@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 Vitasystems GmbH and Hannover Medical School.
+ * Copyright (c) 2024 vitasystems GmbH.
  *
  * This file is part of project EHRbase
  *
@@ -7,7 +7,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -15,46 +15,44 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.ehrbase.api.service;
 
 import com.nedap.archie.rm.composition.Composition;
+import com.nedap.archie.rm.directory.Folder;
 import com.nedap.archie.rm.ehr.EhrStatus;
+import org.ehrbase.openehr.sdk.response.dto.ContributionCreateDto;
 
 /**
  * ValidationService
  * <p>
- * performs a composition validation based on the constraints defined in a 1.4 operational template
- * The service is a wrapper of Validator and use a cache to optimize validation since the
- * construction of the constraints is somewhat resource intensive. The validation constraints are
- * maintained into a standard java cache. The service uses KnowledgeCache to retrieve operational
- * templates.
+ * Performs RM Object validation,
+ * Composition validation is based on the constraints defined in a 1.4 operational template.
  */
 public interface ValidationService {
 
-  /**
-   * check a composition based on the operation template constraints
-   *
-   * @param templateID  the template Id (String)
-   * @param composition the RM composition
-   * @throws Exception if the validation fails or the template cannot be resolved
-   */
-  void check(String templateID, Composition composition) throws Exception;
+    /**
+     * Initially check if the <code>composition</code> is valid for further processing.
+     *
+     * @param composition to validate
+     * @throws IllegalArgumentException in case the given <code>composition</code> is invalid.
+     */
+    void check(Composition composition);
 
-  /**
-   * initially check if the composition is valid for further processing
-   *
-   * @param composition
-   * @throws IllegalArgumentException
-   */
-  void check(Composition composition) throws Exception;
+    void check(Folder folder);
 
-  /**
-   * initially check if ehrstatus is valid for further processing
-   *
-   * @param ehrStatus
-   * @throws IllegalArgumentException
-   */
-  void check(EhrStatus ehrStatus);
+    /**
+     * Initially check if <code>ehrStatus</code> is valid for further processing.
+     *
+     * @param ehrStatus to validate
+     * @throws IllegalArgumentException in case the given <code>ehrStatus</code> is invalid.
+     */
+    void check(EhrStatus ehrStatus);
 
+    /**
+     * Initially check if <code>contribution</code> is valid for further processing.
+     *
+     * @param contribution to validate
+     * @throws IllegalArgumentException in case the given <code>contribution</code> is invalid.
+     */
+    void check(ContributionCreateDto contribution);
 }
